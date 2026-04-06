@@ -10,12 +10,12 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 > If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
 
 # PlatformerGame
-Ascender Game Reference
+## Ascender Game Reference Code
 
 v1:
 
-- Traverse levels.
-- Attack enemies.
-- Player health with game over screen (ui not implemented yet).
-- Gravity.
-- Change tiles and bg when level switching.
+- `Traverse levels.`
+- `Attack enemies.`
+- `Player health with game over screen (ui not implemented yet).`
+- `Gravity.`
+- `Change tiles and bg when level switching.`
