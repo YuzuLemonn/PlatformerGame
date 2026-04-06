@@ -13,8 +13,9 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 Ascender Game Reference
 
 v1:
->Traverse levels
->Attack enemies
->Player health with game over screen (ui not implemented yet)
->Gravity
->Change tiles and bg when level switching
+
+- Traverse levels.
+- Attack enemies.
+- Player health with game over screen (ui not implemented yet).
+- Gravity.
+- Change tiles and bg when level switching.
