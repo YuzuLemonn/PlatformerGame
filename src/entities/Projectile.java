@@ -20,22 +20,21 @@ public class Projectile {
     private BufferedImage[] frames;
     private int aniTick, aniIndex;
 
-    public Projectile(float x, float y, int dir, Playing playing) {
+    public Projectile(float x, float y, int dir, Playing playing, String spritePath, int frameCount) {
         this.dir = dir;
         this.playing = playing;
         hitbox = new Rectangle2D.Float(x, y,
                 (int)(16 * Game.SCALE),
                 (int)(8  * Game.SCALE));
-        loadFrames();
+        loadFrames(spritePath, frameCount);
     }
 
-    private void loadFrames() {
-        BufferedImage sheet = LoadSave.GetSpriteAtlas("sprites/Mage/Attack1Projectile_Mage.png");
+    private void loadFrames(String spritePath, int frameCount) {
+        BufferedImage sheet = LoadSave.GetSpriteAtlas(spritePath);
         if (sheet == null) return;
-        int count = 4; // adjust to your sprite frame count
-        int fw = sheet.getWidth() / count;
-        frames = new BufferedImage[count];
-        for (int i = 0; i < count; i++)
+        int fw = sheet.getWidth() / frameCount;
+        frames = new BufferedImage[frameCount];
+        for (int i = 0; i < frameCount; i++)
             frames[i] = sheet.getSubimage(i * fw, 0, fw, sheet.getHeight());
     }
 
@@ -71,4 +70,9 @@ public class Projectile {
     public int getDamage() { return damage; }
 
     public int getDir() { return dir; }
+
+    private float spawnX;
+    public void setSpawnX(float x) { this.spawnX = x; }
+    public float getSpawnX()       { return spawnX; }
+    public void setInactive()      { this.active = false; }
 }

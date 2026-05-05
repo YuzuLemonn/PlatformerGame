@@ -16,12 +16,17 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import entities.enemies.Crabby;
+import entities.enemies.Zombie;
+import entities.bosses.BossWorm;
+
 public class EnemyManager {
     private Playing playing;
     private BufferedImage[][] crabbyArr;
     private ArrayList<Crabby> crabbies = new ArrayList<>();
     private BufferedImage[][] zombieArr;
     private ArrayList<Zombie> zombies = new ArrayList<>();
+    private entities.BaseBoss boss;
 
     public EnemyManager(Playing playing) {
         this.playing = playing;
@@ -35,6 +40,13 @@ public class EnemyManager {
             z.setPlaying(playing);
         for (Crabby c : crabbies)
             c.setPlaying(playing);
+        
+        // Load boss if present
+        boss = null;
+        Point bossSpawn = level.getBossSpawn();
+        if(bossSpawn != null) {
+            boss = new BossWorm(bossSpawn.x, bossSpawn.y, playing);
+        }
     }
 
     public void update(int[][] lvlData, Player player) {
@@ -45,12 +57,16 @@ public class EnemyManager {
         for (Zombie z : zombies)
             if (z.isActive())
                 z.update(lvlData, player);
-
+        
+        if(boss != null && boss.isActive())
+            boss.update(lvlData, player);
     }
 
     public void draw(Graphics g, int xLvlOffset) {
         drawCrabs(g, xLvlOffset);
         drawZombies(g, xLvlOffset);
+        if(boss != null && boss.isActive())
+            boss.draw(g, xLvlOffset);
     }
 
     private void drawZombies(Graphics g, int xLvlOffset) {
@@ -107,6 +123,8 @@ public class EnemyManager {
         for (Zombie z : zombies)
             if (z.isActive() && z.getState() != DEAD)
                 objectManager.checkSpikesTouched(z);
+        if(boss != null && boss.isActive() && boss.getState() != DEAD)
+            objectManager.checkSpikesTouched(boss);
     }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
@@ -123,6 +141,12 @@ public class EnemyManager {
                     z.hurt(10, playing.getPlayer().getWalkDir());
                     return;
                 }
+        
+        if(boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
+            if (attackBox.intersects(boss.getHitbox())) {
+                boss.hurt(10, playing.getPlayer().getWalkDir());
+                return;
+            }
     }
 
     private void loadEnemyImgs() {
@@ -141,6 +165,20 @@ public class EnemyManager {
         zombieArr[ATTACK] = loadZombieAction(LoadSave.ZOMBIE_ATTACK, 5, 56);
         zombieArr[HIT] = loadZombieAction(LoadSave.ZOMBIE_HIT, 3, 56);
         zombieArr[DEAD] = loadZombieAction(LoadSave.ZOMBIE_DEATH, 11, 56);
+    }
+
+    public entities.BaseBoss getBoss() { return boss; }
+    
+    public boolean areAllEnemiesCleared() {
+        for (Crabby c : crabbies)
+            if (c.isActive())
+                return false;
+        for (Zombie z : zombies)
+            if (z.isActive())
+                return false;
+        if(boss != null && boss.isActive())
+            return false;
+        return true;
     }
 
     private BufferedImage[] loadZombieAction(String path, int frameCount, int height) {
@@ -179,14 +217,13 @@ public class EnemyManager {
                     proj.setActive(false);
                     return;
                 }
-    }
-
-    public boolean areAllEnemiesCleared() {
-        for (Crabby c : crabbies)
-            if (c.isActive()) return false;
-        for (Zombie z : zombies)
-            if (z.isActive()) return false;
-        return true;
+        
+        if(boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
+            if (proj.getHitbox().intersects(boss.getHitbox())) {
+                boss.hurt(proj.getDamage(), knockDir);
+                proj.setActive(false);
+                return;
+            }
     }
 
     public void resetAllEnemies() {
@@ -195,6 +232,9 @@ public class EnemyManager {
         }
         for (Zombie z : zombies) {
             z.resetEnemy();
+        }
+        if(boss != null) {
+            boss.resetEnemy();
         }
     }
 }

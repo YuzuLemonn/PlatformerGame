@@ -21,10 +21,12 @@ public class Brawler extends Player {
 
     @Override
     protected void loadAnimations() {
-        idleFrames   = loadActionFrames("IdleAni",  GetSpriteAmount(IDLE));
-        runFrames    = loadActionFrames("RunAni",    GetSpriteAmount(RUNNING));
-        jumpFrames   = loadActionFrames("JumpAni",  GetSpriteAmount(JUMP));
-        attackFrames = loadActionFrames("Attack1",  GetSpriteAmount(ATTACK));
+        idleFrames   = loadActionFrames("IdleAni",  GetSpriteAmount(IDLE, "Brawler"));
+        runFrames    = loadActionFrames("RunAni",    GetSpriteAmount(RUNNING, "Brawler"));
+        jumpFrames   = loadActionFrames("JumpAni",  GetSpriteAmount(JUMP, "Brawler"));
+        attackFrames = loadActionFrames("Attack1",  GetSpriteAmount(ATTACK, "Brawler"));
+        skill2Frames = loadActionFrames("Attack2",  GetSpriteAmount(SKILL2, "Brawler"));
+        skill3Frames = loadActionFrames("Attack3",  GetSpriteAmount(SKILL3, "Brawler"));
         statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
     }
 
@@ -47,4 +49,31 @@ public class Brawler extends Player {
 
     @Override
     protected void spawnProjectile() {} // melee, no projectile
+
+    @Override
+    protected void useSkill2() {
+        playing.checkEnemyHit(attackBox);
+        playing.getGame().getAudioPlayer().playAttackSound();
+    }
+
+    @Override
+    protected void useSkill3() {
+        playing.checkEnemyHit(attackBox);
+        playing.getGame().getAudioPlayer().playAttackSound();
+    }
+
+    @Override
+    protected int getAttackHitFrame() { 
+        return 2; 
+    }
+
+    @Override
+    protected int getSkill2HitFrame() { 
+        return 3; 
+    }
+
+    @Override
+    protected int getSkill3HitFrame() { 
+        return 7; 
+    }
 }

@@ -27,6 +27,8 @@ public class Mage extends Player {
         runFrames    = loadFrames("RunAni_Mage.png",   GetSpriteAmount(RUNNING, "Mage"));
         jumpFrames   = loadFrames("JumpAni_Mage.png",  GetSpriteAmount(JUMP, "Mage"));
         attackFrames = loadFrames("Attack1_Mage.png",  GetSpriteAmount(ATTACK, "Mage"));
+        skill2Frames = loadFrames("Attack2_Mage.png", GetSpriteAmount(SKILL2, "Mage"));
+        skill3Frames = loadFrames("Attack3_Mage.png", GetSpriteAmount(SKILL3, "Mage"));
         statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
     }
 
@@ -54,6 +56,41 @@ public class Mage extends Player {
                 ? hitbox.x + hitbox.width
                 : hitbox.x - (int)(20 * Game.SCALE);
         float spawnY = hitbox.y + hitbox.height / 4f;
-        projectiles.add(new Projectile(spawnX, spawnY, dir, playing));
+        projectiles.add(new Projectile(spawnX, spawnY, dir, playing,
+        "sprites/Mage/Attack1Projectile_Mage.png", 4));
+    }
+
+    @Override
+    protected void useSkill2() {
+        // heal — no damage, just restore health
+        changeHealth(20);  // adjust heal amount as needed
+    }
+
+    @Override
+    protected void useSkill3() {
+        // 8-frame projectile
+        int dir = (flipW == 1) ? 1 : -1;
+        float projX = (dir == 1)
+                ? hitbox.x + hitbox.width
+                : hitbox.x - (16 * Game.SCALE);
+        float projY = hitbox.y + hitbox.height / 2 - (4 * Game.SCALE);
+        projectiles.add(new Projectile(projX, projY, dir, playing,
+        "sprites/Mage/Attack3Projectile_Mage.png", 3));
+        playing.getGame().getAudioPlayer().playAttackSound();
+    }
+
+    @Override
+    protected int getAttackHitFrame() { 
+        return 4; 
+    }
+
+    @Override
+    protected int getSkill2HitFrame() { 
+        return 2; 
+    }
+
+    @Override
+    protected int getSkill3HitFrame() { 
+        return 7; 
     }
 }

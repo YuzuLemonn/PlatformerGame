@@ -11,7 +11,6 @@ import entities.NPC;
 
 import java.util.ArrayList;
 
-import ui.GameCompletedOverlay;
 import audio.AudioPlayer;
 
 import java.awt.*;
@@ -205,6 +204,10 @@ public class Playing extends State implements Statemethods {
         enemyManager.draw(g, xLvlOffset);
         player.render(g, xLvlOffset);
         player.renderProjectiles(g, xLvlOffset);
+        
+        // Draw boss bar if boss is active
+        if(game.getStoryManager().currentSceneIsBoss() && enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
+            enemyManager.getBoss().drawBossBar(g);
 
         if (dialogueActive && activeNPC != null)
             dialogueOverlay.draw(g, activeNPC);
@@ -258,6 +261,9 @@ public class Playing extends State implements Statemethods {
         if (!gameOver && !paused && !lvlCompleted && !gameCompleted) {
             if (e.getButton() == MouseEvent.BUTTON1)
                 player.setAttacking(true);
+            else if (e.getButton() == MouseEvent.BUTTON3) 
+                if (!player.isSkill2Active())
+                player.setSkill2(true);
         }
         if (gameOver)           gameOverOverlay.mousePressed(e);
         else if (paused)        pauseOverlay.mousePressed(e);
@@ -290,16 +296,18 @@ public class Playing extends State implements Statemethods {
             case KeyEvent.VK_A:
             case KeyEvent.VK_D:
             case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_R:
                 player.keyPressed(e);
                 break;
 
-            // Interaction — belongs to the gamestate
+
             case KeyEvent.VK_E:
                 if (objectManager.isPlayerAtOpenPortal(player.getHitbox()))
                     loadNextLevel();
                 else
                     handleNPCInteract();
                 break;
+
 
             case KeyEvent.VK_ESCAPE:
                 paused = !paused;
@@ -316,6 +324,7 @@ public class Playing extends State implements Statemethods {
             case KeyEvent.VK_A:
             case KeyEvent.VK_D:
             case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_R:
                 player.keyReleased(e);
                 break;
         }

@@ -1,7 +1,7 @@
 package levels;
 
-import entities.Crabby;
-import entities.Zombie;
+import entities.enemies.Crabby;
+import entities.enemies.Zombie;
 import main.Game;
 import objects.Portal;
 import objects.Spike;
@@ -27,6 +27,7 @@ public class Level {
     private ArrayList<Point> merchantSpawns;
     private ArrayList<Spike> spikes = new ArrayList<>();
     private ArrayList<Portal> portals = new ArrayList<>();
+    private Point bossSpawn;
 
     public Level(BufferedImage img){
         this.img = img;
@@ -38,6 +39,7 @@ public class Level {
         oldManSpawns   = GetNPCSpawns(img, 255);
         merchantSpawns = GetNPCSpawns(img, 200);
         zombies = GetZombies(img);
+        bossSpawn = GetBossSpawn(img);
     }
 
     private void createObjects() {
@@ -108,4 +110,6 @@ public class Level {
     }
 
     public ArrayList<Portal> getPortals() { return portals; }
+
+    public Point getBossSpawn() { return bossSpawn; }
 }

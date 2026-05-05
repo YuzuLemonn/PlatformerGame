@@ -1,9 +1,12 @@
-package entities;
+package entities.enemies;
 
 import main.Game;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+
+import entities.Enemy;
+import entities.Player;
 
 import static utilz.Constants.Directions.*;
 import static utilz.Constants.EnemyConstants.*;
