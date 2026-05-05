@@ -22,6 +22,7 @@ public class Game implements Runnable{
     private CharacterSelect characterSelect;
     private GameOptions gameOptions;
     private Credits credits;
+    private StoryManager storyManager;
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.7f;
@@ -50,6 +51,7 @@ public class Game implements Runnable{
         playing = new Playing (this);
         gameOptions = new GameOptions(this);
         credits = new Credits(this);
+        storyManager = new StoryManager(this);
 
 
 
@@ -74,6 +76,9 @@ public class Game implements Runnable{
             case CHARACTER_SELECT:
                 characterSelect.update();
                 break;
+            case CUTSCENE:
+                storyManager.update();
+                break;
             case CREDITS:
                 credits.update();
                 break;
@@ -96,6 +101,9 @@ public class Game implements Runnable{
                 break;
             case CHARACTER_SELECT:
                 characterSelect.draw(g);
+                break;
+            case CUTSCENE:
+                storyManager.draw(g);
                 break;
             case OPTIONS:
                 gameOptions.draw(g);
@@ -174,6 +182,8 @@ public class Game implements Runnable{
     public GameOptions getGameOptions() { return gameOptions; }
 
     public Credits getCredits() { return credits; }
+
+    public StoryManager getStoryManager() { return storyManager; }
 
 
 }

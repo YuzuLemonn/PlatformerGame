@@ -62,6 +62,9 @@ public class KeyboardInputs implements KeyListener {
             case CREDITS:
                 gamePanel.getGame().getCredits().keyPressed(e);
                 break;
+            case CUTSCENE:
+                gamePanel.getGame().getStoryManager().onKeyPressed(e);
+                break;
             default:
                 break;
         }

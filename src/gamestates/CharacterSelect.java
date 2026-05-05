@@ -79,7 +79,7 @@ public class CharacterSelect extends State implements Statemethods {
             case "Mage"     -> playing.setPlayer(new Mage(    200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
             case "Assassin" -> playing.setPlayer(new Assassin(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
         }
-        Gamestate.state = Gamestate.PLAYING;
+        game.getStoryManager().startStory();
     }
 
     @Override public void mouseClicked(MouseEvent e) {}

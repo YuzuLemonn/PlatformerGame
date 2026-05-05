@@ -56,7 +56,7 @@ public class LevelManager {
     }
 
     private void importOutsideSprites() {
-        String[] atlases = {LoadSave.LEVEL_ATLAS, LoadSave.LEVEL_ATLAS_2};
+        String[] atlases = {LoadSave.LEVEL_ATLAS, LoadSave.LEVEL_ATLAS_2, LoadSave.LEVEL_ATLAS_3};
         levelSprites = new BufferedImage[atlases.length][48];
 
         for(int k = 0; k < atlases.length; k++){
@@ -70,13 +70,22 @@ public class LevelManager {
         }
     }
 
-    public void draw(Graphics g, int lvlOffset){
-        for(int i = 0; i < Game.TILES_IN_HEIGHT; i++){
-            for(int j = 0; j < levels.get(lvlIndex).getLevelData()[0].length; j++){
+    private int getTilesetIndex(int lvlIndex) {
+        if (lvlIndex <= 2) return 0; // World 1 tiles (outside_sprites1.png)
+        if (lvlIndex <= 4) return 1; // World 2 tiles (outside_sprites2.png)
+        return 2; // World 3 - add outside_sprites3.png later
+    }
+
+    public void draw(Graphics g, int lvlOffset) {
+        int tilesetIdx = getTilesetIndex(lvlIndex);
+        for(int i = 0; i < Game.TILES_IN_HEIGHT; i++)
+            for(int j = 0; j < levels.get(lvlIndex).getLevelData()[0].length; j++) {
                 int index = levels.get(lvlIndex).getSpriteIndex(j, i);
-                g.drawImage(levelSprites[lvlIndex][index], Game.TILES_SIZE * j - lvlOffset, Game.TILES_SIZE * i, Game.TILES_SIZE, Game.TILES_SIZE, null);
+                g.drawImage(levelSprites[tilesetIdx][index],
+                        Game.TILES_SIZE * j - lvlOffset,
+                        Game.TILES_SIZE * i,
+                        Game.TILES_SIZE, Game.TILES_SIZE, null);
             }
-        }
     }
 
     public void update(){

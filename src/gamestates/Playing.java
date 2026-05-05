@@ -57,8 +57,13 @@ public class Playing extends State implements Statemethods {
         initClasses();
 
         backgroundImgs = new BufferedImage[]{
-                LoadSave.GetSpriteAtlas("playing_bg_img1.png"),
-                LoadSave.GetSpriteAtlas("playing_bg_img2.png")
+                LoadSave.GetSpriteAtlas("playing_bg_village.png"), // index 0 - World 1 (village + combat + boss 1)
+                LoadSave.GetSpriteAtlas("playing_bg_img1.png"), // index 1
+                LoadSave.GetSpriteAtlas("playing_bg_img1.png"), // index 2
+                LoadSave.GetSpriteAtlas("playing_bg_img2.png"), // index 3 - World 2
+                LoadSave.GetSpriteAtlas("playing_bg_img2.png"), // index 4
+                LoadSave.GetSpriteAtlas("playing_bg_img3.png"), // index 5 - World 3
+                LoadSave.GetSpriteAtlas("playing_bg_img3.png") // index 6 - Final boss
         };
 
         calcLvlOffset();
@@ -375,10 +380,12 @@ public class Playing extends State implements Statemethods {
 
     public void setLevelCompleted(boolean levelCompleted) {
         game.getAudioPlayer().lvlCompleted();
+        game.getStoryManager().onLevelComplete();
         if (levelManager.getLvlIndex() + 1 >= levelManager.getAmountOfLevels()) {
             levelManager.loadNextLevel(); // resets to 0 and goes to menu already
             resetAll();
             game.getAudioPlayer().playSong(AudioPlayer.MENU_1);
+
             return;
         }
         this.lvlCompleted = levelCompleted;
@@ -390,6 +397,20 @@ public class Playing extends State implements Statemethods {
         player.resetAll();
         player.setAttacking(false);
         resetAll();
+        xLvlOffset = 0;
+        calcLvlOffset();
+        npcs.clear();
+        initNPCs();
+    }
+
+    public void loadStartLevelByIndex(int index) {
+        resetAll();
+        levelManager.setLevelIndex(index);
+        enemyManager.loadEnemies(levelManager.getCurrentLevel());
+        objectManager.loadObjects(levelManager.getCurrentLevel());
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+        player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+        player.resetAll();
         xLvlOffset = 0;
         calcLvlOffset();
         npcs.clear();
