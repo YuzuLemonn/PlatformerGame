@@ -148,15 +148,47 @@ public class Constants {
         public static final int HIT = 5;
         public static final int DEAD = 6;
 
-        public static int GetSpriteAmount(int player_action) {
-            switch(player_action) {
-                case IDLE:    return 14;
-                case RUNNING: return 8;
-                case JUMP:    return 7;
-                case ATTACK:  return 3;
-                case FALLING:
-                default:      return 1;
+        public static int GetSpriteAmount(int player_action, String character) {
+            switch (character) {
+                case "Mage" -> {
+                    return switch (player_action) {
+                        case IDLE    -> 9;  // adjust to actual frame count of character
+                        case RUNNING -> 8;
+                        case JUMP    -> 8;
+                        case ATTACK  -> 5;
+                        default      -> 1;
+                    };
+                }
+                case "Assassin" -> {
+                    return switch (player_action) {
+                        case IDLE    -> 8;
+                        case RUNNING -> 8;
+                        case JUMP    -> 6;
+                        case ATTACK  -> 5;
+                        default      -> 1;
+                    };
+                }
+                default -> { // Brawler
+                    return switch (player_action) {
+                        case IDLE    -> 14;
+                        case RUNNING -> 8;
+                        case JUMP    -> 7;
+                        case ATTACK  -> 3;
+                        default      -> 1;
+                    };
+                }
             }
+        }
+
+        // keep old one for Player base class death/hit states
+        public static int GetSpriteAmount(int player_action) {
+            return switch (player_action) {
+                case IDLE    -> 14;
+                case RUNNING -> 8;
+                case JUMP    -> 7;
+                case ATTACK  -> 3;
+                default      -> 1;
+            };
         }
     }
 

@@ -8,6 +8,7 @@ import utilz.LoadSave;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import static utilz.Constants.*;
 import static utilz.Constants.PlayerConstants.*;
@@ -15,25 +16,33 @@ import static utilz.Constants.Directions.*;
 import static utilz.HelpMethods.CanMoveHere;
 import static utilz.HelpMethods.*;
 
-public class Player extends Entity {
-    private BufferedImage[] idleFrames;
-    private BufferedImage[] runFrames;
-    private BufferedImage[] jumpFrames;
-    private BufferedImage[] attackFrames;
+public abstract class Player extends Entity {
+    protected BufferedImage[] idleFrames;
+    protected BufferedImage[] runFrames;
+    protected BufferedImage[] jumpFrames;
+    protected BufferedImage[] attackFrames;
+    protected BufferedImage statusBarImg;
 
-    private boolean moving = false, attacking = false;
-    private boolean left, right, jump;
+    protected abstract void loadAnimations();
+    protected abstract String getCharacterName();
 
-    private int[][] lvlData;
+    protected ArrayList<Projectile> projectiles = new ArrayList<>();
+
+    protected boolean moving = false, attacking = false;
+    protected boolean left, right, jump;
+
+    protected int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 10 * Game.SCALE;
+
+    protected abstract boolean isProjectileAttack();
+    protected abstract void spawnProjectile();
 
     // Jumping / Gravity
     private float jumpSpeed = -2.25f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
 
     // Status bar UI
-    private BufferedImage statusBarImg;
     private int statusBarWidth  = (int)(192 * Game.SCALE);
     private int statusBarHeight = (int)(58  * Game.SCALE);
     private int statusBarX      = (int)(10  * Game.SCALE);
@@ -45,11 +54,11 @@ public class Player extends Entity {
     private int healthBarYStart = (int)(14  * Game.SCALE);
     private int healthWidth     = healthBarWidth;
 
-    private int flipX = 0;
-    private int flipW = 1;
+    protected int flipX = 0;
+    protected int flipW = 1;
 
     private boolean attackChecked;
-    private Playing playing;
+    protected Playing playing;
 
     public Player(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
@@ -70,7 +79,7 @@ public class Player extends Entity {
         hitbox.y = y;
     }
 
-    private void initAttackBox() {
+    protected void initAttackBox() {
         attackBox = new Rectangle2D.Float(x, y,
                 (int)(20 * Game.SCALE),
                 (int)(27 * Game.SCALE));
@@ -124,15 +133,29 @@ public class Player extends Entity {
         setAnimation();
     }
 
+    public void updateProjectiles(int[][] lvlData) {
+        projectiles.removeIf(p -> !p.isActive());
+        for (Projectile p : projectiles)
+            p.update(lvlData);
+    }
+
+    public void renderProjectiles(Graphics g, int lvlOffset) {
+        for (Projectile p : projectiles)
+            if (p.isActive())
+                p.render(g, lvlOffset);
+    }
+
     private void checkSpikesTouched() {
         playing.checkSpikesTouched(this);
     }
 
     private void checkAttack() {
-        if (attackChecked || aniIndex != 1)
-            return;
+        if (attackChecked || aniIndex != 1) return;
         attackChecked = true;
-        playing.checkEnemyHit(attackBox);
+        if (isProjectileAttack())
+            spawnProjectile();
+        else
+            playing.checkEnemyHit(attackBox);
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 
@@ -190,7 +213,8 @@ public class Player extends Entity {
         if (aniTick >= ANI_SPEED) {
             aniTick = 0;
             aniIndex++;
-            if (aniIndex >= GetSpriteAmount(state)) {
+            int frameCount = getFrameCount(state);
+            if (aniIndex >= frameCount) {
                 aniIndex = 0;
                 attacking = false;
                 attackChecked = false;
@@ -204,6 +228,8 @@ public class Player extends Entity {
             }
         }
     }
+
+
 
     private void setAnimation() {
         int startAni = state;
@@ -331,15 +357,6 @@ public class Player extends Entity {
         applyKnockback(pushBackDir, -1.5f * Game.SCALE, 1.0f);
     }
 
-    private void loadAnimations() {
-        idleFrames   = loadActionFrames("IdleAni", GetSpriteAmount(IDLE));
-        runFrames    = loadActionFrames("RunAni",   GetSpriteAmount(RUNNING));
-        jumpFrames   = loadActionFrames("JumpAni",  GetSpriteAmount(JUMP));
-        attackFrames = loadActionFrames("Attack1",  GetSpriteAmount(ATTACK));
-
-        statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
-    }
-
     private BufferedImage[] loadActionFrames(String action, int frameCount) {
         BufferedImage sheet = LoadSave.GetBrawlerSprite(action);
         if (sheet == null) {
@@ -400,4 +417,11 @@ public class Player extends Entity {
     public int getWalkDir() {
         return (flipW == 1) ? RIGHT : LEFT;
     }
+
+    protected int getFrameCount(int state) {
+        return GetSpriteAmount(state, getCharacterName());
+    }
+
+    public ArrayList<Projectile> getProjectiles() { return projectiles; }
+
 }

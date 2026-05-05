@@ -1,5 +1,8 @@
 //package effects;
 //
+
+//NOT APPLIED YET OR NEVER APPLIED IDK
+
 //import static utilz.Constants.ANI_SPEED;
 //import static utilz.Constants.Dialogue.*;
 //

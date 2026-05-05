@@ -82,6 +82,13 @@ public class Playing extends State implements Statemethods {
         objectManager.loadObjects(levelManager.getCurrentLevel());
     }
 
+    public void setPlayer(Player p) {
+        this.player = p;
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+        player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+        player.setAttacking(false);
+    }
+
     private void calcLvlOffset() {
         maxLvlOffsetX = levelManager.getCurrentLevel().getLvlOffset();
     }
@@ -91,7 +98,8 @@ public class Playing extends State implements Statemethods {
         enemyManager = new EnemyManager(this);
         objectManager = new ObjectManager(this);
 
-        player = new Player(200, 200, (int)(64 * Game.SCALE), (int)(40 * Game.SCALE), this);
+        player = new entities.players.Brawler(200, 200,
+                (int)(64 * Game.SCALE), (int)(40 * Game.SCALE), this);
         player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
         player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
 
@@ -143,8 +151,10 @@ public class Playing extends State implements Statemethods {
                 npc.update();
             dialogueOverlay.update(activeNPC);
         } else {
+
             levelManager.update();
             player.update();
+            player.updateProjectiles(levelManager.getCurrentLevel().getLevelData());
 
             allEnemiesCleared = enemyManager.areAllEnemiesCleared();
             enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
@@ -155,6 +165,10 @@ public class Playing extends State implements Statemethods {
             checkCloseToBorder();
             for (NPC npc : npcs)
                 npc.update();
+
+            for (entities.Projectile proj : player.getProjectiles())
+                if (proj.isActive())
+                    enemyManager.checkEnemyHitByProjectile(proj);
         }
 
     }
@@ -180,12 +194,14 @@ public class Playing extends State implements Statemethods {
         g.drawImage(backgroundImgs[levelManager.getLvlIndex()], 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 
         levelManager.draw(g, xLvlOffset);
-        player.render(g, xLvlOffset);
-        enemyManager.draw(g, xLvlOffset);
         objectManager.draw(g, xLvlOffset);
 
         for(NPC npc : npcs)
             npc.draw(g, xLvlOffset);
+
+        enemyManager.draw(g, xLvlOffset);
+        player.render(g, xLvlOffset);
+        player.renderProjectiles(g, xLvlOffset);
 
         if(dialogueActive && activeNPC != null)
             dialogueOverlay.draw(g, activeNPC);
@@ -198,9 +214,8 @@ public class Playing extends State implements Statemethods {
             gameOverOverlay.draw(g);
         else if(lvlCompleted)
             levelCompletedOverlay.draw(g);
-        else if(gameCompleted) {
+        else if(gameCompleted)
             gameCompletedOverlay.draw(g);
-        }
     }
 
     public void resetAll() {
@@ -247,14 +262,15 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(!gameOver) {
-            if(e.getButton() == MouseEvent.BUTTON1)
-                player.setAttacking(true);
-        }
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (!gameOver && !paused && !lvlCompleted && !gameCompleted) {
+            if (e.getButton() == MouseEvent.BUTTON1)
+                player.setAttacking(true);
+        }
         if(gameOver)
             gameOverOverlay.mousePressed(e);
         else if(paused)
@@ -372,6 +388,7 @@ public class Playing extends State implements Statemethods {
         levelManager.resetLevelIndex();
         player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
         player.resetAll();
+        player.setAttacking(false);
         resetAll();
         xLvlOffset = 0;
         calcLvlOffset();

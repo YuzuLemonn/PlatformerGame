@@ -1,8 +1,7 @@
 package main;
 
 import audio.AudioPlayer;
-import gamestates.Gamestate;
-import gamestates.Playing;
+import gamestates.*;
 import gamestates.Menu;
 import ui.AudioOptions;
 import utilz.LoadSave;
@@ -20,6 +19,9 @@ public class Game implements Runnable{
     private Menu menu;
     private AudioPlayer audioPlayer;
     private AudioOptions audioOptions;
+    private CharacterSelect characterSelect;
+    private GameOptions gameOptions;
+    private Credits credits;
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.7f;
@@ -44,7 +46,12 @@ public class Game implements Runnable{
         audioOptions = new AudioOptions(this);
         audioPlayer = new AudioPlayer();
         menu = new Menu(this);
+        characterSelect = new CharacterSelect(this);
         playing = new Playing (this);
+        gameOptions = new GameOptions(this);
+        credits = new Credits(this);
+
+
 
     }
 
@@ -62,6 +69,13 @@ public class Game implements Runnable{
                 menu.update();
                 break;
             case OPTIONS:
+                gameOptions.update();
+                break;
+            case CHARACTER_SELECT:
+                characterSelect.update();
+                break;
+            case CREDITS:
+                credits.update();
                 break;
             case QUIT:
                 System.exit(0);
@@ -79,6 +93,15 @@ public class Game implements Runnable{
                 break;
             case MENU:
                 menu.draw(g);
+                break;
+            case CHARACTER_SELECT:
+                characterSelect.draw(g);
+                break;
+            case OPTIONS:
+                gameOptions.draw(g);
+                break;
+            case CREDITS:
+                credits.draw(g);
                 break;
             default:
                 break;
@@ -145,4 +168,12 @@ public class Game implements Runnable{
     public AudioPlayer getAudioPlayer() { return audioPlayer; }
 
     public AudioOptions getAudioOptions() { return audioOptions; }
+
+    public CharacterSelect getCharacterSelect() { return characterSelect; }
+
+    public GameOptions getGameOptions() { return gameOptions; }
+
+    public Credits getCredits() { return credits; }
+
+
 }

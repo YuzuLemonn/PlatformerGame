@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 public class Menu extends State implements Statemethods{
-    private MenuButton[] buttons = new MenuButton[3];
+    private MenuButton[] buttons = new MenuButton[4];
     private BufferedImage backdropImg;
 
 //    private BufferedImage backgroundImg;
@@ -33,9 +33,15 @@ public class Menu extends State implements Statemethods{
 //    }
 
     private void loadButtons() {
-        buttons[0] = new MenuButton(Game.GAME_WIDTH/2, (int)(150 * Game.SCALE), 0, Gamestate.PLAYING);
-        buttons[1] = new MenuButton(Game.GAME_WIDTH/2, (int)(220 * Game.SCALE), 1, Gamestate.OPTIONS);
-        buttons[2] = new MenuButton(Game.GAME_WIDTH/2, (int)(290 * Game.SCALE), 2, Gamestate.QUIT);
+        int centerX = Game.GAME_WIDTH / 2;
+        int startY  = (int)(Game.GAME_HEIGHT * 0.50f);
+        int gap     = (int)(50 * Game.SCALE);
+
+        buttons[0] = new MenuButton(centerX, startY,0, Gamestate.CHARACTER_SELECT);
+        buttons[1] = new MenuButton(centerX, startY + gap,1, Gamestate.OPTIONS);
+        buttons[2] = new MenuButton(centerX, startY + gap * 2, 3, Gamestate.CREDITS);
+        buttons[3] = new MenuButton(centerX, startY + gap * 3, 2, Gamestate.QUIT);
+
     }
 
     @Override
@@ -76,7 +82,11 @@ public class Menu extends State implements Statemethods{
             if (isIn(e, mb)) {
                 if (mb.isMousePressed()) {
                     mb.applyGamestate();
-                    if (mb.getState() == Gamestate.PLAYING) {
+                    if (mb.getState() == Gamestate.CHARACTER_SELECT){
+                        game.getAudioPlayer().setLevelSong(0);
+                        game.getPlaying().restartGame();
+                    }
+                    if (mb.getState() == Gamestate.CHARACTER_SELECT) {
                         game.getAudioPlayer().setLevelSong(0);
                         game.getPlaying().restartGame();
                     }

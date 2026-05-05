@@ -8,6 +8,7 @@ import objects.ObjectManager;
 import utilz.LoadSave;
 
 import static utilz.Constants.Directions.LEFT;
+import static utilz.Constants.Directions.RIGHT;
 import static utilz.Constants.EnemyConstants.*;
 
 import java.awt.*;
@@ -153,6 +154,31 @@ public class EnemyManager {
         for (int i = 0; i < frameCount; i++)
             frames[i] = sheet.getSubimage(i * frameWidth, 0, frameWidth, height);
         return frames;
+    }
+
+    // In EnemyManager.checkEnemyHitByProjectile:
+    public void checkEnemyHitByProjectile(entities.Projectile proj) {
+        if (!proj.isActive()) {
+            return;
+        }
+
+        int knockDir = (proj.getDir() == 1) ? RIGHT : LEFT;
+
+        for (Crabby c : crabbies)
+            if (c.isActive() && c.getState() != DEAD && c.getState() != HIT)
+                if (proj.getHitbox().intersects(c.getHitbox())) {
+                    c.hurt(proj.getDamage(), knockDir);
+                    proj.setActive(false);
+                    return;
+                }
+
+        for (Zombie z : zombies)
+            if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
+                if (proj.getHitbox().intersects(z.getHitbox())) {
+                    z.hurt(proj.getDamage(), knockDir);
+                    proj.setActive(false);
+                    return;
+                }
     }
 
     public boolean areAllEnemiesCleared() {

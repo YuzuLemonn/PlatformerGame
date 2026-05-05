@@ -52,6 +52,8 @@ public class LoadSave {
 
     public static final String STATUS_BAR = "health_power_bar.png";
 
+    public static final String CHARACTER_SELECT_BG = "playing_bg_img1.png";
+
     public static BufferedImage GetSpriteAtlas(String fileName){
         BufferedImage img = null;
         InputStream is = LoadSave.class.getResourceAsStream("/" + fileName);

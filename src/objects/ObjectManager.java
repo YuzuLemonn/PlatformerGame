@@ -112,6 +112,9 @@ public class ObjectManager {
     }
 
     public void resetAllObjects() {
+        for (Portal p : currentLevel.getPortals()) {
+            p.reset();
+        }
         loadObjects(playing.getLevelManager().getCurrentLevel());
     }
 }

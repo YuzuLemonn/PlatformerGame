@@ -40,4 +40,11 @@ public class Portal extends GameObject {
         unlocked = true;
         doAnimation = true;
     }
+
+    public void reset() {
+        unlocked = false;
+        doAnimation = false;
+        aniTick = 0;
+        aniIndex = 0;
+    }
 }

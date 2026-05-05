@@ -18,11 +18,13 @@ public class VolumeButton extends PauseButton {
     public VolumeButton(int x, int y, int width, int height) {
         super(x + width / 2, y, VOLUME_WIDTH, height);
         bounds.x -= VOLUME_WIDTH / 2;
-        buttonX = x + width / 2;
         this.x = x;
         this.width = width;
         minX = x + VOLUME_WIDTH / 2;
         maxX = x + width - VOLUME_WIDTH / 2;
+        buttonX = maxX;
+        floatValue = 1f;
+        bounds.x = buttonX - VOLUME_WIDTH / 2;
         loadImgs();
     }
 

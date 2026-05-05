@@ -29,6 +29,16 @@ public class KeyboardInputs implements KeyListener {
             case MENU:
                 gamePanel.getGame().getMenu().keyReleased(e);
                 break;
+            case CHARACTER_SELECT:
+                gamePanel.getGame().getCharacterSelect().keyReleased(e);
+                break;
+            case OPTIONS:
+                gamePanel.getGame().getGameOptions().keyReleased(e);
+                break;
+            case CREDITS:
+                gamePanel.getGame().getCredits().keyReleased(e);
+                break;
+
             default:
                 break;
         }
@@ -42,6 +52,15 @@ public class KeyboardInputs implements KeyListener {
                 break;
             case MENU:
                 gamePanel.getGame().getMenu().keyPressed(e);
+                break;
+            case CHARACTER_SELECT:
+                gamePanel.getGame().getCharacterSelect().keyPressed(e);
+                break;
+            case OPTIONS:
+                gamePanel.getGame().getGameOptions().keyPressed(e);
+                break;
+            case CREDITS:
+                gamePanel.getGame().getCredits().keyPressed(e);
                 break;
             default:
                 break;
