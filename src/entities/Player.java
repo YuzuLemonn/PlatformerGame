@@ -6,6 +6,7 @@ import main.Game;
 import utilz.LoadSave;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public abstract class Player extends Entity {
 
     protected abstract void loadAnimations();
     protected abstract String getCharacterName();
+    protected abstract boolean isProjectileAttack();
+    protected abstract void spawnProjectile();
 
     protected ArrayList<Projectile> projectiles = new ArrayList<>();
 
@@ -34,9 +37,6 @@ public abstract class Player extends Entity {
     protected int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 10 * Game.SCALE;
-
-    protected abstract boolean isProjectileAttack();
-    protected abstract void spawnProjectile();
 
     // Jumping / Gravity
     private float jumpSpeed = -2.25f * Game.SCALE;
@@ -67,9 +67,8 @@ public abstract class Player extends Entity {
         this.maxHealth = 100;
         this.currentHealth = maxHealth;
         this.walkSpeed = Game.SCALE * 1.0f;
-        loadAnimations();
-        initHitbox(20, 27);
-        initAttackBox();
+        // NOTE: subclasses call loadAnimations(), initHitbox(), initAttackBox()
+        // in their own constructors — do NOT call them here to avoid double-init.
     }
 
     public void setSpawn(Point spawn) {
@@ -84,6 +83,30 @@ public abstract class Player extends Entity {
                 (int)(20 * Game.SCALE),
                 (int)(27 * Game.SCALE));
     }
+
+    // -------------------------------------------------------------------------
+    // Input — WASD / Space belong on the player, not the gamestate
+    // -------------------------------------------------------------------------
+
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A:     setLeft(true);   break;
+            case KeyEvent.VK_D:     setRight(true);  break;
+            case KeyEvent.VK_SPACE: setJump(true);   break;
+        }
+    }
+
+    public void keyReleased(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A:     setLeft(false);  break;
+            case KeyEvent.VK_D:     setRight(false); break;
+            case KeyEvent.VK_SPACE: setJump(false);  break;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Update / render
+    // -------------------------------------------------------------------------
 
     public void update() {
         updateHealthBar();
@@ -113,18 +136,16 @@ public abstract class Player extends Entity {
                         airSpeed += GRAVITY;
                     } else
                         inAir = false;
-
             }
-
             return;
         }
+
         updateAttackBox();
 
-        if (state == HIT) {
+        if (state == HIT)
             updateKnockback(lvlData);
-        } else {
+        else
             updatePos();
-        }
 
         if (attacking)
             checkAttack();
@@ -143,10 +164,6 @@ public abstract class Player extends Entity {
         for (Projectile p : projectiles)
             if (p.isActive())
                 p.render(g, lvlOffset);
-    }
-
-    private void checkSpikesTouched() {
-        playing.checkSpikesTouched(this);
     }
 
     private void checkAttack() {
@@ -189,7 +206,6 @@ public abstract class Player extends Entity {
         }
 //        drawAttackBox(g, lvlOffset);
 //        drawHitbox(g, lvlOffset);
-
         drawUI(g);
     }
 
@@ -229,13 +245,10 @@ public abstract class Player extends Entity {
         }
     }
 
-
-
     private void setAnimation() {
         int startAni = state;
 
-        if (state == HIT)
-            return;
+        if (state == HIT) return;
 
         if (moving)
             state = RUNNING;
@@ -270,8 +283,7 @@ public abstract class Player extends Entity {
     private void updatePos() {
         moving = false;
 
-        if (jump)
-            jump();
+        if (jump) jump();
 
         if (!inAir)
             if ((!left && !right) || (right && left))
@@ -332,7 +344,6 @@ public abstract class Player extends Entity {
             hitbox.x = GetEntityXPosNextToWall(hitbox, xSpeed);
     }
 
-//    changeHealth with HIT state check
     public void changeHealth(int value) {
         if (value < 0) {
             if (state == HIT) return;
@@ -342,33 +353,16 @@ public abstract class Player extends Entity {
         currentHealth = Math.max(Math.min(currentHealth, maxHealth), 0);
     }
 
-//    overload for pushback direction
     public void changeHealth(int value, Enemy e) {
         if (state == HIT) return;
         changeHealth(value);
         pushBackOffsetDir = UP;
         pushDrawOffset = 0;
-//        knock away from enemy
         if (e.getHitbox().x < hitbox.x)
             pushBackDir = RIGHT;
         else
             pushBackDir = LEFT;
-//        launch upward
         applyKnockback(pushBackDir, -1.5f * Game.SCALE, 1.0f);
-    }
-
-    private BufferedImage[] loadActionFrames(String action, int frameCount) {
-        BufferedImage sheet = LoadSave.GetBrawlerSprite(action);
-        if (sheet == null) {
-            System.out.println("Failed to load: " + action + "_Brawler.png");
-            return new BufferedImage[frameCount];
-        }
-        int frameWidth  = sheet.getWidth() / frameCount;
-        int frameHeight = sheet.getHeight();
-        BufferedImage[] frames = new BufferedImage[frameCount];
-        for (int i = 0; i < frameCount; i++)
-            frames[i] = sheet.getSubimage(i * frameWidth, 0, frameWidth, frameHeight);
-        return frames;
     }
 
     public void loadLvlData(int[][] lvlData) {
@@ -383,9 +377,7 @@ public abstract class Player extends Entity {
         jump = false;
     }
 
-    public void setAttacking(boolean attacking) {
-        this.attacking = attacking;
-    }
+    public void setAttacking(boolean attacking) { this.attacking = attacking; }
 
     public boolean isLeft()  { return left; }
     public void setLeft(boolean left)   { this.left = left; }
@@ -402,7 +394,6 @@ public abstract class Player extends Entity {
         currentHealth = maxHealth;
         airSpeed = 0f;
 
-
         hitbox.x = x;
         hitbox.y = y;
 
@@ -410,9 +401,7 @@ public abstract class Player extends Entity {
             inAir = true;
     }
 
-    public void kill() {
-        currentHealth = 0;
-    }
+    public void kill() { currentHealth = 0; }
 
     public int getWalkDir() {
         return (flipW == 1) ? RIGHT : LEFT;
@@ -423,5 +412,4 @@ public abstract class Player extends Entity {
     }
 
     public ArrayList<Projectile> getProjectiles() { return projectiles; }
-
 }
