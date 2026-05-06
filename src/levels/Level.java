@@ -1,5 +1,7 @@
 package levels;
 
+import entities.enemies.Crabby;
+import entities.enemies.Zombie;
 import entities.Goblin;
 import entities.Slime;
 import entities.Zombie;
@@ -29,6 +31,7 @@ public class Level {
     private ArrayList<Point> merchantSpawns;
     private ArrayList<Spike> spikes = new ArrayList<>();
     private ArrayList<Portal> portals = new ArrayList<>();
+    private Point bossSpawn;
 
     public Level(BufferedImage img){
         this.img = img;
@@ -39,6 +42,7 @@ public class Level {
         oldManSpawns   = GetNPCSpawns(img, 255);
         merchantSpawns = GetNPCSpawns(img, 200);
         zombies = GetZombies(img);
+        bossSpawn = GetBossSpawn(img);
         slimes  = GetSlimes(img);
         goblins = GetGoblins(img);
     }
@@ -108,4 +112,6 @@ public class Level {
     }
 
     public ArrayList<Portal> getPortals() { return portals; }
+
+    public Point getBossSpawn() { return bossSpawn; }
 }

@@ -56,8 +56,7 @@ public class StoryManager {
                 "Press SPACE to fight"
         }, AudioPlayer.LEVEL_1));
 
-        // BOSS 1 — level 1 (2.png)
-        scenes.add(new Scene(SceneType.BOSS, 1, AudioPlayer.LEVEL_1));
+        scenes.add(new Scene(SceneType.BOSS, 2, AudioPlayer.LEVEL_1));
 
         // POST-BOSS 1
         scenes.add(new Scene(null, new String[]{
@@ -72,10 +71,8 @@ public class StoryManager {
                 "Press SPACE to continue"
         }, AudioPlayer.LEVEL_2));
 
-        // INFERNAL DEPTHS — level 2 (3.png)
         scenes.add(new Scene(SceneType.LEVEL, 2, AudioPlayer.LEVEL_2));
 
-        // PRE-BOSS 2
         scenes.add(new Scene("Gabryle, the Starcaller", new String[]{
                 "No mortal shall pass this abyss.",
                 "",
@@ -86,10 +83,8 @@ public class StoryManager {
                 "Press SPACE to fight"
         }, AudioPlayer.LEVEL_2));
 
-        // BOSS 2 — level 3 (4.png)
         scenes.add(new Scene(SceneType.BOSS, 3, AudioPlayer.LEVEL_2));
 
-        // POST-BOSS 2
         scenes.add(new Scene(null, new String[]{
                 "Through the smoke, I saw something new.",
                 "",

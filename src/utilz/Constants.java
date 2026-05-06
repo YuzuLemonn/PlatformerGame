@@ -67,6 +67,8 @@ public class Constants {
 
         public static int GetMaxHealth(int enemy_type) {
             switch(enemy_type) {
+                case CRABBY: return 20;
+                case ZOMBIE: return 1;
                 case SLIME:  return 35;
                 case GOBLIN: return 45;
                 case ZOMBIE: return 30;
@@ -162,9 +164,11 @@ public class Constants {
         public static final int RUNNING = 1;
         public static final int JUMP = 2;
         public static final int FALLING = 3;
-        public static final int ATTACK = 4;
+        public static final int ATTACK = 4; 
         public static final int HIT = 5;
         public static final int DEAD = 6;
+        public static final int SKILL2  = 7;
+        public static final int SKILL3  = 8;
 
         public static int GetSpriteAmount(int player_action, String character) {
             switch (character) {
@@ -174,6 +178,8 @@ public class Constants {
                         case RUNNING -> 8;
                         case JUMP    -> 8;
                         case ATTACK  -> 5;
+                        case SKILL2  -> 8; 
+                        case SKILL3  -> 8;
                         default      -> 1;
                     };
                 }
@@ -183,6 +189,8 @@ public class Constants {
                         case RUNNING -> 8;
                         case JUMP    -> 6;
                         case ATTACK  -> 5;
+                        case SKILL2  -> 4;
+                        case SKILL3  -> 21;
                         default      -> 1;
                     };
                 }
@@ -192,6 +200,8 @@ public class Constants {
                         case RUNNING -> 8;
                         case JUMP    -> 7;
                         case ATTACK  -> 3;
+                        case SKILL2  -> 5;
+                        case SKILL3  -> 13;
                         default      -> 1;
                     };
                 }
@@ -210,4 +220,37 @@ public class Constants {
         }
     }
 
+    public static class BossConstants {
+        public static final int BOSS_1 = 10;
+        public static final int BOSS_2 = 11;
+        public static final int BOSS_3 = 12;
+        public static final int BOSS_4 = 13;
+
+        // boss states (shared)
+        public static final int BOSS_IDLE    = 0;
+        public static final int BOSS_ATTACK1 = 2;
+        public static final int BOSS_ATTACK2 = 3;
+        public static final int BOSS_HIT     = 4;
+        public static final int BOSS_DEAD    = 5;
+
+        public static int GetMaxHealthBoss(int BossType) {
+            switch (BossType) {
+                case BOSS_1: return 150;  // worm — low HP
+                case BOSS_2: return 400;  // beast — high HP
+                case BOSS_3: return 280;  // golem — moderate
+                case BOSS_4: return 500;  // final — very high
+                default: return 1;
+            }
+        }
+
+        public static int GetEnemyDmgBoss(int BossType) {
+            switch (BossType) {
+            case BOSS_1: return 15;
+            case BOSS_2: return 25;
+            case BOSS_3: return 20;
+            case BOSS_4: return 30;
+            default: return 0;
+            }
+        }
+    }
 }

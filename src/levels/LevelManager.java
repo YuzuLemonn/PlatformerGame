@@ -71,9 +71,9 @@ public class LevelManager {
     }
 
     private int getTilesetIndex(int lvlIndex) {
-        if (lvlIndex <= 2) return 0; // World 1 tiles (outside_sprites1.png)
-        if (lvlIndex <= 4) return 1; // World 2 tiles (outside_sprites2.png)
-        return 2; // World 3 - add outside_sprites3.png later
+        if (lvlIndex <= 2) return 0;
+        if (lvlIndex <= 4) return 1;
+        return 2;
     }
 
     public void draw(Graphics g, int lvlOffset) {

@@ -1,6 +1,7 @@
 package entities.players;
 
 import entities.Player;
+import entities.Projectile;
 import gamestates.Playing;
 import main.Game;
 import utilz.LoadSave;
@@ -25,6 +26,8 @@ public class Assassin extends Player {
         runFrames    = loadFrames("RunAni_Assassin.png",   GetSpriteAmount(RUNNING, "Assassin"));
         jumpFrames   = loadFrames("JumpAni_Assassin.png",  GetSpriteAmount(JUMP, "Assassin"));
         attackFrames = loadFrames("Attack1_Assassin.png",  GetSpriteAmount(ATTACK, "Assassin"));
+        skill2Frames = loadFrames("Attack2_Assassin.png",  GetSpriteAmount(SKILL2,  "Assassin"));
+        skill3Frames = loadFrames("Attack3_Assassin.png",  GetSpriteAmount(SKILL3,  "Assassin"));
         statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
     }
 
@@ -47,4 +50,38 @@ public class Assassin extends Player {
 
     @Override
     protected void spawnProjectile() {} // melee, no projectile
+
+    @Override
+    protected void useSkill2() {
+        // assassin's skill2 is also a projectile
+        int dir = (flipW == 1) ? 1 : -1;
+        float projX = (dir == 1)
+                ? hitbox.x + hitbox.width
+                : hitbox.x - (16 * Game.SCALE);
+        float projY = hitbox.y + hitbox.height / 2 - (4 * Game.SCALE);
+        projectiles.add(new Projectile(projX, projY, dir, playing,
+        "sprites/Assassin/Attack2_Projectile_Assassin.png", 8));
+        playing.getGame().getAudioPlayer().playAttackSound();
+    }
+
+    @Override
+    protected void useSkill3() {
+        playing.checkEnemyHit(attackBox);
+        playing.getGame().getAudioPlayer().playAttackSound();
+    }
+
+    @Override
+    protected int getAttackHitFrame() { 
+        return 5; 
+    }
+
+    @Override
+    protected int getSkill2HitFrame() { 
+        return 3; 
+    }
+
+    @Override
+    protected int getSkill3HitFrame() { 
+        return 7; 
+    }
 }

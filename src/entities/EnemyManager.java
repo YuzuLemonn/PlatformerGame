@@ -16,6 +16,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import entities.enemies.Crabby;
+import entities.enemies.Zombie;
+import entities.bosses.BossWorm;
+
 public class EnemyManager {
     private Playing playing;
 
@@ -24,6 +28,7 @@ public class EnemyManager {
     private BufferedImage[][] goblinArr;
 
     private ArrayList<Zombie> zombies = new ArrayList<>();
+    private entities.BaseBoss boss;
     private ArrayList<Slime>  slimes  = new ArrayList<>();
     private ArrayList<Goblin> goblins = new ArrayList<>();
 
@@ -38,6 +43,14 @@ public class EnemyManager {
         zombies = level.getZombies();
         for (Zombie z : zombies) {
             z.setPlaying(playing);
+        for (Crabby c : crabbies)
+            c.setPlaying(playing);
+        
+        // Load boss if present
+        boss = null;
+        Point bossSpawn = level.getBossSpawn();
+        if(bossSpawn != null) {
+            boss = new BossWorm(bossSpawn.x, bossSpawn.y, playing);
         }
         for (Slime  s : slimes) {
             s.setPlaying(playing);
@@ -61,6 +74,9 @@ public class EnemyManager {
         for (Zombie z : zombies) {
             if (z.isActive()) {
                 z.update(lvlData, player);
+        
+        if(boss != null && boss.isActive())
+            boss.update(lvlData, player);
             }
         }
     }
@@ -69,6 +85,8 @@ public class EnemyManager {
         drawSlimes(g, xLvlOffset);
         drawGoblins(g, xLvlOffset);
         drawZombies(g, xLvlOffset);
+        if(boss != null && boss.isActive())
+            boss.draw(g, xLvlOffset);
     }
 
     private void drawZombies(Graphics g, int xLvlOffset) {
@@ -146,11 +164,26 @@ public class EnemyManager {
         for (Zombie z : zombies) {
             if (z.isActive() && z.getState() != DEAD) {
                 objectManager.checkSpikesTouched(z);
+        if(boss != null && boss.isActive() && boss.getState() != DEAD)
+            objectManager.checkSpikesTouched(boss);
             }
         }
     }
 
 
+        for (Zombie z : zombies)
+            if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
+                if (attackBox.intersects(z.getHitbox())) {
+                    z.hurt(10, playing.getPlayer().getWalkDir());
+                    return;
+                }
+        
+        if(boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
+            if (attackBox.intersects(boss.getHitbox())) {
+                boss.hurt(10, playing.getPlayer().getWalkDir());
+                return;
+            }
+    }
 
     private void loadEnemyImgs() {
         slimeArr  = new BufferedImage[5][];
@@ -175,6 +208,21 @@ public class EnemyManager {
         zombieArr[DEAD]    = loadAction(LoadSave.ZOMBIE_DEATH,  11, 56);
     }
 
+    public entities.BaseBoss getBoss() { return boss; }
+    
+    public boolean areAllEnemiesCleared() {
+        for (Crabby c : crabbies)
+            if (c.isActive())
+                return false;
+        for (Zombie z : zombies)
+            if (z.isActive())
+                return false;
+        if(boss != null && boss.isActive())
+            return false;
+        return true;
+    }
+
+    private BufferedImage[] loadZombieAction(String path, int frameCount, int height) {
     private BufferedImage[] loadAction(String path, int frameCount, int height) {
         BufferedImage sheet = LoadSave.GetSpriteAtlas(path);
         if (sheet == null) return new BufferedImage[frameCount];
@@ -231,6 +279,13 @@ public class EnemyManager {
                     proj.setActive(false);
                     return;
                 }
+        
+        if(boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
+            if (proj.getHitbox().intersects(boss.getHitbox())) {
+                boss.hurt(proj.getDamage(), knockDir);
+                proj.setActive(false);
+                return;
+            }
     }
 
     public boolean areAllEnemiesCleared() {
@@ -261,6 +316,9 @@ public class EnemyManager {
         }
         for (Zombie z : zombies) {
             z.resetEnemy();
+        }
+        if(boss != null) {
+            boss.resetEnemy();
         }
     }
 }

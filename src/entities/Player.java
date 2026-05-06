@@ -6,14 +6,16 @@ import main.Game;
 import utilz.LoadSave;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import java.awt.event.MouseEvent;
+
 import static utilz.Constants.*;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.Directions.*;
-import static utilz.HelpMethods.CanMoveHere;
 import static utilz.HelpMethods.*;
 
 public abstract class Player extends Entity {
@@ -21,45 +23,55 @@ public abstract class Player extends Entity {
     protected BufferedImage[] runFrames;
     protected BufferedImage[] jumpFrames;
     protected BufferedImage[] attackFrames;
+    protected BufferedImage[] skill2Frames;
+    protected BufferedImage[] skill3Frames;
     protected BufferedImage statusBarImg;
-
+    protected boolean skill3;
+    protected boolean skill2;
+    
     protected abstract void loadAnimations();
     protected abstract String getCharacterName();
-
+    protected abstract boolean isProjectileAttack();
+    protected abstract void spawnProjectile();
+    protected abstract void useSkill2();
+    protected abstract void useSkill3();
+    
     protected ArrayList<Projectile> projectiles = new ArrayList<>();
 
     protected boolean moving = false, attacking = false;
     protected boolean left, right, jump;
-
+    protected abstract int getAttackHitFrame();
+    protected abstract int getSkill2HitFrame();
+    protected abstract int getSkill3HitFrame();
+    
     protected int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 10 * Game.SCALE;
-
-    protected abstract boolean isProjectileAttack();
-    protected abstract void spawnProjectile();
-
+    
+    
     // Jumping / Gravity
     private float jumpSpeed = -2.25f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
-
+    
     // Status bar UI
     private int statusBarWidth  = (int)(192 * Game.SCALE);
     private int statusBarHeight = (int)(58  * Game.SCALE);
     private int statusBarX      = (int)(10  * Game.SCALE);
     private int statusBarY      = (int)(10  * Game.SCALE);
-
+    
     private int healthBarWidth  = (int)(150 * Game.SCALE);
     private int healthBarHeight = (int)(4   * Game.SCALE);
     private int healthBarXStart = (int)(34  * Game.SCALE);
     private int healthBarYStart = (int)(14  * Game.SCALE);
     private int healthWidth     = healthBarWidth;
-
+    
     protected int flipX = 0;
     protected int flipW = 1;
-
+    
     private boolean attackChecked;
     protected Playing playing;
-
+    private boolean skill2Checked, skill3Checked;
+    
     public Player(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
         this.playing = playing;
@@ -67,9 +79,6 @@ public abstract class Player extends Entity {
         this.maxHealth = 100;
         this.currentHealth = maxHealth;
         this.walkSpeed = Game.SCALE * 1.0f;
-        loadAnimations();
-        initHitbox(20, 27);
-        initAttackBox();
     }
 
     public void setSpawn(Point spawn) {
@@ -85,8 +94,37 @@ public abstract class Player extends Entity {
                 (int)(27 * Game.SCALE));
     }
 
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A:     setLeft(true);   break;
+            case KeyEvent.VK_D:     setRight(true);  break;
+            case KeyEvent.VK_SPACE: setJump(true);   break;
+            case KeyEvent.VK_R:
+                if (!skill3)   
+                    setSkill3(true);
+                break;
+        }
+    }
+
+    public void keyReleased(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A:     setLeft(false);  break;
+            case KeyEvent.VK_D:     setRight(false); break;
+            case KeyEvent.VK_SPACE: setJump(false);  break;
+            case KeyEvent.VK_R:
+        }
+    }
+
+    
     public void update() {
         updateHealthBar();
+
+        if (attacking)
+            checkAttack();
+        if (skill2)
+            checkSkill2();
+        if (skill3)
+            checkSkill3();
 
         if (currentHealth <= 0) {
             if (state != DEAD) {
@@ -113,21 +151,16 @@ public abstract class Player extends Entity {
                         airSpeed += GRAVITY;
                     } else
                         inAir = false;
-
             }
-
             return;
         }
+
         updateAttackBox();
 
-        if (state == HIT) {
+        if (state == HIT)
             updateKnockback(lvlData);
-        } else {
+        else
             updatePos();
-        }
-
-        if (attacking)
-            checkAttack();
 
         updateAnimationTick();
         setAnimation();
@@ -145,12 +178,8 @@ public abstract class Player extends Entity {
                 p.render(g, lvlOffset);
     }
 
-    private void checkSpikesTouched() {
-        playing.checkSpikesTouched(this);
-    }
-
     private void checkAttack() {
-        if (attackChecked || aniIndex != 1) return;
+        if (attackChecked || aniIndex != getAttackHitFrame()) return;
         attackChecked = true;
         if (isProjectileAttack())
             spawnProjectile();
@@ -189,7 +218,6 @@ public abstract class Player extends Entity {
         }
 //        drawAttackBox(g, lvlOffset);
 //        drawHitbox(g, lvlOffset);
-
         drawUI(g);
     }
 
@@ -198,6 +226,8 @@ public abstract class Player extends Entity {
             case RUNNING: return runFrames;
             case JUMP:    return jumpFrames;
             case ATTACK:  return attackFrames;
+            case SKILL2:   return skill2Frames;  // new
+            case SKILL3:   return skill3Frames;
             default:      return idleFrames;
         }
     }
@@ -218,6 +248,10 @@ public abstract class Player extends Entity {
                 aniIndex = 0;
                 attacking = false;
                 attackChecked = false;
+                skill2 = false;        
+                skill2Checked = false; 
+                skill3 = false;        
+                skill3Checked = false;
                 if (state == HIT) {
                     newState(IDLE);
                     airSpeed = 0f;
@@ -229,13 +263,33 @@ public abstract class Player extends Entity {
         }
     }
 
-
-
     private void setAnimation() {
         int startAni = state;
 
-        if (state == HIT)
+        if (skill3) {
+            if (state != SKILL3) {
+                state = SKILL3;
+                aniIndex = 0;
+                aniTick = 0;
+            }
             return;
+        } else if (skill2) {
+            if (state != SKILL2) {
+                state = SKILL2;
+                aniIndex = 0;
+                aniTick = 0;
+            }
+            return;
+        } else if (attacking) {
+            if (state != ATTACK) {
+                state = ATTACK;
+                aniIndex = 0;
+                aniTick = 0;
+            }
+            return;
+        }
+
+        if (state == HIT) return;
 
         if (moving)
             state = RUNNING;
@@ -247,15 +301,6 @@ public abstract class Player extends Entity {
                 state = JUMP;
             else
                 state = FALLING;
-        }
-
-        if (attacking) {
-            state = ATTACK;
-            if (startAni != ATTACK) {
-                aniIndex = 1;
-                aniTick = 0;
-                return;
-            }
         }
 
         if (startAni != state)
@@ -270,8 +315,7 @@ public abstract class Player extends Entity {
     private void updatePos() {
         moving = false;
 
-        if (jump)
-            jump();
+        if (jump) jump();
 
         if (!inAir)
             if ((!left && !right) || (right && left))
@@ -332,7 +376,6 @@ public abstract class Player extends Entity {
             hitbox.x = GetEntityXPosNextToWall(hitbox, xSpeed);
     }
 
-//    changeHealth with HIT state check
     public void changeHealth(int value) {
         if (value < 0) {
             if (state == HIT) return;
@@ -342,33 +385,16 @@ public abstract class Player extends Entity {
         currentHealth = Math.max(Math.min(currentHealth, maxHealth), 0);
     }
 
-//    overload for pushback direction
     public void changeHealth(int value, Enemy e) {
         if (state == HIT) return;
         changeHealth(value);
         pushBackOffsetDir = UP;
         pushDrawOffset = 0;
-//        knock away from enemy
         if (e.getHitbox().x < hitbox.x)
             pushBackDir = RIGHT;
         else
             pushBackDir = LEFT;
-//        launch upward
         applyKnockback(pushBackDir, -1.5f * Game.SCALE, 1.0f);
-    }
-
-    private BufferedImage[] loadActionFrames(String action, int frameCount) {
-        BufferedImage sheet = LoadSave.GetBrawlerSprite(action);
-        if (sheet == null) {
-            System.out.println("Failed to load: " + action + "_Brawler.png");
-            return new BufferedImage[frameCount];
-        }
-        int frameWidth  = sheet.getWidth() / frameCount;
-        int frameHeight = sheet.getHeight();
-        BufferedImage[] frames = new BufferedImage[frameCount];
-        for (int i = 0; i < frameCount; i++)
-            frames[i] = sheet.getSubimage(i * frameWidth, 0, frameWidth, frameHeight);
-        return frames;
     }
 
     public void loadLvlData(int[][] lvlData) {
@@ -383,9 +409,7 @@ public abstract class Player extends Entity {
         jump = false;
     }
 
-    public void setAttacking(boolean attacking) {
-        this.attacking = attacking;
-    }
+    public void setAttacking(boolean attacking) { this.attacking = attacking; }
 
     public boolean isLeft()  { return left; }
     public void setLeft(boolean left)   { this.left = left; }
@@ -401,7 +425,10 @@ public abstract class Player extends Entity {
         state = IDLE;
         currentHealth = maxHealth;
         airSpeed = 0f;
-
+        skill2 = false;
+        skill2Checked = false;
+        skill3 = false;
+        skill3Checked = false;
 
         hitbox.x = x;
         hitbox.y = y;
@@ -410,9 +437,7 @@ public abstract class Player extends Entity {
             inAir = true;
     }
 
-    public void kill() {
-        currentHealth = 0;
-    }
+    public void kill() { currentHealth = 0; }
 
     public int getWalkDir() {
         return (flipW == 1) ? RIGHT : LEFT;
@@ -422,6 +447,35 @@ public abstract class Player extends Entity {
         return GetSpriteAmount(state, getCharacterName());
     }
 
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1)
+            setSkill2(true);
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1)
+            setSkill2(false);
+    }
+
     public ArrayList<Projectile> getProjectiles() { return projectiles; }
 
+    public void setSkill2(boolean skill2) { this.skill2 = skill2; }
+
+    public void setSkill3(boolean skill3) { this.skill3 = skill3; }
+
+    private void checkSkill2() {
+        if (skill2Checked || aniIndex != getSkill2HitFrame()) return;
+        skill2Checked = true;
+        useSkill2();
+    }
+
+    private void checkSkill3() {
+        if (skill3Checked || aniIndex != getSkill3HitFrame()) return;
+        skill3Checked = true;
+        useSkill3();
+    }
+
+    public boolean isSkill2Active() { 
+        return skill2; 
+    }
 }
