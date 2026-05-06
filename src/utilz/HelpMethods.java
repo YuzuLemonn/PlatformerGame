@@ -2,6 +2,9 @@ package utilz;
 
 import entities.enemies.Crabby;
 import entities.enemies.Zombie;
+import entities.Slime;
+import entities.Goblin;
+import entities.Zombie;
 import main.Game;
 
 import java.awt.*;
@@ -9,7 +12,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import static utilz.Constants.EnemyConstants.CRABBY;
+import static utilz.Constants.EnemyConstants.SLIME;
+import static utilz.Constants.EnemyConstants.GOBLIN;
 
 public class HelpMethods {
     public static boolean CanMoveHere(float x, float y, float width, float height, int[][] lvlData){
@@ -161,8 +165,13 @@ public class HelpMethods {
                     lvlData[i][j] = 11;
                     continue;
                 }
-                // Skip crabby pixels (R=0, G=CRABBY, B=0)
-                if(color.getRed() == 0 && color.getGreen() == CRABBY && color.getBlue() == 0) {
+                // Skip Slime pixels (R=0, G=22, B=0)
+                if(color.getRed() == 0 && color.getGreen() == SLIME && color.getBlue() == 0) {
+                    lvlData[i][j] = 11;
+                    continue;
+                }
+                // Skip Slime pixels (R=0, G=44, B=0)
+                if(color.getRed() == 0 && color.getGreen() == GOBLIN && color.getBlue() == 0) {
                     lvlData[i][j] = 11;
                     continue;
                 }
@@ -190,13 +199,24 @@ public class HelpMethods {
         return lvlData;
     }
 
-    public static ArrayList<Crabby> GetCrabs(BufferedImage img) {
-        ArrayList<Crabby> list = new ArrayList<>();
+    public static ArrayList<Slime> GetSlimes(BufferedImage img) {
+        ArrayList<Slime> list = new ArrayList<>();
         for(int i = 0; i < img.getHeight(); i++)
             for(int j = 0; j < img.getWidth(); j++) {
                 Color color = new Color(img.getRGB(j, i));
-                if(color.getRed() == 0 && color.getGreen() == CRABBY && color.getBlue() == 0)
-                    list.add(new Crabby(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
+                if(color.getRed() == 0 && color.getGreen() == SLIME && color.getBlue() == 0)
+                    list.add(new Slime(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
+            }
+        return list;
+    }
+
+    public static ArrayList<Goblin> GetGoblins(BufferedImage img) {
+        ArrayList<Goblin> list = new ArrayList<>();
+        for(int i = 0; i < img.getHeight(); i++)
+            for(int j = 0; j < img.getWidth(); j++) {
+                Color color = new Color(img.getRGB(j, i));
+                if(color.getRed() == 0 && color.getGreen() == GOBLIN && color.getBlue() == 0)
+                    list.add(new Goblin(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
             }
         return list;
     }

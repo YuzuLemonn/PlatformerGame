@@ -37,12 +37,23 @@ public class LoadSave {
     public static final String ZOMBIE_WALK   = "sprites/Zombie/Zombie_Walk.png";
     public static final String ZOMBIE_ATTACK = "sprites/Zombie/Zombie_Attack.png";
     public static final String ZOMBIE_HIT    = "sprites/Zombie/Zombie_Hit.png";
+    public static final String ZOMBIE_DEATH  = "sprites/Zombie/Zombie_Death.png";
+
+    public static final String SLIME_WALK   = "sprites/Slime/Slime_Walk.png";
+    public static final String SLIME_ATTACK = "sprites/Slime/Slime_Attack.png";
+    public static final String SLIME_HIT    = "sprites/Slime/Slime_Hit.png";
+    public static final String SLIME_DEATH  = "sprites/Slime/Slime_Death.png";
+
+    public static final String GOBLIN_WALK   = "sprites/Goblin/Goblin_Walk.png";
+    public static final String GOBLIN_ATTACK = "sprites/Goblin/Goblin_Attack.png";
+    public static final String GOBLIN_HIT    = "sprites/Goblin/Goblin_Hit.png";
+    public static final String GOBLIN_DEATH  = "sprites/Goblin/Goblin_Death.png";
 
     public static final String GAME_COMPLETED = "game_completed.png";
     public static final String OPTIONS_MENU = "options_background.png";
     public static final String DEATH_SCREEN = "death_screen.png";
 
-    public static final String ZOMBIE_DEATH  = "sprites/Zombie/Zombie_Death.png";
+
 
     public static final String TRAP_ATLAS = "trap_atlas.png";
     public static final String PORTAL_ATLAS = "portal.png";

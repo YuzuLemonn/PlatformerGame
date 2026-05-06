@@ -2,6 +2,9 @@ package levels;
 
 import entities.enemies.Crabby;
 import entities.enemies.Zombie;
+import entities.Goblin;
+import entities.Slime;
+import entities.Zombie;
 import main.Game;
 import objects.Portal;
 import objects.Spike;
@@ -17,7 +20,8 @@ import static utilz.HelpMethods.*;
 public class Level {
     private BufferedImage img;
     private int[][] lvlData;
-    private ArrayList<Crabby> crabs;
+    private ArrayList<Slime> slimes;
+    private ArrayList<Goblin> goblins;
     private ArrayList<Zombie> zombies;
     private int lvlTilesWide;
     private int maxTilesOffset;
@@ -32,7 +36,6 @@ public class Level {
     public Level(BufferedImage img){
         this.img = img;
         createLevelData();
-        createEnemies();
         createObjects();
         calculateLvlOffsets();
         calcPlayerSpawn();
@@ -40,6 +43,8 @@ public class Level {
         merchantSpawns = GetNPCSpawns(img, 200);
         zombies = GetZombies(img);
         bossSpawn = GetBossSpawn(img);
+        slimes  = GetSlimes(img);
+        goblins = GetGoblins(img);
     }
 
     private void createObjects() {
@@ -64,16 +69,17 @@ public class Level {
     }
 
     public void resetEnemies() {
-        crabs  = GetCrabs(img);
+        slimes  = GetSlimes(img);
+        goblins = GetGoblins(img);
         zombies = GetZombies(img);
-        spikes = new ArrayList<>();
+        spikes  = new ArrayList<>();
         portals = new ArrayList<>();
         createObjects();
     }
 
-    private void createEnemies() {
-        crabs = GetCrabs(img);
-    }
+    public ArrayList<Slime>  getSlimes()  { return slimes; }
+
+    public ArrayList<Goblin> getGoblins() { return goblins; }
 
     private void createLevelData() {
         lvlData = GetLevelData(img);
@@ -89,10 +95,6 @@ public class Level {
 
     public int getLvlOffset(){
         return maxLvlOffsetX;
-    }
-
-    public ArrayList<Crabby> getCrabs(){
-        return crabs;
     }
 
     public Point getPlayerSpawn(){

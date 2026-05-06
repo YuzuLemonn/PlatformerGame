@@ -12,7 +12,7 @@ public class Credits extends State implements Statemethods {
 
     public Credits(Game game) {
         super(game);
-        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND_IMG);
+        backgroundImg = LoadSave.GetSpriteAtlas("black_bg.png");
     }
 
     @Override
@@ -23,25 +23,36 @@ public class Credits extends State implements Statemethods {
         g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Monospaced", Font.BOLD, (int)(14 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
 
         String[] lines = {
                 "CREDITS",
                 "",
-                "Game Design & Programming",
-                "Yuzu & Team",
+                "Project Mangers",
+                "Neo Mark Tripoli",
+                "Francis Louie Tantengco",
+                "",
+                "Programming",
+                "Neo Mark Tripoli",
+                "Josiah Angeles",
+                "Ser Raineir Benedict Macailing",
                 "",
                 "Art & Sprites",
-                "Your artist here",
+                "Edvard Antony De los Reyes",
+                "Francis Louie Tantengco",
+                "",
+                "Level Design",
+                "Neo Mark Tripoli",
+                "Edvard Antony De los Reyes",
                 "",
                 "Music",
-                "Your composer here",
+                "Stolen",
                 "",
                 "Press ESC to return"
         };
 
         int startY = (int)(80 * Game.SCALE);
-        int lineH  = (int)(22 * Game.SCALE);
+        int lineH  = (int)(13 * Game.SCALE);
         FontMetrics fm = g.getFontMetrics();
 
         for (int i = 0; i < lines.length; i++) {
