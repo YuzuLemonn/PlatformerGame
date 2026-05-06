@@ -31,6 +31,10 @@ public class EnemyManager {
     private ArrayList<Slime>  slimes  = new ArrayList<>();
     private ArrayList<Goblin> goblins = new ArrayList<>();
 
+    
+    private int gold = 0;
+    private float damageMultiplier = 1.0f;
+
     public EnemyManager(Playing playing) {
         this.playing = playing;
         loadEnemyImgs();
@@ -67,6 +71,8 @@ public class EnemyManager {
         // OUTSIDE all loops!
         if (boss != null && boss.isActive())
             boss.update(lvlData, player);
+
+        checkCoinDrops(player);
     }
 
     public void draw(Graphics g, int xLvlOffset) {
@@ -195,64 +201,64 @@ public class EnemyManager {
         return frames;
     }
 
-    public void checkEnemyHit(Rectangle2D.Float attackBox) {
-        for (Slime s : slimes)
-            if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
-                if (attackBox.intersects(s.getHitbox())) {
-                    s.hurt(10, playing.getPlayer().getWalkDir());
-                    return;
-                }
-        for (Goblin g : goblins)
-            if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
-                if (attackBox.intersects(g.getHitbox())) {
-                    g.hurt(10, playing.getPlayer().getWalkDir());
-                    return;
-                }
-        for (Zombie z : zombies)
-            if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
-                if (attackBox.intersects(z.getHitbox())) {
-                    z.hurt(10, playing.getPlayer().getWalkDir());
-                    return;
-                }
-
-        if (boss != null && boss.isActive() && boss.getState() != DEAD)
-            if (attackBox.intersects(boss.getHitbox()))
-                boss.hurt(10, playing.getPlayer().getWalkDir());
+    public void checkEnemyHit(Rectangle2D.Float attackBox, int damage) {
+    for (Slime s : slimes)
+        if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
+            if (attackBox.intersects(s.getHitbox())) {
+                s.hurt(damage, playing.getPlayer().getWalkDir());
+                return;
+            }
+    for (Goblin g : goblins)
+        if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
+            if (attackBox.intersects(g.getHitbox())) {
+                g.hurt(damage, playing.getPlayer().getWalkDir());
+                return;
+            }
+    for (Zombie z : zombies)
+        if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
+            if (attackBox.intersects(z.getHitbox())) {
+                z.hurt(damage, playing.getPlayer().getWalkDir());
+                return;
+            }
+    if (boss != null && boss.isActive() && boss.getState() != DEAD)
+        if (attackBox.intersects(boss.getHitbox()))
+            boss.hurt(damage, playing.getPlayer().getWalkDir());
     }
 
     public void checkEnemyHitByProjectile(entities.Projectile proj) {
-        if (!proj.isActive()) return;
-        int knockDir = (proj.getDir() == 1) ? RIGHT : LEFT;
+    if (!proj.isActive()) return;
+    int knockDir = (proj.getDir() == 1) ? RIGHT : LEFT;
 
-        for (Slime s : slimes)
-            if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
-                if (proj.getHitbox().intersects(s.getHitbox())) {
-                    s.hurt(proj.getDamage(), knockDir);
-                    proj.setActive(false);
-                    return;
-                }
-        for (Goblin g : goblins)
-            if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
-                if (proj.getHitbox().intersects(g.getHitbox())) {
-                    g.hurt(proj.getDamage(), knockDir);
-                    proj.setActive(false);
-                    return;
-                }
-        for (Zombie z : zombies)
-            if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
-                if (proj.getHitbox().intersects(z.getHitbox())) {
-                    z.hurt(proj.getDamage(), knockDir);
-                    proj.setActive(false);
-                    return;
-                }
-        
-        if(boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
-            if (proj.getHitbox().intersects(boss.getHitbox())) {
-                boss.hurt(proj.getDamage(), knockDir);
+    // Apply player's damage multiplier to projectile hits
+    int damage = (int)(proj.getDamage() * playing.getPlayer().getDamageMultiplier());
+
+    for (Slime s : slimes)
+        if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
+            if (proj.getHitbox().intersects(s.getHitbox())) {
+                s.hurt(damage, knockDir);
                 proj.setActive(false);
                 return;
             }
-    }
+    for (Goblin g : goblins)
+        if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
+            if (proj.getHitbox().intersects(g.getHitbox())) {
+                g.hurt(damage, knockDir);
+                proj.setActive(false);
+                return;
+            }
+    for (Zombie z : zombies)
+        if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
+            if (proj.getHitbox().intersects(z.getHitbox())) {
+                z.hurt(damage, knockDir);
+                proj.setActive(false);
+                return;
+            }
+    if (boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
+        if (proj.getHitbox().intersects(boss.getHitbox())) {
+            boss.hurt(damage, knockDir);
+            proj.setActive(false);
+        }
+}
 
     public boolean areAllEnemiesCleared() {
         for (Slime  s : slimes) {
@@ -287,4 +293,39 @@ public class EnemyManager {
             boss.resetEnemy();
         }
     }
+
+public int getGold() { return gold; }
+public void addGold(int amount) { gold += amount; }
+public boolean spendGold(int amount) {
+    if (gold < amount) return false;
+    gold -= amount;
+    return true;
+}
+
+public float getDamageMultiplier() { return damageMultiplier; }
+public void increaseDamage(float amount) { damageMultiplier += amount; }
+
+// track which enemies were already dead last frame to detect fresh deaths
+private void checkCoinDrops(Player player) {
+    for (Slime s : slimes)
+        if (!s.isActive() && !s.isCoinDropped()) {
+            player.addGold(s.getCoinValue());
+            s.markCoinDropped();
+        }
+    for (Goblin g : goblins)
+        if (!g.isActive() && !g.isCoinDropped()) {
+            player.addGold(g.getCoinValue());
+            g.markCoinDropped();
+        }
+    for (Zombie z : zombies)
+        if (!z.isActive() && !z.isCoinDropped()) {
+            player.addGold(z.getCoinValue());
+            z.markCoinDropped();
+        }
+    if (boss != null && !boss.isActive() && !boss.isCoinDropped()) {
+        player.addGold(boss.getCoinValue());
+        boss.markCoinDropped();
+    }
+}
+
 }

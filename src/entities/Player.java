@@ -28,6 +28,12 @@ public abstract class Player extends Entity {
     protected BufferedImage statusBarImg;
     protected boolean skill3;
     protected boolean skill2;
+    private int checkpointGold = 0;
+    private int checkpointPotions = 0;
+    private int potionCount = 0;
+    private int potionHealAmount = 50;
+    private int gold = 0;
+    private float damageMultiplier = 1.0f;
     
     protected abstract void loadAnimations();
     protected abstract String getCharacterName();
@@ -71,6 +77,11 @@ public abstract class Player extends Entity {
     private boolean attackChecked;
     protected Playing playing;
     private boolean skill2Checked, skill3Checked;
+    protected String playerClass;
+
+    public String getPlayerClass() {
+    return playerClass;
+    }
     
     public Player(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
@@ -226,7 +237,7 @@ public abstract class Player extends Entity {
             case RUNNING: return runFrames;
             case JUMP:    return jumpFrames;
             case ATTACK:  return attackFrames;
-            case SKILL2:   return skill2Frames;  // new
+            case SKILL2:   return skill2Frames;
             case SKILL3:   return skill3Frames;
             default:      return idleFrames;
         }
@@ -418,24 +429,26 @@ public abstract class Player extends Entity {
     public void setJump(boolean jump)   { this.jump = jump; }
 
     public void resetAll() {
-        resetDirBooleans();
-        inAir = false;
-        attacking = false;
-        moving = false;
-        state = IDLE;
-        currentHealth = maxHealth;
-        airSpeed = 0f;
-        skill2 = false;
-        skill2Checked = false;
-        skill3 = false;
-        skill3Checked = false;
+    resetDirBooleans();
+    inAir         = false;
+    attacking     = false;
+    moving        = false;
+    state         = IDLE;
+    currentHealth = maxHealth;
+    airSpeed      = 0f;
+    skill2        = false;
+    skill2Checked = false;
+    skill3        = false;
+    skill3Checked = false;
 
-        hitbox.x = x;
-        hitbox.y = y;
+    hitbox.x = x;
+    hitbox.y = y;
 
-        if (!IsEntityOnFloor(hitbox, lvlData))
-            inAir = true;
-    }
+    restoreCheckpoint();
+
+    if (!IsEntityOnFloor(hitbox, lvlData))
+        inAir = true;
+}
 
     public void kill() { currentHealth = 0; }
 
@@ -478,4 +491,38 @@ public abstract class Player extends Entity {
     public boolean isSkill2Active() { 
         return skill2; 
     }
+
+public void setPlayerClass(String playerClass) {
+    this.playerClass = playerClass;
+}
+
+public int getGold() { return gold; }
+public void addGold(int amount) { gold += amount; }
+public boolean spendGold(int amount) {
+    if (gold < amount) return false;
+    gold -= amount;
+    return true;
+}
+
+public float getDamageMultiplier() { return damageMultiplier; }
+public void increaseDamage(float amount) { damageMultiplier += amount; }
+
+public void addPotion()  { potionCount++; }
+public int getPotionCount() { return potionCount; }
+
+public void usePotion() {
+    if (potionCount <= 0) return;
+    potionCount--;
+    changeHealth(potionHealAmount);
+}
+
+    public void saveCheckpoint() {
+    checkpointGold    = gold;
+    checkpointPotions = potionCount;
+}
+
+public void restoreCheckpoint() {
+    gold        = checkpointGold;
+    potionCount = checkpointPotions;
+}
 }

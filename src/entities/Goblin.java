@@ -54,4 +54,7 @@ public class Goblin extends Enemy {
             }
         }
     }
+
+    @Override
+    public int getCoinValue() { return 8; }
 }

@@ -10,9 +10,7 @@ import utilz.LoadSave;
 import entities.NPC;
 
 import java.util.ArrayList;
-
 import audio.AudioPlayer;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -48,6 +46,7 @@ public class Playing extends State implements Statemethods {
     private NPC activeNPC = null;
     private DialogueOverlay dialogueOverlay;
     private boolean dialogueActive = false;
+    private boolean shopActive = false;
     private boolean allEnemiesCleared = false;
 
     public Playing(Game game) {
@@ -55,13 +54,13 @@ public class Playing extends State implements Statemethods {
         initClasses();
 
         backgroundImgs = new BufferedImage[]{
-                LoadSave.GetSpriteAtlas("playing_bg_village.png"), // index 0 - World 1
-                LoadSave.GetSpriteAtlas("playing_bg_img1.png"),    // index 1
-                LoadSave.GetSpriteAtlas("playing_bg_img1.png"),    // index 2
-                LoadSave.GetSpriteAtlas("playing_bg_img2.png"),    // index 3 - World 2
-                LoadSave.GetSpriteAtlas("playing_bg_img2.png"),    // index 4
-                LoadSave.GetSpriteAtlas("playing_bg_img3.png"),    // index 5 - World 3
-                LoadSave.GetSpriteAtlas("playing_bg_img3.png")     // index 6 - Final boss
+                LoadSave.GetSpriteAtlas("playing_bg_village.png"),
+                LoadSave.GetSpriteAtlas("playing_bg_img1.png"),
+                LoadSave.GetSpriteAtlas("playing_bg_img1.png"),
+                LoadSave.GetSpriteAtlas("playing_bg_img2.png"),
+                LoadSave.GetSpriteAtlas("playing_bg_img2.png"),
+                LoadSave.GetSpriteAtlas("playing_bg_img3.png"),
+                LoadSave.GetSpriteAtlas("playing_bg_img3.png")
         };
 
         calcLvlOffset();
@@ -69,33 +68,31 @@ public class Playing extends State implements Statemethods {
     }
 
     public void loadNextLevel() {
-        resetAll();                          
-        levelManager.loadNextLevel();        
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn()); 
-        player.loadLvlData(levelManager.getCurrentLevel().getLevelData()); 
-        player.resetAll();        
-        game.getAudioPlayer().setLevelSong(levelManager.getLvlIndex());
-        npcs.clear();
-        initNPCs();
-        xLvlOffset = 0;
-        calcLvlOffset();
-    }
+    player.saveCheckpoint();
+    saveShopCheckpoints();
+    resetAll();
+    levelManager.loadNextLevel();
+    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+    player.resetAll();
+    game.getAudioPlayer().setLevelSong(levelManager.getLvlIndex());
+    npcs.clear();
+    initNPCs();
+    xLvlOffset = 0;
+    calcLvlOffset();
+}
 
     private void loadStartLevel() {
         enemyManager.loadEnemies(levelManager.getCurrentLevel());
         objectManager.loadObjects(levelManager.getCurrentLevel());
     }
 
-    /**
-     * Called by CharacterSelect after the player picks a character.
-     * Swaps in the chosen Player subclass and wires it to the current level.
-     */
     public void setPlayer(Player p) {
-        this.player = p;
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-        player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
-        player.setAttacking(false);
-    }
+    this.player = p;
+    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+    player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+    player.setAttacking(false);
+    player.saveCheckpoint();
+}
 
     private void calcLvlOffset() {
         maxLvlOffsetX = levelManager.getCurrentLevel().getLvlOffset();
@@ -106,38 +103,48 @@ public class Playing extends State implements Statemethods {
         enemyManager = new EnemyManager(this);
         objectManager = new ObjectManager(this);
 
-        // Default to Brawler; CharacterSelect will call setPlayer() to override.
         player = new entities.players.Brawler(200, 200,
                 (int)(64 * Game.SCALE), (int)(40 * Game.SCALE), this);
         player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
         player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
 
-        pauseOverlay         = new PauseOverlay(this);
-        gameOverOverlay      = new GameOverOverlay(this);
+        pauseOverlay          = new PauseOverlay(this);
+        gameOverOverlay       = new GameOverOverlay(this);
         levelCompletedOverlay = new LevelCompletedOverlay(this);
         gameCompletedOverlay  = new GameCompletedOverlay(this);
-        dialogueOverlay      = new DialogueOverlay(this);
+        dialogueOverlay       = new DialogueOverlay(this);
 
         initNPCs();
     }
 
     private void initNPCs() {
         for (Point p : levelManager.getCurrentLevel().getOldManSpawns()) {
-            NPC npc = new NPC(p.x, p.y, "Old Man", new String[]{
-                    "Welcome, traveler!",
-                    "Beware of the enemies ahead.",
-                    "Good luck on your journey!"
-            });
+            NPC npc = new NPC(
+                    p.x, p.y,
+                    "Old Man",
+                    new String[]{
+                            "Welcome, traveler!",
+                            "Beware of the enemies ahead.",
+                            "Good luck on your journey!"
+                    },
+                    this
+            );
             npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
             npcs.add(npc);
         }
 
         for (Point p : levelManager.getCurrentLevel().getMerchantSpawns()) {
-            NPC npc = new NPC(p.x, p.y, "Merchant", new String[]{
-                    "Welcome to my shop!",
-                    "I have wares if you have coin."
-            });
+            NPC npc = new NPC(
+                    p.x, p.y,
+                    "Merchant",
+                    new String[]{
+                            "Welcome to my shop!",
+                            "I have wares if you have coin."
+                    },
+                    this
+            );
             npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+            npc.setShopkeeper(true);
             npcs.add(npc);
         }
     }
@@ -206,12 +213,31 @@ public class Playing extends State implements Statemethods {
         player.render(g, xLvlOffset);
         player.renderProjectiles(g, xLvlOffset);
         
-        // Draw boss bar if boss is active
-        if(enemyManager.getBoss() instanceof entities.bosses.BossWorm bw && bw.isActive())
-            bw.drawBossBar(g);
+        if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
+            enemyManager.getBoss().drawBossBar(g);
 
+        g.setColor(Color.YELLOW);
+        g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        FontMetrics fm = g.getFontMetrics();
+
+        String goldText   = "Gold: " + player.getGold() + "g";
+        String potionText = "Potions: " + player.getPotionCount() + "  [H]";
+
+        g.drawString(goldText,
+                Game.GAME_WIDTH - fm.stringWidth(goldText) - (int)(10 * Game.SCALE),
+                (int)(20 * Game.SCALE));
+
+        g.setColor(new Color(150, 255, 150));
+        g.drawString(potionText,
+                Game.GAME_WIDTH - fm.stringWidth(potionText) - (int)(10 * Game.SCALE),
+                (int)(32 * Game.SCALE));
+
+        // Dialogue and shop overlays
         if (dialogueActive && activeNPC != null)
             dialogueOverlay.draw(g, activeNPC);
+
+        if (shopActive && activeNPC != null)
+            activeNPC.drawShop(g);
 
         if (paused) {
             g.setColor(new Color(0, 0, 0, 150));
@@ -227,16 +253,18 @@ public class Playing extends State implements Statemethods {
 
     public void resetAll() {
         allEnemiesCleared = false;
-        gameOver = false;
-        paused = false;
-        lvlCompleted = false;
-        playerDying = false;
-        gameCompleted = false;
+        gameOver          = false;
+        paused            = false;
+        lvlCompleted      = false;
+        playerDying       = false;
+        gameCompleted     = false;
+        dialogueActive    = false;
+        shopActive        = false;
+        activeNPC         = null;
         player.resetAll();
+        restoreShopCheckpoints();
         enemyManager.resetAllEnemies();
         objectManager.resetAllObjects();
-        dialogueActive = false;
-        activeNPC = null;
         for (NPC npc : npcs) npc.endDialogue();
     }
 
@@ -246,7 +274,18 @@ public class Playing extends State implements Statemethods {
     public void setPlayerDying(boolean playerDying) { this.playerDying = playerDying; }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
-        enemyManager.checkEnemyHit(attackBox);
+        int baseDamage = getPlayerBaseDamage();   // per-class base
+        int damage = (int)(baseDamage * player.getDamageMultiplier());
+        enemyManager.checkEnemyHit(attackBox, damage);
+    }
+
+    private int getPlayerBaseDamage() {
+        switch (player.getPlayerClass()) {
+            case "BRAWLER"  -> { return 15; }  // hits hard
+            case "MAGE"     -> { return 8;  }  // relies on projectiles
+            case "ASSASSIN" -> { return 12; }  // fast but moderate
+            default         -> { return 10; }
+        }
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -254,17 +293,16 @@ public class Playing extends State implements Statemethods {
             pauseOverlay.mouseDragged(e);
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {}
+    @Override public void mouseClicked(MouseEvent e) {}
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (!gameOver && !paused && !lvlCompleted && !gameCompleted) {
             if (e.getButton() == MouseEvent.BUTTON1)
                 player.setAttacking(true);
-            else if (e.getButton() == MouseEvent.BUTTON3) 
+            else if (e.getButton() == MouseEvent.BUTTON3)
                 if (!player.isSkill2Active())
-                player.setSkill2(true);
+                    player.setSkill2(true);
         }
         if (gameOver)           gameOverOverlay.mousePressed(e);
         else if (paused)        pauseOverlay.mousePressed(e);
@@ -293,14 +331,13 @@ public class Playing extends State implements Statemethods {
         if (gameOver || gameCompleted || lvlCompleted) return;
 
         switch (e.getKeyCode()) {
-            // Movement — delegated to Player
             case KeyEvent.VK_A:
             case KeyEvent.VK_D:
             case KeyEvent.VK_SPACE:
             case KeyEvent.VK_R:
-                player.keyPressed(e);
+                if (!shopActive && !dialogueActive)
+                    player.keyPressed(e);
                 break;
-
 
             case KeyEvent.VK_E:
                 if (objectManager.isPlayerAtOpenPortal(player.getHitbox()))
@@ -309,6 +346,19 @@ public class Playing extends State implements Statemethods {
                     handleNPCInteract();
                 break;
 
+            case KeyEvent.VK_H:
+                if (!shopActive && !dialogueActive)
+                    player.usePotion();
+                break;
+
+            case KeyEvent.VK_1:
+            case KeyEvent.VK_2:
+            case KeyEvent.VK_3:
+            case KeyEvent.VK_4:
+            case KeyEvent.VK_5:
+                if (shopActive && activeNPC != null)
+                    activeNPC.handleShopKey(e.getKeyCode());
+                break;
 
             case KeyEvent.VK_ESCAPE:
                 paused = !paused;
@@ -321,7 +371,6 @@ public class Playing extends State implements Statemethods {
         if (gameOver || gameCompleted || lvlCompleted) return;
 
         switch (e.getKeyCode()) {
-            // Movement — delegated to Player
             case KeyEvent.VK_A:
             case KeyEvent.VK_D:
             case KeyEvent.VK_SPACE:
@@ -332,24 +381,39 @@ public class Playing extends State implements Statemethods {
     }
 
     private void handleNPCInteract() {
+        if (shopActive && activeNPC != null) {
+            shopActive = false;
+            activeNPC  = null;
+            return;
+        }
+
+        // Dialogue active
         if (dialogueActive && activeNPC != null) {
             if (!dialogueOverlay.isTextComplete()) {
                 dialogueOverlay.skipToEnd();
                 return;
             }
+
             activeNPC.interact();
+
             if (!activeNPC.isDialogueActive()) {
                 dialogueActive = false;
-                activeNPC = null;
-            }
-        } else {
-            for (NPC npc : npcs) {
-                if (npc.isPlayerInRange(player.getHitbox())) {
-                    activeNPC = npc;
-                    activeNPC.interact();
-                    dialogueActive = true;
-                    break;
+                if (activeNPC.isShopkeeper()) {
+                    activeNPC.openShop();
+                    shopActive = true;
+                } else {
+                    activeNPC = null;
                 }
+            }
+            return;
+        }
+
+        for (NPC npc : npcs) {
+            if (npc.isPlayerInRange(player.getHitbox())) {
+                activeNPC = npc;
+                npc.interact();
+                dialogueActive = true;
+                break;
             }
         }
     }
@@ -367,40 +431,53 @@ public class Playing extends State implements Statemethods {
     }
 
     public void restartGame() {
-        levelManager.resetLevelIndex();
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-        player.resetAll();
-        player.setAttacking(false);
-        resetAll();
-        xLvlOffset = 0;
-        calcLvlOffset();
-        npcs.clear();
-        initNPCs();
+    player.saveCheckpoint();
+    saveShopCheckpoints();
+    levelManager.resetLevelIndex();
+    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+    player.resetAll();
+    player.setAttacking(false);
+    resetAll();
+    xLvlOffset = 0;
+    calcLvlOffset();
+    npcs.clear();
+    initNPCs();
     }
 
     public void loadStartLevelByIndex(int index) {
-        resetAll();
-        levelManager.setLevelIndex(index);
-        enemyManager.loadEnemies(levelManager.getCurrentLevel());
-        objectManager.loadObjects(levelManager.getCurrentLevel());
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-        player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
-        player.resetAll();
-        xLvlOffset = 0;
-        calcLvlOffset();
-        npcs.clear();
-        initNPCs();
+    player.saveCheckpoint();
+    saveShopCheckpoints();
+    resetAll();
+    levelManager.setLevelIndex(index);
+    enemyManager.loadEnemies(levelManager.getCurrentLevel());
+    objectManager.loadObjects(levelManager.getCurrentLevel());
+    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+    player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+    player.resetAll();
+    xLvlOffset = 0;
+    calcLvlOffset();
+    npcs.clear();
+    initNPCs();
     }
 
     public void setMaxLvlOffset(int lvlOffset) { this.maxLvlOffsetX = lvlOffset; }
     public void unpauseGame()                  { paused = false; }
+    public void windowFocusLost()              { player.resetDirBooleans(); }
 
-    public void windowFocusLost() {
-        player.resetDirBooleans();
+    public Player         getPlayer()         { return player; }
+    public EnemyManager   getEnemyManager()   { return enemyManager; }
+    public LevelManager   getLevelManager()   { return levelManager; }
+    public ObjectManager  getObjectManager()  { return objectManager; }
+
+        private void saveShopCheckpoints() {
+        for (NPC npc : npcs)
+            if (npc.isShopkeeper())
+                npc.saveShopCheckpoint();
     }
 
-    public Player getPlayer()               { return player; }
-    public EnemyManager getEnemyManager()   { return enemyManager; }
-    public LevelManager getLevelManager()   { return levelManager; }
-    public ObjectManager getObjectManager() { return objectManager; }
+    private void restoreShopCheckpoints() {
+        for (NPC npc : npcs)
+            if (npc.isShopkeeper())
+                npc.restoreShopCheckpoint();
+    }
 }

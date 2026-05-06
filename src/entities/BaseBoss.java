@@ -200,4 +200,7 @@ public abstract class BaseBoss extends Enemy {
     }
 
     public abstract void applySpawn(Point spawnPoint);
+
+    @Override
+    public int getCoinValue() { return 100; }
 }

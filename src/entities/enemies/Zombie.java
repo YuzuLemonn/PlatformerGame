@@ -70,4 +70,7 @@ public class Zombie extends Enemy {
     }
 
     public int getWalkDir() { return walkDir; }
+
+    @Override
+    public int getCoinValue() { return 6; }
 }

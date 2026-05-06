@@ -72,7 +72,7 @@ public class Assassin extends Player {
 
     @Override
     protected int getAttackHitFrame() { 
-        return 5; 
+        return 2; 
     }
 
     @Override

@@ -50,4 +50,7 @@ public class Slime extends Enemy {
             }
         }
     }
+
+    @Override
+    public int getCoinValue() { return 7; }
 }

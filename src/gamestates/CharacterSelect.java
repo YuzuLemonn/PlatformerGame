@@ -73,13 +73,26 @@ public class CharacterSelect extends State implements Statemethods {
     }
 
     private void selectCharacter(String name) {
-        Playing playing = game.getPlaying();
-        switch (name) {
-            case "Brawler"  -> playing.setPlayer(new Brawler( 200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
-            case "Mage"     -> playing.setPlayer(new Mage(    200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
-            case "Assassin" -> playing.setPlayer(new Assassin(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
+    Playing playing = game.getPlaying();
+
+    switch (name) {
+        case "Brawler" -> {
+            playing.setPlayer(new Brawler(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
+            playing.getPlayer().setPlayerClass("BRAWLER");
         }
-        game.getStoryManager().startStory();
+
+        case "Mage" -> {
+            playing.setPlayer(new Mage(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
+            playing.getPlayer().setPlayerClass("MAGE");
+        }
+
+        case "Assassin" -> {
+            playing.setPlayer(new Assassin(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
+            playing.getPlayer().setPlayerClass("ASSASSIN");
+        }
+    }
+
+    game.getStoryManager().startStory();
     }
 
     @Override public void mouseClicked(MouseEvent e) {}

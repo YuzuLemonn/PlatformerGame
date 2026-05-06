@@ -184,6 +184,7 @@ public abstract class Enemy extends Entity{
         firstUpdate = true;
         inAir = false;
         pushDrawOffset = 0;
+        coinDropped = false;
     }
 
 
@@ -209,4 +210,11 @@ public abstract class Enemy extends Entity{
         this.playing = playing;
     }
 
+        private boolean coinDropped = false;
+
+    public boolean isCoinDropped()  { return coinDropped; }
+    public void markCoinDropped()   { coinDropped = true; }
+
+    // Override per enemy type, or set a default:
+    public int getCoinValue() { return 5; }   // default: 5 gold
 }
