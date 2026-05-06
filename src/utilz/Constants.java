@@ -84,6 +84,21 @@ public class Constants {
         }
     }
 
+    public static class DamageConstants {
+        // Player attacks
+        public static final int MAGE_ATTACK_DMG   = 20;
+        public static final int MAGE_SKILL2_DMG   = 0;  // heal, no damage
+        public static final int MAGE_SKILL3_DMG   = 30;
+
+        public static final int ASSASSIN_ATTACK_DMG = 15;
+        public static final int ASSASSIN_SKILL2_DMG = 25;
+        public static final int ASSASSIN_SKILL3_DMG = 35;
+
+        public static final int BRAWLER_ATTACK_DMG  = 15;
+        public static final int BRAWLER_SKILL2_DMG  = 30;
+        public static final int BRAWLER_SKILL3_DMG  = 40;
+    }
+
     public static class ObjectConstants {
         public static final int SPIKE = 4;
         public static final int PORTAL = 100;
@@ -167,6 +182,12 @@ public class Constants {
         public static final int DEAD = 6;
         public static final int SKILL2  = 7;
         public static final int SKILL3  = 8;
+        public static final int MAX_STAMINA = 100;
+        public static final float STAMINA_REGEN_PASSIVE = 0.01f;
+        public static final float STAMINA_REGEN_IDLE    = 0.10f;
+        public static final int   STAMINA_COST_ATTACK   = 15;
+        public static final int   STAMINA_COST_SKILL2   = 25;
+        public static final int   STAMINA_COST_SKILL3   = 40;
 
         public static int GetSpriteAmount(int player_action, String character) {
             switch (character) {
@@ -226,8 +247,8 @@ public class Constants {
 
         // boss states (shared)
         public static final int BOSS_MOVE    = 0;
-        public static final int BOSS_ATTACKED = 2;
-        public static final int BOSS_HIT     = 3;
+        public static final int BOSS_HIT = 2;
+        public static final int BOSS_ATTACKED     = 3;
         public static final int BOSS_DEAD    = 4;
         public static final int BOSS_SPAWN = 50;
 
@@ -240,7 +261,7 @@ public class Constants {
 
         public static int GetMaxHealthBoss(int BossType) {
             switch (BossType) {
-                case BOSS_1: return 100;  // worm — low HP
+                case BOSS_1: return 150;  // worm — low HP
                 case BOSS_2: return 400;  // beast — high HP
                 case BOSS_3: return 280;  // golem — moderate
                 case BOSS_4: return 500;  // final — very high

@@ -196,28 +196,31 @@ public class EnemyManager {
     }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
+        checkEnemyHit(attackBox, 10); // default damage
+    }
+
+    public void checkEnemyHit(Rectangle2D.Float attackBox, int damage) {
         for (Slime s : slimes)
             if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
                 if (attackBox.intersects(s.getHitbox())) {
-                    s.hurt(10, playing.getPlayer().getWalkDir());
+                    s.hurt(damage, playing.getPlayer().getWalkDir());
                     return;
                 }
         for (Goblin g : goblins)
             if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
                 if (attackBox.intersects(g.getHitbox())) {
-                    g.hurt(10, playing.getPlayer().getWalkDir());
+                    g.hurt(damage, playing.getPlayer().getWalkDir());
                     return;
                 }
         for (Zombie z : zombies)
             if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
                 if (attackBox.intersects(z.getHitbox())) {
-                    z.hurt(10, playing.getPlayer().getWalkDir());
+                    z.hurt(damage, playing.getPlayer().getWalkDir());
                     return;
                 }
-
         if (boss != null && boss.isActive() && boss.getState() != DEAD)
             if (attackBox.intersects(boss.getHitbox()))
-                boss.hurt(10, playing.getPlayer().getWalkDir());
+                boss.hurt(damage, playing.getPlayer().getWalkDir());
     }
 
     public void checkEnemyHitByProjectile(entities.Projectile proj) {

@@ -48,7 +48,6 @@ public abstract class Player extends Entity {
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 10 * Game.SCALE;
     
-    
     // Jumping / Gravity
     private float jumpSpeed = -2.25f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
@@ -69,6 +68,7 @@ public abstract class Player extends Entity {
     protected int flipW = 1;
     
     private boolean attackChecked;
+    private float stamina = MAX_STAMINA;
     protected Playing playing;
     private boolean skill2Checked, skill3Checked;
     
@@ -118,6 +118,7 @@ public abstract class Player extends Entity {
     
     public void update() {
         updateHealthBar();
+        updateStamina();
 
         if (attacking)
             checkAttack();
@@ -181,6 +182,7 @@ public abstract class Player extends Entity {
     private void checkAttack() {
         if (attackChecked || aniIndex != getAttackHitFrame()) return;
         attackChecked = true;
+        if (!useStamina(STAMINA_COST_ATTACK)) return; // gate here
         if (isProjectileAttack())
             spawnProjectile();
         else
@@ -234,10 +236,30 @@ public abstract class Player extends Entity {
 
     private void drawUI(Graphics g) {
         g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+        
+        // health bar
         g.setColor(Color.red);
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+        
+        // stamina bar
+        int staminaBarWidth = (int)(healthBarWidth * 0.70f);
+        int staminaWidth = (int)((stamina / MAX_STAMINA) * staminaBarWidth);
+        g.setColor(new Color(255, 200, 0));
+        g.fillRect(healthBarXStart + statusBarX + (int)(10 * Game.SCALE), // nudge right
+        healthBarYStart + statusBarY + (int)(20 * Game.SCALE), 
+        staminaWidth, healthBarHeight);
+        if (staminaMessageTimer > 0) {
+            staminaMessageTimer--;
+            g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+            g.setColor(new Color(255, 80, 0));
+            FontMetrics fm = g.getFontMetrics();
+            String msg = "Not enough stamina!";
+            int msgX = (Game.GAME_WIDTH - fm.stringWidth(msg)) / 2;
+            int msgY = Game.GAME_HEIGHT / 2;
+            g.drawString(msg, msgX, msgY);
+        }
     }
-
+    
     private void updateAnimationTick() {
         aniTick++;
         if (aniTick >= ANI_SPEED) {
@@ -266,27 +288,36 @@ public abstract class Player extends Entity {
     private void setAnimation() {
         int startAni = state;
 
-        if (skill3) {
-            if (state != SKILL3) {
+            if (skill3) {
+            if (stamina < STAMINA_COST_SKILL3) {
+                skill3 = false;
+                showNotEnoughStamina();
+            } else if (state != SKILL3) {
                 state = SKILL3;
                 aniIndex = 0;
                 aniTick = 0;
-            }
-            return;
+                return;
+            } else return;
         } else if (skill2) {
-            if (state != SKILL2) {
+            if (stamina < STAMINA_COST_SKILL2) {
+                skill2 = false;
+                showNotEnoughStamina();
+            } else if (state != SKILL2) {
                 state = SKILL2;
                 aniIndex = 0;
                 aniTick = 0;
-            }
-            return;
+                return;
+            } else return;
         } else if (attacking) {
-            if (state != ATTACK) {
+            if (stamina < STAMINA_COST_ATTACK) {
+                attacking = false;
+                showNotEnoughStamina();
+            } else if (state != ATTACK) {
                 state = ATTACK;
                 aniIndex = 0;
                 aniTick = 0;
-            }
-            return;
+                return;
+            } else return;
         }
 
         if (state == HIT) return;
@@ -477,5 +508,26 @@ public abstract class Player extends Entity {
 
     public boolean isSkill2Active() { 
         return skill2; 
+    }
+
+    private void updateStamina() {
+        boolean isIdle = !moving && !inAir; // adjust to your actual idle condition
+        float regen = isIdle ? STAMINA_REGEN_IDLE : STAMINA_REGEN_PASSIVE;
+        stamina = Math.min(MAX_STAMINA, stamina + regen);
+    }
+
+    public boolean useStamina(int cost) {
+        if (stamina < cost)
+            return false; // blocked
+        stamina -= cost;
+        return true;
+    }
+
+    private int staminaMessageTimer = 0;
+
+    private static final int STAMINA_MESSAGE_DURATION = 120; // frames
+
+    private void showNotEnoughStamina() {
+        staminaMessageTimer = STAMINA_MESSAGE_DURATION;
     }
 }
