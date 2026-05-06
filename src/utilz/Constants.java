@@ -225,15 +225,22 @@ public class Constants {
         public static final int BOSS_4 = 13;
 
         // boss states (shared)
-        public static final int BOSS_IDLE    = 0;
-        public static final int BOSS_ATTACK1 = 2;
-        public static final int BOSS_ATTACK2 = 3;
-        public static final int BOSS_HIT     = 4;
-        public static final int BOSS_DEAD    = 5;
+        public static final int BOSS_MOVE    = 0;
+        public static final int BOSS_ATTACKED = 2;
+        public static final int BOSS_HIT     = 3;
+        public static final int BOSS_DEAD    = 4;
+        public static final int BOSS_SPAWN = 50;
+
+        public static final int BOSS1_WIDTH_DEFAULT  = 80;
+        public static final int BOSS1_HEIGHT_DEFAULT = 80;
+        public static final int BOSS1_WIDTH  = (int)(BOSS1_WIDTH_DEFAULT  * Game.SCALE);
+        public static final int BOSS1_HEIGHT = (int)(BOSS1_HEIGHT_DEFAULT * Game.SCALE);
+        public static final int BOSS1_DRAWOFFSET_X = (int)(15 * Game.SCALE);
+        public static final int BOSS1_DRAWOFFSET_Y = (int)(28 * Game.SCALE);
 
         public static int GetMaxHealthBoss(int BossType) {
             switch (BossType) {
-                case BOSS_1: return 150;  // worm — low HP
+                case BOSS_1: return 100;  // worm — low HP
                 case BOSS_2: return 400;  // beast — high HP
                 case BOSS_3: return 280;  // golem — moderate
                 case BOSS_4: return 500;  // final — very high

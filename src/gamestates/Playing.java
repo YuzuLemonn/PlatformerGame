@@ -69,10 +69,11 @@ public class Playing extends State implements Statemethods {
     }
 
     public void loadNextLevel() {
-        resetAll();
-        levelManager.loadNextLevel();
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-        player.resetAll();
+        resetAll();                          
+        levelManager.loadNextLevel();        
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn()); 
+        player.loadLvlData(levelManager.getCurrentLevel().getLevelData()); 
+        player.resetAll();        
         game.getAudioPlayer().setLevelSong(levelManager.getLvlIndex());
         npcs.clear();
         initNPCs();
@@ -206,8 +207,8 @@ public class Playing extends State implements Statemethods {
         player.renderProjectiles(g, xLvlOffset);
         
         // Draw boss bar if boss is active
-        if(game.getStoryManager().currentSceneIsBoss() && enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
-            enemyManager.getBoss().drawBossBar(g);
+        if(enemyManager.getBoss() instanceof entities.bosses.BossWorm bw && bw.isActive())
+            bw.drawBossBar(g);
 
         if (dialogueActive && activeNPC != null)
             dialogueOverlay.draw(g, activeNPC);

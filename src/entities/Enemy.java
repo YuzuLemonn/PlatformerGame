@@ -177,11 +177,11 @@ public abstract class Enemy extends Entity{
     public void resetEnemy() {
         hitbox.x = x;
         hitbox.y = y;
-        firstUpdate = true;
         currentHealth = maxHealth;
         newState(IDLE);
         active = true;
         airSpeed = 0;
+        firstUpdate = true;
         inAir = false;
         pushDrawOffset = 0;
     }

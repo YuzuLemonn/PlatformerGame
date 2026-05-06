@@ -42,39 +42,31 @@ public class EnemyManager {
         zombies = level.getZombies();
         for (Zombie z : zombies)
             z.setPlaying(playing);
-        
+
         boss = null;
-        Point bossSpawn = level.getBossSpawn();
-        if(bossSpawn != null) {
-            boss = new BossWorm(bossSpawn.x, bossSpawn.y, playing);
+        int lvlIndex = playing.getLevelManager().getLvlIndex();
+        if (lvlIndex == 2) {
+            boss = new BossWorm(0, 0, playing);
+            boss.applySpawn(null);
         }
-        for (Slime  s : slimes) {
-            s.setPlaying(playing);
-        }
-        for (Goblin g : goblins) {
-            g.setPlaying(playing);
-        }
+        
+        for (Slime s : slimes) s.setPlaying(playing);
+        for (Goblin g : goblins) g.setPlaying(playing);
     }
 
     public void update(int[][] lvlData, Player player) {
-        for (Slime  s : slimes) {
-            if (s.isActive()) {
-                s.update(lvlData, player);
-            }
-        }
-        for (Goblin g : goblins) {
-            if (g.isActive()) {
-                g.update(lvlData, player);
-            }
-        }
-        for (Zombie z : zombies) {
-            if (z.isActive()) {
-                z.update(lvlData, player);
-        
-        if(boss != null && boss.isActive())
+        for (Slime s : slimes)
+            if (s.isActive()) s.update(lvlData, player);
+
+        for (Goblin g : goblins)
+            if (g.isActive()) g.update(lvlData, player);
+
+        for (Zombie z : zombies)
+            if (z.isActive()) z.update(lvlData, player);
+
+        // OUTSIDE all loops!
+        if (boss != null && boss.isActive())
             boss.update(lvlData, player);
-            }
-        }
     }
 
     public void draw(Graphics g, int xLvlOffset) {
@@ -143,8 +135,8 @@ public class EnemyManager {
         }
     }
 
-    //                c.drawHitbox(g, xLvlOffset);
-//                c.drawAttackBox(g, xLvlOffset);
+      //                c.drawHitbox(g, xLvlOffset);
+      //                c.drawAttackBox(g, xLvlOffset);
 
     public void checkSpikesTouched(ObjectManager objectManager) {
         for (Slime  s : slimes) {
@@ -222,6 +214,10 @@ public class EnemyManager {
                     z.hurt(10, playing.getPlayer().getWalkDir());
                     return;
                 }
+
+        if (boss != null && boss.isActive() && boss.getState() != DEAD)
+            if (attackBox.intersects(boss.getHitbox()))
+                boss.hurt(10, playing.getPlayer().getWalkDir());
     }
 
     public void checkEnemyHitByProjectile(entities.Projectile proj) {

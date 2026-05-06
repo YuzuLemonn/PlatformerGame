@@ -235,11 +235,10 @@ public class HelpMethods {
         for(int i = 0; i < img.getHeight(); i++)
             for(int j = 0; j < img.getWidth(); j++) {
                 Color color = new Color(img.getRGB(j, i));
-                // use green value 2 for boss spawn
-                if(color.getGreen() == 2 && color.getRed() == 0 && color.getBlue() == 0)
+                if(color.getRed() == 2 && color.getGreen() == 0 && color.getBlue() == 0)
                     return new Point(j * Game.TILES_SIZE, i * Game.TILES_SIZE);
             }
-        return null; // no boss in this level
+        return null;
     }
 
     public static ArrayList<Point> GetNPCSpawns(BufferedImage img, int npcType) {

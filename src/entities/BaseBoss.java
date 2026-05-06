@@ -1,6 +1,7 @@
 package entities;
 
 import gamestates.Playing;
+import levels.Level;
 import main.Game;
 import utilz.LoadSave;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.Constants.BossConstants.*;
+import static utilz.Constants.Directions.LEFT;
 
 public abstract class BaseBoss extends Enemy {
 
@@ -19,7 +21,7 @@ public abstract class BaseBoss extends Enemy {
 
     // animation
     protected BufferedImage[] moveFrames;
-    protected BufferedImage[] attackFrames;
+    protected BufferedImage[] attackedFrames;
     protected BufferedImage[] hitFrames;
     protected BufferedImage[] deadFrames;
     protected int aniTick = 0, aniIndex = 0;
@@ -102,7 +104,12 @@ public abstract class BaseBoss extends Enemy {
         }
     }
 
-    protected void onAnimationComplete() {} // hook — boss can react when anim ends
+    protected void onAnimationComplete() {
+        if (state == BOSS_ATTACKED || state == BOSS_HIT || state == HIT) {
+            state = BOSS_MOVE;
+            aniIndex = 0;
+        }
+    }
 
     protected void updateDeadAnimation() {
         aniTick++;
@@ -117,10 +124,9 @@ public abstract class BaseBoss extends Enemy {
     }
 
     protected BufferedImage[] getCurrentFrames() {
-        if (currentHealth <= 0)        return deadFrames;
-        if (state == BOSS_HIT)         return hitFrames;
-        if (state == BOSS_ATTACK1
-         || state == BOSS_ATTACK2)     return attackFrames;
+        if (currentHealth <= 0)       return deadFrames;
+        if (state == BOSS_HIT || state == HIT) return attackedFrames;
+        if (state == BOSS_ATTACKED)   return hitFrames;
         return moveFrames;
     }
 
@@ -142,11 +148,15 @@ public abstract class BaseBoss extends Enemy {
 
     public void draw(Graphics g, int lvlOffset) {
         BufferedImage[] frames = getCurrentFrames();
-        if (frames == null || aniIndex >= frames.length) return;
+        if (frames == null || aniIndex >= frames.length || frames[aniIndex] == null) return;
+
+        int flipX = (walkDir == LEFT) ? BOSS1_WIDTH : 0;
+        int flipW = (walkDir == LEFT) ? -1 : 1;
+
         g.drawImage(frames[aniIndex],
-                (int)(hitbox.x) - lvlOffset,
-                (int)(hitbox.y),
-                width, height, null);
+            (int)(hitbox.x) - lvlOffset - BOSS1_DRAWOFFSET_X + flipX,
+            (int)(hitbox.y) - BOSS1_DRAWOFFSET_Y,
+            BOSS1_WIDTH * flipW, BOSS1_HEIGHT, null);
     }
 
     public void drawBossBar(Graphics g) {
@@ -180,4 +190,14 @@ public abstract class BaseBoss extends Enemy {
 
     public ArrayList<Projectile> getProjectiles() { return projectiles; }
     public boolean isActive()                      { return active; }
+
+    protected int getSpawnTileX(Level level) {
+        return level.getLevelData()[0].length / 2 * Game.TILES_SIZE;
+    }
+
+    protected int getSpawnTileY() {
+        return (Game.TILES_IN_HEIGHT - 2) * Game.TILES_SIZE;
+    }
+
+    public abstract void applySpawn(Point spawnPoint);
 }
