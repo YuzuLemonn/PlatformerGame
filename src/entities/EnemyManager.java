@@ -16,7 +16,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import entities.enemies.Crabby;
 import entities.enemies.Zombie;
 import entities.bosses.BossWorm;
 
@@ -41,12 +40,9 @@ public class EnemyManager {
         slimes  = level.getSlimes();
         goblins = level.getGoblins();
         zombies = level.getZombies();
-        for (Zombie z : zombies) {
+        for (Zombie z : zombies)
             z.setPlaying(playing);
-        for (Crabby c : crabbies)
-            c.setPlaying(playing);
         
-        // Load boss if present
         boss = null;
         Point bossSpawn = level.getBossSpawn();
         if(bossSpawn != null) {
@@ -170,21 +166,6 @@ public class EnemyManager {
         }
     }
 
-
-        for (Zombie z : zombies)
-            if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
-                if (attackBox.intersects(z.getHitbox())) {
-                    z.hurt(10, playing.getPlayer().getWalkDir());
-                    return;
-                }
-        
-        if(boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
-            if (attackBox.intersects(boss.getHitbox())) {
-                boss.hurt(10, playing.getPlayer().getWalkDir());
-                return;
-            }
-    }
-
     private void loadEnemyImgs() {
         slimeArr  = new BufferedImage[5][];
         slimeArr[IDLE]    = loadAction(LoadSave.SLIME_WALK,   9,  56);
@@ -209,20 +190,9 @@ public class EnemyManager {
     }
 
     public entities.BaseBoss getBoss() { return boss; }
-    
-    public boolean areAllEnemiesCleared() {
-        for (Crabby c : crabbies)
-            if (c.isActive())
-                return false;
-        for (Zombie z : zombies)
-            if (z.isActive())
-                return false;
-        if(boss != null && boss.isActive())
-            return false;
-        return true;
-    }
 
-    private BufferedImage[] loadZombieAction(String path, int frameCount, int height) {
+    
+
     private BufferedImage[] loadAction(String path, int frameCount, int height) {
         BufferedImage sheet = LoadSave.GetSpriteAtlas(path);
         if (sheet == null) return new BufferedImage[frameCount];

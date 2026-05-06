@@ -1,10 +1,8 @@
 package utilz;
 
-import entities.enemies.Crabby;
 import entities.enemies.Zombie;
 import entities.Slime;
 import entities.Goblin;
-import entities.Zombie;
 import main.Game;
 
 import java.awt.*;

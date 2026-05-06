@@ -1,10 +1,8 @@
 package levels;
 
-import entities.enemies.Crabby;
 import entities.enemies.Zombie;
 import entities.Goblin;
 import entities.Slime;
-import entities.Zombie;
 import main.Game;
 import objects.Portal;
 import objects.Spike;
