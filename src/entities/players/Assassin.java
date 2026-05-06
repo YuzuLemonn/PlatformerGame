@@ -7,6 +7,7 @@ import main.Game;
 import utilz.LoadSave;
 import java.awt.image.BufferedImage;
 import static utilz.Constants.PlayerConstants.*;
+import static utilz.Constants.DamageConstants.*;
 
 public class Assassin extends Player {
 
@@ -53,19 +54,20 @@ public class Assassin extends Player {
 
     @Override
     protected void useSkill2() {
-        // assassin's skill2 is also a projectile
+        if (!useStamina(STAMINA_COST_SKILL2)) return;
         int dir = (flipW == 1) ? 1 : -1;
         float projX = (dir == 1)
                 ? hitbox.x + hitbox.width
                 : hitbox.x - (16 * Game.SCALE);
         float projY = hitbox.y + hitbox.height / 2 - (4 * Game.SCALE);
         projectiles.add(new Projectile(projX, projY, dir, playing,
-        "sprites/Assassin/Attack2_Projectile_Assassin.png", 8));
+        "sprites/Assassin/Attack2_Projectile_Assassin.png", 8, ASSASSIN_SKILL2_DMG));
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 
     @Override
     protected void useSkill3() {
+        if (!useStamina(STAMINA_COST_SKILL3)) return;
         playing.checkEnemyHit(attackBox);
         playing.getGame().getAudioPlayer().playAttackSound();
     }

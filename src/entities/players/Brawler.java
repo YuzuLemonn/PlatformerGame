@@ -5,6 +5,7 @@ import gamestates.Playing;
 import main.Game;
 import utilz.LoadSave;
 import java.awt.image.BufferedImage;
+import static utilz.Constants.DamageConstants.*;
 import static utilz.Constants.PlayerConstants.*;
 
 public class Brawler extends Player {
@@ -52,13 +53,15 @@ public class Brawler extends Player {
 
     @Override
     protected void useSkill2() {
-        playing.checkEnemyHit(attackBox);
+        if (!useStamina(STAMINA_COST_SKILL2)) return;
+        playing.checkEnemyHit(attackBox, BRAWLER_SKILL2_DMG);
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 
     @Override
     protected void useSkill3() {
-        playing.checkEnemyHit(attackBox);
+        if (!useStamina(STAMINA_COST_SKILL3)) return;
+        playing.checkEnemyHit(attackBox, BRAWLER_SKILL3_DMG);
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 

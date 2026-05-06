@@ -20,9 +20,10 @@ public class Projectile {
     private BufferedImage[] frames;
     private int aniTick, aniIndex;
 
-    public Projectile(float x, float y, int dir, Playing playing, String spritePath, int frameCount) {
+    public Projectile(float x, float y, int dir, Playing playing, String spritePath, int frameCount, int damage) {
         this.dir = dir;
         this.playing = playing;
+        this.damage = damage;
         hitbox = new Rectangle2D.Float(x, y,
                 (int)(16 * Game.SCALE),
                 (int)(8  * Game.SCALE));

@@ -6,6 +6,10 @@ import entities.players.Mage;
 import main.Game;
 import utilz.LoadSave;
 
+import static utilz.Constants.DamageConstants.*;
+import static utilz.Constants.PlayerConstants.*;
+import static utilz.Constants.PlayerConstants.MAX_STAMINA;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -31,9 +35,30 @@ public class CharacterSelect extends State implements Statemethods {
         int totalWidth = 3 * cardWidth + 2 * spacing;
         int startX = Game.GAME_WIDTH / 2 - totalWidth / 2;
         cards = new CharacterCard[3];
-        cards[0] = new CharacterCard("Brawler",  startX, cardY, cardWidth, cardHeight, "sprites/Brawler/IdleAni_Brawler.png",   14);
-        cards[1] = new CharacterCard("Mage",     startX + cardWidth + spacing,   cardY, cardWidth, cardHeight, "sprites/Mage/IdleAni_Mage.png",         9);
-        cards[2] = new CharacterCard("Assassin", startX + (cardWidth+spacing)*2, cardY, cardWidth, cardHeight, "sprites/Assassin/IdleAni_Assassin.png",  8);
+
+        cards[0] = new CharacterCard("Brawler",
+            startX, cardY, cardWidth, cardHeight,
+            "sprites/Brawler/IdleAni_Brawler.png", 14,
+            new CharacterStats(100, MAX_STAMINA,
+                "Punch",  BRAWLER_ATTACK_DMG,
+                "Slam",   BRAWLER_SKILL2_DMG,
+                "Smash",  BRAWLER_SKILL3_DMG));
+
+        cards[1] = new CharacterCard("Mage",
+            startX + cardWidth + spacing, cardY, cardWidth, cardHeight,
+            "sprites/Mage/IdleAni_Mage.png", 9,
+            new CharacterStats(70, MAX_STAMINA,
+                "Bolt",   MAGE_ATTACK_DMG,
+                "Heal",   0,
+                "Blast",  MAGE_SKILL3_DMG));
+
+        cards[2] = new CharacterCard("Assassin",
+            startX + (cardWidth+spacing)*2, cardY, cardWidth, cardHeight,
+            "sprites/Assassin/IdleAni_Assassin.png", 8,
+            new CharacterStats(80, MAX_STAMINA,
+                "Slash",  ASSASSIN_ATTACK_DMG,
+                "Throw",  ASSASSIN_SKILL2_DMG,
+                "Flurry", ASSASSIN_SKILL3_DMG));
     }
 
     @Override

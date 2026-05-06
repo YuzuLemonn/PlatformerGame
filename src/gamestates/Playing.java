@@ -288,6 +288,10 @@ public class Playing extends State implements Statemethods {
         }
     }
 
+    public void checkEnemyHit(Rectangle2D.Float attackBox, int damage) {
+        enemyManager.checkEnemyHit(attackBox, damage);
+    }
+
     public void mouseDragged(MouseEvent e) {
         if (!gameOver && paused)
             pauseOverlay.mouseDragged(e);

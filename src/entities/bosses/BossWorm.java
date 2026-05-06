@@ -28,8 +28,8 @@ public class BossWorm extends BaseBoss {
     @Override
     protected void loadFrames() {
         moveFrames   = loadStrip("sprites/Boss1/Boss1_Move.png",     5);
-        attackedFrames = loadStrip("sprites/Boss1/Boss1_Attacked.png", 3);
-        hitFrames    = loadStrip("sprites/Boss1/Boss1_Hit.png",      5);
+        hitFrames = loadStrip("sprites/Boss1/Boss1_Hit.png", 3);
+        attackFrames    = loadStrip("sprites/Boss1/Boss1_Attack.png",      5);
         deadFrames   = loadStrip("sprites/Boss1/Boss1_Dead.png",     5);
         System.out.println("moveFrames null? " + (moveFrames == null || moveFrames[0] == null));
     System.out.println("hitFrames null? "  + (hitFrames  == null || hitFrames[0]  == null));
@@ -145,6 +145,6 @@ public class BossWorm extends BaseBoss {
     @Override
     public void applySpawn(Point spawnPoint) {
         hitbox.x = 500 * Game.SCALE;  // adjust X to wherever you want
-        hitbox.y = 2 * Game.TILES_SIZE; // adjust Y — boss will gravity-drop from here
+        hitbox.y = 5 * Game.TILES_SIZE; // adjust Y — boss will gravity-drop from here
     }
 }

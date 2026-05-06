@@ -21,7 +21,7 @@ public abstract class BaseBoss extends Enemy {
 
     // animation
     protected BufferedImage[] moveFrames;
-    protected BufferedImage[] attackedFrames;
+    protected BufferedImage[] attackFrames;
     protected BufferedImage[] hitFrames;
     protected BufferedImage[] deadFrames;
     protected int aniTick = 0, aniIndex = 0;
@@ -105,7 +105,7 @@ public abstract class BaseBoss extends Enemy {
     }
 
     protected void onAnimationComplete() {
-        if (state == BOSS_ATTACKED || state == BOSS_HIT || state == HIT) {
+        if (state == BOSS_HIT || state == HIT || state == BOSS_ATTACKED) {
             state = BOSS_MOVE;
             aniIndex = 0;
         }
@@ -124,9 +124,9 @@ public abstract class BaseBoss extends Enemy {
     }
 
     protected BufferedImage[] getCurrentFrames() {
-        if (currentHealth <= 0)       return deadFrames;
-        if (state == BOSS_HIT || state == HIT) return attackedFrames;
-        if (state == BOSS_ATTACKED)   return hitFrames;
+        if (currentHealth <= 0)                        return deadFrames;
+        if (state == BOSS_HIT || state == HIT)         return attackFrames;
+        if (state == BOSS_ATTACKED)                    return hitFrames;
         return moveFrames;
     }
 

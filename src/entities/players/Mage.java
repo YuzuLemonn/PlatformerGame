@@ -8,6 +8,7 @@ import utilz.LoadSave;
 import java.awt.image.BufferedImage;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.Directions.*;
+import static utilz.Constants.DamageConstants.*;
 
 public class Mage extends Player {
 
@@ -51,31 +52,33 @@ public class Mage extends Player {
 
     @Override
     protected void spawnProjectile() {
+        if (!useStamina(STAMINA_COST_ATTACK)) return;
         int dir = (flipW == 1) ? 1 : -1;
         float spawnX = dir == 1
                 ? hitbox.x + hitbox.width
                 : hitbox.x - (int)(20 * Game.SCALE);
         float spawnY = hitbox.y + hitbox.height / 4f;
         projectiles.add(new Projectile(spawnX, spawnY, dir, playing,
-        "sprites/Mage/Attack1Projectile_Mage.png", 4));
+        "sprites/Mage/Attack1Projectile_Mage.png", 4, MAGE_ATTACK_DMG));
+        playing.getGame().getAudioPlayer().playAttackSound();
     }
 
     @Override
     protected void useSkill2() {
-        // heal — no damage, just restore health
+        if (!useStamina(STAMINA_COST_SKILL2)) return;
         changeHealth(20);  // adjust heal amount as needed
     }
 
     @Override
     protected void useSkill3() {
-        // 8-frame projectile
+        if (!useStamina(STAMINA_COST_SKILL3)) return;
         int dir = (flipW == 1) ? 1 : -1;
         float projX = (dir == 1)
                 ? hitbox.x + hitbox.width
                 : hitbox.x - (16 * Game.SCALE);
         float projY = hitbox.y + hitbox.height / 2 - (4 * Game.SCALE);
         projectiles.add(new Projectile(projX, projY, dir, playing,
-        "sprites/Mage/Attack3Projectile_Mage.png", 3));
+        "sprites/Mage/Attack3Projectile_Mage.png", 3, MAGE_SKILL3_DMG));
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 
