@@ -35,7 +35,7 @@ public class StoryManager {
                 "came from glowing mushrooms along the cave walls.",
                 "My village, Abyssos, was carved from stone.",
                 "But to me... it always felt like a prison.",
-                "",
+                "...",
                 "Press SPACE to continue"
         }, AudioPlayer.MENU_1));
 

@@ -18,10 +18,14 @@ import java.util.ArrayList;
 
 public class EnemyManager {
     private Playing playing;
-    private BufferedImage[][] crabbyArr;
-    private ArrayList<Crabby> crabbies = new ArrayList<>();
+
     private BufferedImage[][] zombieArr;
+    private BufferedImage[][] slimeArr;
+    private BufferedImage[][] goblinArr;
+
     private ArrayList<Zombie> zombies = new ArrayList<>();
+    private ArrayList<Slime>  slimes  = new ArrayList<>();
+    private ArrayList<Goblin> goblins = new ArrayList<>();
 
     public EnemyManager(Playing playing) {
         this.playing = playing;
@@ -29,27 +33,41 @@ public class EnemyManager {
     }
 
     public void loadEnemies(Level level) {
-        crabbies = level.getCrabs();
+        slimes  = level.getSlimes();
+        goblins = level.getGoblins();
         zombies = level.getZombies();
-        for (Zombie z : zombies)
+        for (Zombie z : zombies) {
             z.setPlaying(playing);
-        for (Crabby c : crabbies)
-            c.setPlaying(playing);
+        }
+        for (Slime  s : slimes) {
+            s.setPlaying(playing);
+        }
+        for (Goblin g : goblins) {
+            g.setPlaying(playing);
+        }
     }
 
     public void update(int[][] lvlData, Player player) {
-        for (Crabby c : crabbies)
-            if (c.isActive())
-                c.update(lvlData, player);
-
-        for (Zombie z : zombies)
-            if (z.isActive())
+        for (Slime  s : slimes) {
+            if (s.isActive()) {
+                s.update(lvlData, player);
+            }
+        }
+        for (Goblin g : goblins) {
+            if (g.isActive()) {
+                g.update(lvlData, player);
+            }
+        }
+        for (Zombie z : zombies) {
+            if (z.isActive()) {
                 z.update(lvlData, player);
-
+            }
+        }
     }
 
     public void draw(Graphics g, int xLvlOffset) {
-        drawCrabs(g, xLvlOffset);
+        drawSlimes(g, xLvlOffset);
+        drawGoblins(g, xLvlOffset);
         drawZombies(g, xLvlOffset);
     }
 
@@ -79,21 +97,35 @@ public class EnemyManager {
         }
     }
 
-    private void drawCrabs(Graphics g, int xLvlOffset) {
-        for (Crabby c : crabbies) {
-            if (c.isActive()) {
-                int state = c.getState();
-                int frame = c.getAniIndex();
-                // bounds check before drawing
-                if (frame < crabbyArr[state].length) {
-                    g.drawImage(crabbyArr[state][frame],
-                            (int) c.getHitbox().x - xLvlOffset - CRABBY_DRAWOFFSET_X + c.flipX(),
-                            (int) c.getHitbox().y - CRABBY_DRAWOFFSET_Y,
-                            CRABBY_WIDTH * c.flipW(),
-                            CRABBY_HEIGHT,
-                            null);
-                }
+    private void drawSlimes(Graphics g, int xLvlOffset) {
+        for (Slime s : slimes) {
+            if (!s.isActive()) continue;
+            int state = s.getState();
+            int frame = s.getAniIndex();
+            if (slimeArr[state] != null && frame < slimeArr[state].length) {
+                g.drawImage(slimeArr[state][frame],
+                        (int) s.getHitbox().x - xLvlOffset - SLIME_DRAWOFFSET_X + s.flipX(),
+                        (int) s.getHitbox().y - SLIME_DRAWOFFSET_Y + (int) s.getPushDrawOffset(),
+                        SLIME_WIDTH * s.flipW(), SLIME_HEIGHT, null);
             }
+            s.drawHitbox(g, xLvlOffset);
+            s.drawAttackBox(g, xLvlOffset);
+        }
+    }
+
+    private void drawGoblins(Graphics g, int xLvlOffset) {
+        for (Goblin gb : goblins) {
+            if (!gb.isActive()) continue;
+            int state = gb.getState();
+            int frame = gb.getAniIndex();
+            if (goblinArr[state] != null && frame < goblinArr[state].length) {
+                g.drawImage(goblinArr[state][frame],
+                        (int) gb.getHitbox().x - xLvlOffset - GOBLIN_DRAWOFFSET_X + gb.flipX(),
+                        (int) gb.getHitbox().y - GOBLIN_DRAWOFFSET_Y + (int) gb.getPushDrawOffset(),
+                        GOBLIN_WIDTH * gb.flipW(), GOBLIN_HEIGHT, null);
+            }
+            gb.drawHitbox(g, xLvlOffset);
+            gb.drawAttackBox(g, xLvlOffset);
         }
     }
 
@@ -101,22 +133,71 @@ public class EnemyManager {
 //                c.drawAttackBox(g, xLvlOffset);
 
     public void checkSpikesTouched(ObjectManager objectManager) {
-        for (Crabby c : crabbies)
-            if (c.isActive() && c.getState() != DEAD)
-                objectManager.checkSpikesTouched(c);
-        for (Zombie z : zombies)
-            if (z.isActive() && z.getState() != DEAD)
+        for (Slime  s : slimes) {
+            if (s.isActive() && s.getState() != DEAD) {
+                objectManager.checkSpikesTouched(s);
+            }
+        }
+        for (Goblin g : goblins) {
+            if (g.isActive() && g.getState() != DEAD) {
+                objectManager.checkSpikesTouched(g);
+            }
+        }
+        for (Zombie z : zombies) {
+            if (z.isActive() && z.getState() != DEAD) {
                 objectManager.checkSpikesTouched(z);
+            }
+        }
+    }
+
+
+
+    private void loadEnemyImgs() {
+        slimeArr  = new BufferedImage[5][];
+        slimeArr[IDLE]    = loadAction(LoadSave.SLIME_WALK,   9,  56);
+        slimeArr[RUNNING] = loadAction(LoadSave.SLIME_WALK,   9,  56);
+        slimeArr[ATTACK]  = loadAction(LoadSave.SLIME_ATTACK, 7,  56);
+        slimeArr[HIT]     = loadAction(LoadSave.SLIME_HIT,    3,  56);
+        slimeArr[DEAD]    = loadAction(LoadSave.SLIME_DEATH,  6,  56);
+
+        goblinArr  = new BufferedImage[5][];
+        goblinArr[IDLE]    = loadAction(LoadSave.GOBLIN_WALK,   9, 56);
+        goblinArr[RUNNING] = loadAction(LoadSave.GOBLIN_WALK,   9, 56);
+        goblinArr[ATTACK]  = loadAction(LoadSave.GOBLIN_ATTACK, 3, 56);
+        goblinArr[HIT]     = loadAction(LoadSave.GOBLIN_HIT,    3, 56);
+        goblinArr[DEAD]    = loadAction(LoadSave.GOBLIN_DEATH,  9, 56);
+
+        zombieArr = new BufferedImage[5][];
+        zombieArr[IDLE]    = loadAction(LoadSave.ZOMBIE_WALK,   6,  56);
+        zombieArr[RUNNING] = loadAction(LoadSave.ZOMBIE_WALK,   6,  56);
+        zombieArr[ATTACK]  = loadAction(LoadSave.ZOMBIE_ATTACK, 5,  56);
+        zombieArr[HIT]     = loadAction(LoadSave.ZOMBIE_HIT,    3,  56);
+        zombieArr[DEAD]    = loadAction(LoadSave.ZOMBIE_DEATH,  11, 56);
+    }
+
+    private BufferedImage[] loadAction(String path, int frameCount, int height) {
+        BufferedImage sheet = LoadSave.GetSpriteAtlas(path);
+        if (sheet == null) return new BufferedImage[frameCount];
+        int frameWidth = sheet.getWidth() / frameCount;
+        BufferedImage[] frames = new BufferedImage[frameCount];
+        for (int i = 0; i < frameCount; i++)
+            frames[i] = sheet.getSubimage(i * frameWidth, 0, frameWidth, height);
+        return frames;
     }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
-        for (Crabby c : crabbies)
-            if (c.isActive() && c.getState() != DEAD && c.getState() != HIT)
-                if (attackBox.intersects(c.getHitbox())) {
-                    c.hurt(10, playing.getPlayer().getWalkDir()); // needs getWalkDir() on Player
+        for (Slime s : slimes)
+            if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
+                if (attackBox.intersects(s.getHitbox())) {
+                    s.hurt(10, playing.getPlayer().getWalkDir());
                     return;
                 }
-
+        for (Goblin g : goblins)
+            if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
+                if (attackBox.intersects(g.getHitbox())) {
+                    g.hurt(10, playing.getPlayer().getWalkDir());
+                    return;
+                }
         for (Zombie z : zombies)
             if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
                 if (attackBox.intersects(z.getHitbox())) {
@@ -125,53 +206,24 @@ public class EnemyManager {
                 }
     }
 
-    private void loadEnemyImgs() {
-        crabbyArr = new BufferedImage[5][9];
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.CRABBY_SPRITE);
-
-        for (int j = 0; j < crabbyArr.length; j++) {
-            for (int i = 0; i < crabbyArr[j].length; i++) {
-                crabbyArr[j][i] = temp.getSubimage(i * CRABBY_WIDTH_DEFAULT, j * CRABBY_HEIGHT_DEFAULT, CRABBY_WIDTH_DEFAULT, CRABBY_HEIGHT_DEFAULT);
-            }
-        }
-
-        zombieArr = new BufferedImage[5][];
-        zombieArr[IDLE] = loadZombieAction(LoadSave.ZOMBIE_WALK, 6, 56);
-        zombieArr[RUNNING] = loadZombieAction(LoadSave.ZOMBIE_WALK, 6, 56);
-        zombieArr[ATTACK] = loadZombieAction(LoadSave.ZOMBIE_ATTACK, 5, 56);
-        zombieArr[HIT] = loadZombieAction(LoadSave.ZOMBIE_HIT, 3, 56);
-        zombieArr[DEAD] = loadZombieAction(LoadSave.ZOMBIE_DEATH, 11, 56);
-    }
-
-    private BufferedImage[] loadZombieAction(String path, int frameCount, int height) {
-        BufferedImage sheet = LoadSave.GetSpriteAtlas(path);
-        if (sheet == null) {
-            System.out.println("Failed to load: " + path);
-            return new BufferedImage[frameCount];
-        }
-        int frameWidth = sheet.getWidth() / frameCount;
-        BufferedImage[] frames = new BufferedImage[frameCount];
-        for (int i = 0; i < frameCount; i++)
-            frames[i] = sheet.getSubimage(i * frameWidth, 0, frameWidth, height);
-        return frames;
-    }
-
-    // In EnemyManager.checkEnemyHitByProjectile:
     public void checkEnemyHitByProjectile(entities.Projectile proj) {
-        if (!proj.isActive()) {
-            return;
-        }
-
+        if (!proj.isActive()) return;
         int knockDir = (proj.getDir() == 1) ? RIGHT : LEFT;
 
-        for (Crabby c : crabbies)
-            if (c.isActive() && c.getState() != DEAD && c.getState() != HIT)
-                if (proj.getHitbox().intersects(c.getHitbox())) {
-                    c.hurt(proj.getDamage(), knockDir);
+        for (Slime s : slimes)
+            if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
+                if (proj.getHitbox().intersects(s.getHitbox())) {
+                    s.hurt(proj.getDamage(), knockDir);
                     proj.setActive(false);
                     return;
                 }
-
+        for (Goblin g : goblins)
+            if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
+                if (proj.getHitbox().intersects(g.getHitbox())) {
+                    g.hurt(proj.getDamage(), knockDir);
+                    proj.setActive(false);
+                    return;
+                }
         for (Zombie z : zombies)
             if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
                 if (proj.getHitbox().intersects(z.getHitbox())) {
@@ -182,16 +234,30 @@ public class EnemyManager {
     }
 
     public boolean areAllEnemiesCleared() {
-        for (Crabby c : crabbies)
-            if (c.isActive()) return false;
-        for (Zombie z : zombies)
-            if (z.isActive()) return false;
+        for (Slime  s : slimes) {
+            if (s.isActive()) {
+                return false;
+            }
+        }
+        for (Goblin g : goblins) {
+            if (g.isActive()) {
+                return false;
+            }
+        }
+        for (Zombie z : zombies) {
+            if (z.isActive()) {
+                return false;
+            }
+        }
         return true;
     }
 
     public void resetAllEnemies() {
-        for (Crabby c : crabbies) {
-            c.resetEnemy();
+        for (Slime  s : slimes) {
+            s.resetEnemy();
+        }
+        for (Goblin g : goblins) {
+            g.resetEnemy();
         }
         for (Zombie z : zombies) {
             z.resetEnemy();

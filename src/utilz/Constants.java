@@ -7,7 +7,8 @@ public class Constants {
     public static final int ANI_SPEED = 25;
 
     public static class EnemyConstants {
-        public static final int CRABBY = 22;
+        public static final int SLIME = 22;
+        public static final int GOBLIN = 44;
         public static final int ZOMBIE = 1;
 
         public static final int IDLE = 0;
@@ -16,12 +17,19 @@ public class Constants {
         public static final int HIT = 3;
         public static final int DEAD = 4;
 
-        public static final int CRABBY_WIDTH_DEFAULT = 72;
-        public static final int CRABBY_HEIGHT_DEFAULT = 32;
-        public static final int CRABBY_WIDTH = (int)(CRABBY_WIDTH_DEFAULT * Game.SCALE);
-        public static final int CRABBY_HEIGHT = (int)(CRABBY_HEIGHT_DEFAULT * Game.SCALE);
-        public static final int CRABBY_DRAWOFFSET_X = (int)(26 * Game.SCALE);
-        public static final int CRABBY_DRAWOFFSET_Y = (int)(9 * Game.SCALE);
+        public static final int GOBLIN_WIDTH_DEFAULT = 54;
+        public static final int GOBLIN_HEIGHT_DEFAULT = 56;
+        public static final int GOBLIN_WIDTH = (int)(GOBLIN_WIDTH_DEFAULT * Game.SCALE);
+        public static final int GOBLIN_HEIGHT = (int)(GOBLIN_HEIGHT_DEFAULT * Game.SCALE);
+        public static final int GOBLIN_DRAWOFFSET_X = (int)(17 * Game.SCALE);
+        public static final int GOBLIN_DRAWOFFSET_Y = (int)(22 * Game.SCALE);
+
+        public static final int SLIME_WIDTH_DEFAULT = 54;
+        public static final int SLIME_HEIGHT_DEFAULT = 56;
+        public static final int SLIME_WIDTH = (int)(SLIME_WIDTH_DEFAULT * Game.SCALE);
+        public static final int SLIME_HEIGHT = (int)(SLIME_HEIGHT_DEFAULT * Game.SCALE);
+        public static final int SLIME_DRAWOFFSET_X = (int)(16 * Game.SCALE);
+        public static final int SLIME_DRAWOFFSET_Y = (int)(30 * Game.SCALE);
 
         public static final int ZOMBIE_WIDTH_DEFAULT = 40;
         public static final int ZOMBIE_HEIGHT_DEFAULT = 40;
@@ -34,24 +42,33 @@ public class Constants {
             switch(enemy_state) {
                 case IDLE:
                 case RUNNING:
-                    if(enemy_type == ZOMBIE) return 6;
+                    if(enemy_type == ZOMBIE)  return 6;
+                    if(enemy_type == SLIME)   return 9;
+                    if(enemy_type == GOBLIN)  return 9;
                     return 9;
                 case ATTACK:
-                    if(enemy_type == ZOMBIE) return 5;
+                    if(enemy_type == ZOMBIE)  return 5;
+                    if(enemy_type == SLIME)   return 7;
+                    if(enemy_type == GOBLIN)  return 3;
                     return 7;
                 case HIT:
-                    if(enemy_type == ZOMBIE) return 3;
-                    return 4;
+                    if(enemy_type == ZOMBIE)  return 3;
+                    if(enemy_type == SLIME)   return 3;
+                    if(enemy_type == GOBLIN)  return 3;
+                    return 3;
                 case DEAD:
-                    if(enemy_type == ZOMBIE) return 11;
-                    return 5;
+                    if(enemy_type == ZOMBIE)  return 11;
+                    if(enemy_type == SLIME)   return 6;
+                    if(enemy_type == GOBLIN)  return 9;
+                    return 6;
             }
             return 0;
         }
 
         public static int GetMaxHealth(int enemy_type) {
             switch(enemy_type) {
-                case CRABBY: return 20;
+                case SLIME:  return 35;
+                case GOBLIN: return 45;
                 case ZOMBIE: return 30;
                 default: return 1;
             }
@@ -59,8 +76,9 @@ public class Constants {
 
         public static int GetEnemyDmg(int enemy_type) {
             switch(enemy_type) {
-                case CRABBY: return 10;
-                case ZOMBIE: return 15;
+                case SLIME:  return 15;
+                case GOBLIN: return 20;
+                case ZOMBIE: return 10;
                 default: return 0;
             }
         }
