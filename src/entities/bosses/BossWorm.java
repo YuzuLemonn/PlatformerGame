@@ -2,10 +2,8 @@ package entities.bosses;
 
 import entities.BaseBoss;
 import entities.Player;
-import entities.Projectile;
 import gamestates.Playing;
 import main.Game;
-import static utilz.Constants.EnemyConstants.*;
 import static utilz.Constants.BossConstants.*;
 
 public class BossWorm extends BaseBoss {
