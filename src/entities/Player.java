@@ -70,6 +70,11 @@ public abstract class Player extends Entity {
     private int healthBarXStart = (int)(34  * Game.SCALE);
     private int healthBarYStart = (int)(14  * Game.SCALE);
     private int healthWidth     = healthBarWidth;
+    private float stamina = MAX_STAMINA;
+    private int staminaBarWidth  = (int)(105 * Game.SCALE);
+    private int staminaBarHeight = (int)(4   * Game.SCALE);
+    private int staminaBarXStart = (int)(44  * Game.SCALE);
+    private int staminaBarYStart = (int)(33  * Game.SCALE);
     
     protected int flipX = 0;
     protected int flipW = 1;
@@ -129,6 +134,7 @@ public abstract class Player extends Entity {
     
     public void update() {
         updateHealthBar();
+        updateStamina();
 
         if (attacking)
             checkAttack();
@@ -245,8 +251,24 @@ public abstract class Player extends Entity {
 
     private void drawUI(Graphics g) {
         g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+
         g.setColor(Color.red);
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+
+        int staminaWidth = (int)((stamina / (float) MAX_STAMINA) * staminaBarWidth);
+        g.setColor(Color.yellow);
+        g.fillRect(staminaBarXStart + statusBarX, staminaBarYStart + statusBarY, staminaWidth, staminaBarHeight);
+
+        // Not enough stamina message
+        if (staminaMessageTimer > 0) {
+            String msg = "Not enough stamina!";
+            g.setColor(new Color(255, 220, 0));
+            g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
+            FontMetrics fm = g.getFontMetrics();
+            int msgX = (Game.GAME_WIDTH  - fm.stringWidth(msg)) / 2;
+            int msgY = (Game.GAME_HEIGHT / 2);
+            g.drawString(msg, msgX, msgY);
+        }
     }
 
     private void updateAnimationTick() {
@@ -492,37 +514,65 @@ public abstract class Player extends Entity {
         return skill2; 
     }
 
-public void setPlayerClass(String playerClass) {
-    this.playerClass = playerClass;
-}
+    public void setPlayerClass(String playerClass) {
+        this.playerClass = playerClass;
+    }
 
-public int getGold() { return gold; }
-public void addGold(int amount) { gold += amount; }
-public boolean spendGold(int amount) {
-    if (gold < amount) return false;
-    gold -= amount;
-    return true;
-}
+    public int getGold() { return gold; }
+    public void addGold(int amount) { gold += amount; }
+    public boolean spendGold(int amount) {
+        if (gold < amount) return false;
+        gold -= amount;
+        return true;
+    }
 
-public float getDamageMultiplier() { return damageMultiplier; }
-public void increaseDamage(float amount) { damageMultiplier += amount; }
+    public float getDamageMultiplier() { return damageMultiplier; }
+    public void increaseDamage(float amount) { damageMultiplier += amount; }
 
-public void addPotion()  { potionCount++; }
-public int getPotionCount() { return potionCount; }
+    public void addPotion()  { potionCount++; }
+    public int getPotionCount() { return potionCount; }
 
-public void usePotion() {
-    if (potionCount <= 0) return;
-    potionCount--;
-    changeHealth(potionHealAmount);
-}
+    public void usePotion() {
+        if (potionCount <= 0) return;
+        potionCount--;
+        changeHealth(potionHealAmount);
+    }
 
-    public void saveCheckpoint() {
-    checkpointGold    = gold;
-    checkpointPotions = potionCount;
-}
+        public void saveCheckpoint() {
+        checkpointGold    = gold;
+        checkpointPotions = potionCount;
+    }
 
-public void restoreCheckpoint() {
-    gold        = checkpointGold;
-    potionCount = checkpointPotions;
-}
+    public void restoreCheckpoint() {
+        gold        = checkpointGold;
+        potionCount = checkpointPotions;
+    }
+
+    private void updateStamina() {
+        boolean isIdle = !moving && !inAir; // adjust to your actual idle condition
+        float regen = isIdle ? STAMINA_REGEN_IDLE : STAMINA_REGEN_PASSIVE;
+        stamina = Math.min(MAX_STAMINA, stamina + regen);
+
+        if (staminaMessageTimer > 0)
+            staminaMessageTimer--;
+    }
+
+    public boolean useStamina(int cost) {
+        if (stamina < cost) {
+            showNotEnoughStamina();
+            return false; // blocked
+        }
+        stamina -= cost;
+        return true;
+    }
+
+    private int staminaMessageTimer = 0;
+
+    private static final int STAMINA_MESSAGE_DURATION = 120; // frames
+
+    private void showNotEnoughStamina() {
+        staminaMessageTimer = STAMINA_MESSAGE_DURATION;
+    }
+
+    
 }
