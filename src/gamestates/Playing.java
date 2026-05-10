@@ -68,18 +68,19 @@ public class Playing extends State implements Statemethods {
     }
 
     public void loadNextLevel() {
-    player.saveCheckpoint();
-    saveShopCheckpoints();
-    resetAll();
-    levelManager.loadNextLevel();
-    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-    player.resetAll();
-    game.getAudioPlayer().setLevelSong(levelManager.getLvlIndex());
-    npcs.clear();
-    initNPCs();
-    xLvlOffset = 0;
-    calcLvlOffset();
-}
+        player.saveCheckpoint();
+        saveShopCheckpoints();
+        resetAll();
+        levelManager.loadNextLevel();
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+        player.loadLvlData(levelManager.getCurrentLevel().getLevelData()); 
+        player.resetAll(); 
+        game.getAudioPlayer().setLevelSong(levelManager.getLvlIndex());
+        npcs.clear();
+        initNPCs();
+        xLvlOffset = 0;
+        calcLvlOffset();
+    }
 
     private void loadStartLevel() {
         enemyManager.loadEnemies(levelManager.getCurrentLevel());
@@ -213,6 +214,9 @@ public class Playing extends State implements Statemethods {
         player.render(g, xLvlOffset);
         player.renderProjectiles(g, xLvlOffset);
         
+        if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
+            enemyManager.getBoss().drawBossBar(g);
+
         if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
             enemyManager.getBoss().drawBossBar(g);
 

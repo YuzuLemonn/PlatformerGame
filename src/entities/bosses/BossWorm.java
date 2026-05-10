@@ -8,6 +8,7 @@ import utilz.HelpMethods;
 import static utilz.Constants.BossConstants.*;
 import static utilz.Constants.Directions.*;
 import static utilz.Constants.EnemyConstants.HIT;
+import static utilz.Constants.PlayerConstants.DEAD;
 import static utilz.Constants.GRAVITY;
 
 import java.awt.Graphics;
@@ -27,18 +28,19 @@ public class BossWorm extends BaseBoss {
 
     @Override
     protected void loadFrames() {
-        moveFrames   = loadStrip("sprites/Boss1/Boss1_Move.png",     5);
+        moveFrames = loadStrip("sprites/Boss1/Boss1_Move.png",     5);
         hitFrames = loadStrip("sprites/Boss1/Boss1_Hit.png", 3);
-        attackFrames    = loadStrip("sprites/Boss1/Boss1_Attack.png",      5);
-        deadFrames   = loadStrip("sprites/Boss1/Boss1_Dead.png",     5);
+        attackFrames = loadStrip("sprites/Boss1/Boss1_Attack.png",      5);
+        deadFrames = loadStrip("sprites/Boss1/Boss1_Dead.png",     5);
         System.out.println("moveFrames null? " + (moveFrames == null || moveFrames[0] == null));
     System.out.println("hitFrames null? "  + (hitFrames  == null || hitFrames[0]  == null));
     }
 
     @Override
     protected void updateAI(int[][] lvlData, Player player) {
-        if (state == BOSS_HIT || state == HIT || state == BOSS_ATTACKED)
-        return;
+        if (state == BOSS_HIT || state == BOSS_ATTACKED)
+            return;
+
         if (firstUpdate) {
             if (!HelpMethods.IsEntityOnFloor(hitbox, lvlData))
                 inAir = true;
@@ -50,7 +52,6 @@ public class BossWorm extends BaseBoss {
                 hitbox.y += airSpeed;
                 airSpeed += GRAVITY;
             } else {
-                // manually snap to floor instead of using the broken helper
                 while (!HelpMethods.CanMoveHere(hitbox.x, hitbox.y + 1, hitbox.width, hitbox.height, lvlData))
                     hitbox.y--;
                 inAir = false;
@@ -58,22 +59,24 @@ public class BossWorm extends BaseBoss {
             }
             return;
         } else {
-            // find the floor tile row directly and snap above it
             int floorTileY = (int)((hitbox.y + hitbox.height) / Game.TILES_SIZE) + 1;
             while (floorTileY < lvlData.length && lvlData[floorTileY][(int)(hitbox.x / Game.TILES_SIZE)] == 11)
                 floorTileY++;
             hitbox.y = (floorTileY * Game.TILES_SIZE) - hitbox.height - 1;
+            tileY = (int)(hitbox.y / Game.TILES_SIZE);
             inAir = false;
             airSpeed = 0;
         }
 
-        // only check floor edge AFTER confirming we're walking
         float speed = (phase == 2) ? WALK_SPEED * 1.5f : WALK_SPEED;
         float dx = player.getHitbox().x - hitbox.x;
+        float dy = player.getHitbox().y - hitbox.y;
 
-        if (Math.abs(dx) < DETECT_RANGE)
-            walkDir = (dx > 0) ? RIGHT : LEFT;
-
+        int playerTileY = (int)(player.getHitbox().y / Game.TILES_SIZE);
+        if (playerTileY == tileY) {
+            turnTowardsPlayer(player);
+        }
+        
         float move = (walkDir == RIGHT) ? speed : -speed;
 
         if (HelpMethods.CanMoveHere(hitbox.x + move, hitbox.y, hitbox.width, hitbox.height, lvlData)
@@ -82,9 +85,15 @@ public class BossWorm extends BaseBoss {
         else
             walkDir = (walkDir == RIGHT) ? LEFT : RIGHT;
 
-        // NOW check if walked off an edge
         if (!HelpMethods.IsEntityOnFloor(hitbox, lvlData))
             inAir = true;
+
+        boolean playerClose = Math.abs(dx) < hitbox.width * 2 && Math.abs(dy) < hitbox.height * 2;
+
+        if (playerClose && attackCooldown <= 0) {
+            doAttack(player);
+            attackCooldown = (phase == 2) ? getPhase2Cooldown() : getAttackCooldown();
+        }
     }
 
     @Override
@@ -92,7 +101,6 @@ public class BossWorm extends BaseBoss {
         float dx = Math.abs(player.getHitbox().x - hitbox.x);
         float dy = Math.abs(player.getHitbox().y - hitbox.y);
         
-        // only enter attack animation if actually touching player
         if (dx < hitbox.width && dy < hitbox.height) {
             state = BOSS_ATTACKED;
             aniIndex = 0;
@@ -102,7 +110,7 @@ public class BossWorm extends BaseBoss {
 
     @Override
     protected void onAnimationComplete() {
-        if (state == BOSS_ATTACKED || state == BOSS_HIT) {
+        if (state == BOSS_ATTACKED || state == BOSS_HIT || state == HIT) {
             state = BOSS_MOVE;
             aniIndex = 0;
         }
@@ -146,5 +154,17 @@ public class BossWorm extends BaseBoss {
     public void applySpawn(Point spawnPoint) {
         hitbox.x = 500 * Game.SCALE;  // adjust X to wherever you want
         hitbox.y = 5 * Game.TILES_SIZE; // adjust Y — boss will gravity-drop from here
+    }
+
+    @Override
+    protected void newState(int state) {
+        if (state == HIT) {
+            this.state = BOSS_HIT;
+            aniIndex = 0;  // ← reset animation
+            aniTick = 0;   // ← reset tick
+            return;
+        }
+        if (state == DEAD) { this.state = BOSS_DEAD; active = false; return; }
+        this.state = state;
     }
 }

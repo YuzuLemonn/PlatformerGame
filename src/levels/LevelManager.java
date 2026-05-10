@@ -22,22 +22,17 @@ public class LevelManager {
     }
 
     public void loadNextLevel() {
-        System.out.println("BEFORE increment: " + lvlIndex);
-    lvlIndex++;
-    System.out.println("AFTER increment: " + lvlIndex);
-    Level newLevel = levels.get(lvlIndex);
-    System.out.println("Level data width: " + newLevel.getLevelData()[0].length);
-    System.out.println("Level img width: " + newLevel.getLvlOffset());
+        lvlIndex++;
+        
         if (lvlIndex >= levels.size()) {
             lvlIndex = 0;
-            System.out.println("No more levels! Game Completed!");
             Gamestate.state = Gamestate.MENU;
             return;
         }
 
-        newLevel.resetEnemies(); // fresh enemy objects
+        Level newLevel = levels.get(lvlIndex);
+        newLevel.resetEnemies();
         game.getPlaying().getEnemyManager().loadEnemies(newLevel);
-        game.getPlaying().getPlayer().loadLvlData(newLevel.getLevelData());
         game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
         game.getPlaying().getObjectManager().loadObjects(newLevel);
     }

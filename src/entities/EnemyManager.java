@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import entities.enemies.Zombie;
+import entities.bosses.BossDemon;
 import entities.bosses.BossWorm;
 
 public class EnemyManager {
@@ -50,8 +51,15 @@ public class EnemyManager {
         boss = null;
         int lvlIndex = playing.getLevelManager().getLvlIndex();
         if (lvlIndex == 2) {
-            boss = new BossWorm(0, 0, playing);
-            boss.applySpawn(null);
+            float bossX = level.getLevelData()[0].length / 2f * Game.TILES_SIZE;
+            float bossY = (Game.TILES_IN_HEIGHT - 2) * Game.TILES_SIZE - (80 * Game.SCALE);
+            boss = new BossWorm(bossX, bossY, playing);
+        }
+
+        if (lvlIndex == 4) {
+            float bossX = level.getLevelData()[0].length / 2f * Game.TILES_SIZE;
+            float bossY = (Game.TILES_IN_HEIGHT - 4) * Game.TILES_SIZE - (120 * Game.SCALE);
+            boss = new BossDemon(bossX, bossY, playing);
         }
         
         for (Slime s : slimes) s.setPlaying(playing);
@@ -226,39 +234,48 @@ public class EnemyManager {
     }
 
     public void checkEnemyHitByProjectile(entities.Projectile proj) {
-    if (!proj.isActive()) return;
-    int knockDir = (proj.getDir() == 1) ? RIGHT : LEFT;
+        if (!proj.isActive()) return;
+        int knockDir = (proj.getDir() == 1) ? RIGHT : LEFT;
 
-    // Apply player's damage multiplier to projectile hits
-    int damage = (int)(proj.getDamage() * playing.getPlayer().getDamageMultiplier());
+        int damage = (int)(proj.getDamage() * playing.getPlayer().getDamageMultiplier());
 
-    for (Slime s : slimes)
-        if (s.isActive() && s.getState() != DEAD && s.getState() != HIT)
-            if (proj.getHitbox().intersects(s.getHitbox())) {
-                s.hurt(damage, knockDir);
-                proj.setActive(false);
-                return;
+        for (Slime s : slimes){
+            if (s.isActive() && s.getState() != DEAD && s.getState() != HIT){
+                if (proj.getHitbox().intersects(s.getHitbox())) {
+                    s.hurt(damage, knockDir);
+                    proj.setActive(false);
+                    return;
+                }
             }
-    for (Goblin g : goblins)
-        if (g.isActive() && g.getState() != DEAD && g.getState() != HIT)
-            if (proj.getHitbox().intersects(g.getHitbox())) {
-                g.hurt(damage, knockDir);
-                proj.setActive(false);
-                return;
-            }
-    for (Zombie z : zombies)
-        if (z.isActive() && z.getState() != DEAD && z.getState() != HIT)
-            if (proj.getHitbox().intersects(z.getHitbox())) {
-                z.hurt(damage, knockDir);
-                proj.setActive(false);
-                return;
-            }
-    if (boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT)
-        if (proj.getHitbox().intersects(boss.getHitbox())) {
-            boss.hurt(damage, knockDir);
-            proj.setActive(false);
         }
-}
+
+        for (Goblin g : goblins){
+            if (g.isActive() && g.getState() != DEAD && g.getState() != HIT){
+                if (proj.getHitbox().intersects(g.getHitbox())) {
+                    g.hurt(damage, knockDir);
+                    proj.setActive(false);
+                    return;
+                }
+            }
+        }
+
+        for (Zombie z : zombies){
+            if (z.isActive() && z.getState() != DEAD && z.getState() != HIT){
+                if (proj.getHitbox().intersects(z.getHitbox())) {
+                    z.hurt(damage, knockDir);
+                    proj.setActive(false);
+                    return;
+                }
+            }
+        }
+
+        if (boss != null && boss.isActive() && boss.getState() != DEAD && boss.getState() != HIT) {
+            if (proj.getHitbox().intersects(boss.getHitbox())) {
+                boss.hurt(damage, knockDir);
+                proj.setActive(false);
+            }
+        }
+    }
 
     public boolean areAllEnemiesCleared() {
         for (Slime  s : slimes) {
@@ -280,52 +297,52 @@ public class EnemyManager {
     }
 
     public void resetAllEnemies() {
-        for (Slime  s : slimes) {
-            s.resetEnemy();
-        }
-        for (Goblin g : goblins) {
-            g.resetEnemy();
-        }
-        for (Zombie z : zombies) {
-            z.resetEnemy();
-        }
-        if(boss != null) {
-            boss.resetEnemy();
-        }
+        for (Slime  s : slimes) s.resetEnemy();
+        for (Goblin g : goblins) g.resetEnemy();
+        for (Zombie z : zombies) z.resetEnemy();
+        loadEnemies(playing.getLevelManager().getCurrentLevel());
     }
 
-public int getGold() { return gold; }
-public void addGold(int amount) { gold += amount; }
-public boolean spendGold(int amount) {
-    if (gold < amount) return false;
-    gold -= amount;
-    return true;
-}
-
-public float getDamageMultiplier() { return damageMultiplier; }
-public void increaseDamage(float amount) { damageMultiplier += amount; }
-
-// track which enemies were already dead last frame to detect fresh deaths
-private void checkCoinDrops(Player player) {
-    for (Slime s : slimes)
-        if (!s.isActive() && !s.isCoinDropped()) {
-            player.addGold(s.getCoinValue());
-            s.markCoinDropped();
-        }
-    for (Goblin g : goblins)
-        if (!g.isActive() && !g.isCoinDropped()) {
-            player.addGold(g.getCoinValue());
-            g.markCoinDropped();
-        }
-    for (Zombie z : zombies)
-        if (!z.isActive() && !z.isCoinDropped()) {
-            player.addGold(z.getCoinValue());
-            z.markCoinDropped();
-        }
-    if (boss != null && !boss.isActive() && !boss.isCoinDropped()) {
-        player.addGold(boss.getCoinValue());
-        boss.markCoinDropped();
+    public int getGold() { 
+        return gold; 
     }
-}
+    public void addGold(int amount) { 
+        gold += amount; 
+    }
+    public boolean spendGold(int amount) {
+        if (gold < amount) return false;
+        gold -= amount;
+        return true;
+    }
+
+    public float getDamageMultiplier() { 
+        return damageMultiplier; 
+
+    }
+    public void increaseDamage(float amount) { 
+        damageMultiplier += amount; 
+    }
+
+    private void checkCoinDrops(Player player) {
+        for (Slime s : slimes)
+            if (!s.isActive() && !s.isCoinDropped()) {
+                player.addGold(s.getCoinValue());
+                s.markCoinDropped();
+            }
+        for (Goblin g : goblins)
+            if (!g.isActive() && !g.isCoinDropped()) {
+                player.addGold(g.getCoinValue());
+                g.markCoinDropped();
+            }
+        for (Zombie z : zombies)
+            if (!z.isActive() && !z.isCoinDropped()) {
+                player.addGold(z.getCoinValue());
+                z.markCoinDropped();
+            }
+        if (boss != null && !boss.isActive() && !boss.isCoinDropped()) {
+            player.addGold(boss.getCoinValue());
+            boss.markCoinDropped();
+        }
+    }
 
 }

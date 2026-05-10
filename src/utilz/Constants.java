@@ -246,11 +246,11 @@ public class Constants {
         public static final int BOSS_4 = 13;
 
         // boss states (shared)
-        public static final int BOSS_MOVE    = 0;
-        public static final int BOSS_HIT = 2;
-        public static final int BOSS_ATTACKED     = 3;
-        public static final int BOSS_DEAD    = 4;
-        public static final int BOSS_SPAWN = 50;
+        public static final int BOSS_MOVE     = 100;
+        public static final int BOSS_HIT      = 101;
+        public static final int BOSS_ATTACKED = 102;
+        public static final int BOSS_DEAD     = 103;
+        public static final int BOSS_SPAWN = 104;
 
         public static final int BOSS1_WIDTH_DEFAULT  = 80;
         public static final int BOSS1_HEIGHT_DEFAULT = 80;
@@ -258,6 +258,13 @@ public class Constants {
         public static final int BOSS1_HEIGHT = (int)(BOSS1_HEIGHT_DEFAULT * Game.SCALE);
         public static final int BOSS1_DRAWOFFSET_X = (int)(15 * Game.SCALE);
         public static final int BOSS1_DRAWOFFSET_Y = (int)(28 * Game.SCALE);
+
+        public static final int BOSS2_WIDTH_DEFAULT  = 80;
+        public static final int BOSS2_HEIGHT_DEFAULT = 80;
+        public static final int BOSS2_WIDTH  = (int)(BOSS2_WIDTH_DEFAULT  * Game.SCALE);
+        public static final int BOSS2_HEIGHT = (int)(BOSS2_HEIGHT_DEFAULT * Game.SCALE);
+        public static final int BOSS2_DRAWOFFSET_X = (int)(10 * Game.SCALE);
+        public static final int BOSS2_DRAWOFFSET_Y = (int)(9 * Game.SCALE);
 
         public static int GetMaxHealthBoss(int BossType) {
             switch (BossType) {

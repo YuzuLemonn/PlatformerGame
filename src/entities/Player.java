@@ -53,6 +53,10 @@ public abstract class Player extends Entity {
     protected int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 10 * Game.SCALE;
+    private int burnTicksLeft = 0;
+    private int burnTimer = 0;
+    private static final int BURN_INTERVAL = (int)(0.5f * 200); // 0.5s at 200 UPS
+    private static final int BURN_DAMAGE = 10;
     
     
     // Jumping / Gravity
@@ -83,9 +87,10 @@ public abstract class Player extends Entity {
     protected Playing playing;
     private boolean skill2Checked, skill3Checked;
     protected String playerClass;
+    
 
     public String getPlayerClass() {
-    return playerClass;
+        return playerClass;
     }
     
     public Player(float x, float y, int width, int height, Playing playing) {
@@ -135,6 +140,7 @@ public abstract class Player extends Entity {
     public void update() {
         updateHealthBar();
         updateStamina();
+        updateBurn();
 
         if (attacking)
             checkAttack();
@@ -268,6 +274,14 @@ public abstract class Player extends Entity {
             int msgX = (Game.GAME_WIDTH  - fm.stringWidth(msg)) / 2;
             int msgY = (Game.GAME_HEIGHT / 2);
             g.drawString(msg, msgX, msgY);
+        }
+
+        if (isBurning()) {
+            g.setColor(new Color(255, 100, 0, 150));
+            g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+            g.setColor(new Color(255, 50, 0));
+            g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+            g.drawString("BURNING!", statusBarX + healthBarXStart, statusBarY + healthBarYStart - 5);
         }
     }
 
@@ -432,6 +446,10 @@ public abstract class Player extends Entity {
 
     public void loadLvlData(int[][] lvlData) {
         this.lvlData = lvlData;
+         System.out.println("loadLvlData called with width: " + lvlData[0].length);
+        if (lvlData[0].length == 30)
+            Thread.currentThread().dumpStack();
+
         if (!IsEntityOnFloor(hitbox, lvlData))
             inAir = true;
     }
@@ -462,6 +480,10 @@ public abstract class Player extends Entity {
     skill2Checked = false;
     skill3        = false;
     skill3Checked = false;
+
+    stamina              = MAX_STAMINA;   
+    staminaMessageTimer  = 0;            
+    burnTicksLeft        = 0; 
 
     hitbox.x = x;
     hitbox.y = y;
@@ -574,5 +596,22 @@ public abstract class Player extends Entity {
         staminaMessageTimer = STAMINA_MESSAGE_DURATION;
     }
 
-    
+    public void applyBurn(int ticks) {
+        burnTicksLeft = ticks;
+        burnTimer = 0;
+    }
+
+    public boolean isBurning() { 
+        return burnTicksLeft > 0; 
+    }
+
+    private void updateBurn() {
+        if (burnTicksLeft <= 0) return;
+        burnTimer++;
+        if (burnTimer >= BURN_INTERVAL) {
+            burnTimer = 0;
+            burnTicksLeft--;
+            changeHealth(-BURN_DAMAGE);
+        }
+    }
 }

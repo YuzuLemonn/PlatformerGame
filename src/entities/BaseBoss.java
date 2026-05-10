@@ -7,7 +7,10 @@ import utilz.LoadSave;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
+import static utilz.HelpMethods.*;
 import static utilz.Constants.EnemyConstants.*;
+import static utilz.Constants.GRAVITY;
 import static utilz.Constants.BossConstants.*;
 import static utilz.Constants.Directions.LEFT;
 
@@ -25,7 +28,7 @@ public abstract class BaseBoss extends Enemy {
     protected BufferedImage[] hitFrames;
     protected BufferedImage[] deadFrames;
     protected int aniTick = 0, aniIndex = 0;
-    protected static final int ANI_SPEED = 18;
+    protected static final int ANI_SPEED = 15;
 
     // boss bar
     public static final int BAR_WIDTH  = 500;
@@ -54,11 +57,8 @@ public abstract class BaseBoss extends Enemy {
 
         checkPhaseTransition();
 
-        if (attackCooldown > 0) attackCooldown--;
-        else {
-            doAttack(player);
-            attackCooldown = (phase == 2) ? getPhase2Cooldown() : getAttackCooldown();
-        }
+        if (attackCooldown > 0) 
+            attackCooldown--;
 
         updateAI(lvlData, player);
         updateProjectiles(lvlData, player);
@@ -125,8 +125,8 @@ public abstract class BaseBoss extends Enemy {
 
     protected BufferedImage[] getCurrentFrames() {
         if (currentHealth <= 0)                        return deadFrames;
-        if (state == BOSS_HIT || state == HIT)         return attackFrames;
-        if (state == BOSS_ATTACKED)                    return hitFrames;
+        if (state == BOSS_HIT || state == HIT)         return hitFrames;
+        if (state == BOSS_ATTACKED)                    return attackFrames;
         return moveFrames;
     }
 
@@ -202,5 +202,58 @@ public abstract class BaseBoss extends Enemy {
     public abstract void applySpawn(Point spawnPoint);
 
     @Override
-    public int getCoinValue() { return 100; }
+    public int getCoinValue() { 
+        return 100; 
+    }
+
+    @Override
+    protected void newState(int state) {
+        if (state == HIT)  { this.state = BOSS_HIT;  return; }
+        if (state == DEAD) { this.state = BOSS_DEAD; active = false; return; }
+        this.state = state;
+    }
+
+    protected void handleGravity(int[][] lvlData) {
+        if (inAir) {
+            if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
+                hitbox.y += airSpeed;
+                airSpeed += GRAVITY;
+            } else {
+                int col = (int)(hitbox.x / Game.TILES_SIZE);
+                if (col < 0) col = 0;
+                if (col >= lvlData[0].length) col = lvlData[0].length - 1;
+                
+                int floorTileY = (int)((hitbox.y + hitbox.height) / Game.TILES_SIZE) + 1;
+                int maxTileY = lvlData.length - 1;
+                
+                while (floorTileY < maxTileY && lvlData[floorTileY][col] == 11)
+                    floorTileY++;
+                
+                if (floorTileY >= maxTileY) {
+                    // fallback — no floor found, just stay put
+                    tileY = (int)(hitbox.y / Game.TILES_SIZE);
+                } else {
+                    hitbox.y = (floorTileY * Game.TILES_SIZE) - hitbox.height - 1;
+                    tileY = (int)(hitbox.y / Game.TILES_SIZE);
+                }
+                inAir = false;
+                airSpeed = 0;
+            }
+        }
+    }
+
+    @Override
+    public void resetEnemy() {
+        super.resetEnemy();
+        currentHealth = GetMaxHealthBoss(enemyType); // fix health
+        maxHealth = currentHealth;
+        active = true;
+        state = BOSS_MOVE;
+        aniTick = 0;
+        aniIndex = 0;
+        phase = 1;
+        phaseTransitioned = false;
+        attackCooldown = 0;
+        projectiles.clear();
+    }
 }
