@@ -17,6 +17,11 @@ public class AudioPlayer {
     public static int MENU_1 = 0;
     public static int LEVEL_1 = 1;
     public static int LEVEL_2 = 2;
+    public static int LEVEL_3 = 3;
+    public static int BOSS_1 = 4;
+    public static int BOSS_2 = 5;
+    public static int BOSS_3 = 6;
+    public static int CREDITS_SONG = 7;
 
     public static int DIE = 0;
     public static int JUMP = 1;
@@ -39,7 +44,7 @@ public class AudioPlayer {
     }
 
     private void loadSongs() {
-        String[] names = {"menu","level1", "level2" };
+        String[] names = {"menu", "level1", "level2", "level3", "boss1", "boss2", "boss3", "credits"};
         songs = new Clip[names.length];
         for (int i = 0; i < songs.length; i++)
             songs[i] = getClip(names[i]);
@@ -91,10 +96,19 @@ public class AudioPlayer {
     }
 
     public void setLevelSong(int lvlIndex) {
-        if (lvlIndex % 2 == 0)
-            playSong(LEVEL_1);
-        else
-            playSong(LEVEL_2);
+        switch (lvlIndex) {
+            case 0, 1 -> playSong(LEVEL_1);
+            case 2 -> playSong(BOSS_1);
+            case 3 -> playSong(LEVEL_2);
+            case 4 -> playSong(BOSS_2);
+            case 5 -> playSong(LEVEL_3);
+            case 6 -> playSong(BOSS_3);
+            default -> playSong(MENU_1);
+        }
+    }
+
+    public void playCreditsSong() {
+        playSong(CREDITS_SONG);
     }
 
     public void lvlCompleted() {

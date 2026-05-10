@@ -11,7 +11,7 @@ public class Goblin extends Enemy {
         super(x, y, GOBLIN_WIDTH, GOBLIN_HEIGHT, GOBLIN);
         initHitbox(20, 28);
         initAttackBox(20, 28, (int)(Game.SCALE * 10));
-        walkSpeed = Game.SCALE * 0.45f; // faster than slime
+        walkSpeed = Game.SCALE * 0.40f; // faster than slime
     }
 
     public void update(int[][] lvlData, Player player) {

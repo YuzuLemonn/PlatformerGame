@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 public class Credits extends State implements Statemethods {
     private BufferedImage backgroundImg;
+    private boolean musicStarted = false;
 
     public Credits(Game game) {
         super(game);
@@ -16,7 +17,12 @@ public class Credits extends State implements Statemethods {
     }
 
     @Override
-    public void update() {}
+    public void update() {
+        if (!musicStarted) {
+            game.getAudioPlayer().playCreditsSong();
+            musicStarted = true;
+        }
+    }
 
     @Override
     public void draw(Graphics g) {
@@ -66,9 +72,13 @@ public class Credits extends State implements Statemethods {
     @Override public void mouseReleased(MouseEvent e) {}
     @Override public void mouseMoved(MouseEvent e) {}
     public void mouseDragged(MouseEvent e) {}
-    @Override public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            musicStarted = false;
+            game.getAudioPlayer().playSong(audio.AudioPlayer.MENU_1);
             Gamestate.state = Gamestate.MENU;
+        }
     }
     @Override public void keyReleased(KeyEvent e) {}
 }
