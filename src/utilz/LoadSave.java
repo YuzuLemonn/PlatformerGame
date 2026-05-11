@@ -53,7 +53,8 @@ public class LoadSave {
     public static final String OPTIONS_MENU = "options_background.png";
     public static final String DEATH_SCREEN = "death_screen.png";
 
-
+    public static final String MOTHER_IDLE   = "sprites/NPC/Mother.png";
+    public static final String MERCHANT2_IDLE = "sprites/NPC/Merchant2.png";
 
     public static final String TRAP_ATLAS = "trap_atlas.png";
     public static final String PORTAL_ATLAS = "portal.png";

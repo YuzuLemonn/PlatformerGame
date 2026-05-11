@@ -119,10 +119,10 @@ public class Playing extends State implements Statemethods {
     }
 
     private void initNPCs() {
-        for (Point p : levelManager.getCurrentLevel().getOldManSpawns()) {
+        for (Point p : levelManager.getCurrentLevel().getMotherSpawns()) {
             NPC npc = new NPC(
                     p.x, p.y,
-                    "Old Man",
+                    "Mother",
                     new String[]{
                             "Welcome, traveler!",
                             "Beware of the enemies ahead.",

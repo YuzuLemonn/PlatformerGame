@@ -25,7 +25,7 @@ public class Level {
     private int maxTilesOffset;
     private int maxLvlOffsetX;
     private Point playerSpawn;
-    private ArrayList<Point> oldManSpawns;
+    private ArrayList<Point> motherSpawns;
     private ArrayList<Point> merchantSpawns;
     private ArrayList<Spike> spikes = new ArrayList<>();
     private ArrayList<Portal> portals = new ArrayList<>();
@@ -37,7 +37,7 @@ public class Level {
         createObjects();
         calculateLvlOffsets();
         calcPlayerSpawn();
-        oldManSpawns   = GetNPCSpawns(img, 255);
+        motherSpawns   = GetNPCSpawns(img, 255);
         merchantSpawns = GetNPCSpawns(img, 200);
         zombies = GetZombies(img);
         bossSpawn = GetBossSpawn(img);
@@ -99,7 +99,7 @@ public class Level {
         return playerSpawn;
     }
 
-    public ArrayList<Point> getOldManSpawns()   { return oldManSpawns; }
+    public ArrayList<Point> getMotherSpawns()   { return motherSpawns; }
 
     public ArrayList<Point> getMerchantSpawns() { return merchantSpawns; }
 
