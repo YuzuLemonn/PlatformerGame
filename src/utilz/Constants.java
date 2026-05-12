@@ -68,8 +68,8 @@ public class Constants {
         public static int GetMaxHealth(int enemy_type) {
             switch(enemy_type) {
                 case ZOMBIE: return 1;
-                case SLIME:  return 35;
-                case GOBLIN: return 45;
+                case SLIME:  return 1;
+                case GOBLIN: return 1;
                 default: return 1;
             }
         }
@@ -251,6 +251,7 @@ public class Constants {
         public static final int BOSS_ATTACKED = 102;
         public static final int BOSS_DEAD     = 103;
         public static final int BOSS_SPAWN = 104;
+        public static final int DEATH_ANI_SPEED = 25;
 
         public static final int BOSS1_WIDTH_DEFAULT  = 80;
         public static final int BOSS1_HEIGHT_DEFAULT = 80;
@@ -266,12 +267,30 @@ public class Constants {
         public static final int BOSS2_DRAWOFFSET_X = (int)(10 * Game.SCALE);
         public static final int BOSS2_DRAWOFFSET_Y = (int)(9 * Game.SCALE);
 
+        public static final int BOSS3_WIDTH_DEFAULT  = 80;
+        public static final int BOSS3_HEIGHT_DEFAULT = 80;
+        public static final int BOSS3_WIDTH  = (int)(BOSS3_WIDTH_DEFAULT  * Game.SCALE);
+        public static final int BOSS3_HEIGHT = (int)(BOSS3_HEIGHT_DEFAULT * Game.SCALE);
+        public static final int BOSS3_DRAWOFFSET_X = (int)(10 * Game.SCALE);
+        public static final int BOSS3_DRAWOFFSET_Y = (int)(30 * Game.SCALE);
+
+        public static final int BOSS3_FLIGHT_DURATION = 8 * 60;
+        public static final int BOSS3_REST_DURATION   = 4 * 60;
+        public static final int BOSS3_SHOOT_DELAY_PHASE1 = 120;
+        public static final int BOSS3_SHOOT_DELAY_PHASE2 = 15;
+        public static final int BOSS3_ATTACK_COOLDOWN = 100;
+        public static final int BOSS3_PHASE2_COOLDOWN = 70;
+        
+        public static final float BOSS3_WALK_SPEED = 0.4f * Game.SCALE;
+        public static final float BOSS3_FLIGHT_SPEED = 1.2f * Game.SCALE;
+        public static final int BOSS3_DETECT_RANGE = 800;
+        public static final int BOSS3_WATER_DAMAGE = 12;
+
         public static int GetMaxHealthBoss(int BossType) {
             switch (BossType) {
                 case BOSS_1: return 150;  // worm — low HP
                 case BOSS_2: return 400;  // beast — high HP
-                case BOSS_3: return 280;  // golem — moderate
-                case BOSS_4: return 500;  // final — very high
+                case BOSS_3: return 380;  // golem — moderate
                 default: return 1;
             }
         }
@@ -281,7 +300,6 @@ public class Constants {
             case BOSS_1: return 15;
             case BOSS_2: return 25;
             case BOSS_3: return 20;
-            case BOSS_4: return 30;
             default: return 0;
             }
         }

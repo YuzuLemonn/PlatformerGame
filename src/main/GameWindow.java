@@ -23,10 +23,8 @@ public class GameWindow {
             try { //for mac dock icon
                 java.awt.Taskbar taskbar = java.awt.Taskbar.getTaskbar();
                 taskbar.setIconImage(icon);
-            } catch (UnsupportedOperationException e) {
-//                if not supported on this OS, skip silently
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Error setting application icon");
             }
         }
 

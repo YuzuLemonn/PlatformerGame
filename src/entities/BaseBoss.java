@@ -27,6 +27,7 @@ public abstract class BaseBoss extends Enemy {
     protected BufferedImage[] attackFrames;
     protected BufferedImage[] hitFrames;
     protected BufferedImage[] deadFrames;
+    protected BufferedImage[] rangedAttackFrames; 
     protected int aniTick = 0, aniIndex = 0;
     protected static final int ANI_SPEED = 15;
 
@@ -113,11 +114,11 @@ public abstract class BaseBoss extends Enemy {
 
     protected void updateDeadAnimation() {
         aniTick++;
-        if (aniTick >= ANI_SPEED) {
+        if (aniTick >= ANI_SPEED * 2) {
             aniTick = 0;
             aniIndex++;
             if (deadFrames != null && aniIndex >= deadFrames.length) {
-                aniIndex = deadFrames.length - 1; // freeze on last frame
+                aniIndex = deadFrames.length - 1;
                 active = false;
             }
         }

@@ -129,7 +129,6 @@ public class BossDemon extends BaseBoss {
         if (currentHealth <= 0) {
             currentHealth = 0;
             state = BOSS_DEAD;
-            active = false;
         } else {
             state = BOSS_HIT;
             aniIndex = 0;  

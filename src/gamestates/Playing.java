@@ -2,6 +2,8 @@ package gamestates;
 
 import entities.EnemyManager;
 import entities.Player;
+import entities.Projectile;
+import levels.Level;
 import levels.LevelManager;
 import main.Game;
 import objects.ObjectManager;
@@ -18,6 +20,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import static utilz.Constants.PlayerConstants.MAX_STAMINA;
+
 public class Playing extends State implements Statemethods {
     private Player player;
     private LevelManager levelManager;
@@ -28,6 +32,7 @@ public class Playing extends State implements Statemethods {
     private GameCompletedOverlay gameCompletedOverlay;
     private LevelCompletedOverlay levelCompletedOverlay;
     private boolean paused = false;
+    private boolean debugMode = false;
 
     private int xLvlOffset;
     private int leftBorder  = (int)(0.2 * Game.GAME_WIDTH);
@@ -170,6 +175,14 @@ public class Playing extends State implements Statemethods {
             player.update();
             player.updateProjectiles(levelManager.getCurrentLevel().getLevelData());
 
+            if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive()) {
+                for (Projectile p : enemyManager.getBoss().getProjectiles()) {
+                    if (p.isActive()) {
+                        p.update(levelManager.getCurrentLevel().getLevelData());
+                    }
+                }
+            }
+
             allEnemiesCleared = enemyManager.areAllEnemiesCleared();
             enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
             objectManager.updatePortals(allEnemiesCleared);
@@ -213,6 +226,14 @@ public class Playing extends State implements Statemethods {
         enemyManager.draw(g, xLvlOffset);
         player.render(g, xLvlOffset);
         player.renderProjectiles(g, xLvlOffset);
+
+        if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive()) {
+            for (Projectile p : enemyManager.getBoss().getProjectiles()) {
+                if (p.isActive()) {
+                    p.render(g, xLvlOffset);
+                }
+            }
+        }
         
         if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
             enemyManager.getBoss().drawBossBar(g);
@@ -235,10 +256,19 @@ public class Playing extends State implements Statemethods {
         g.drawString(potionText,
                 Game.GAME_WIDTH - fm.stringWidth(potionText) - (int)(10 * Game.SCALE),
                 (int)(32 * Game.SCALE));
-
+        
         // Dialogue and shop overlays
         if (dialogueActive && activeNPC != null)
             dialogueOverlay.draw(g, activeNPC);
+
+        if (debugMode) {
+            g.setColor(new Color(0, 0, 0, 150));
+            g.fillRect(0, 0, 100, 40);
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font("Arial", Font.BOLD, 12));
+            g.drawString("DEBUG MODE", 5, 15);
+            g.drawString("Ctrl+B = Boss3", 5, 30);
+        }
 
         if (shopActive && activeNPC != null)
             activeNPC.drawShop(g);
@@ -336,6 +366,13 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (debugMode) {
+            if (e.getKeyCode() == KeyEvent.VK_B && e.isControlDown()) {
+                System.out.println("DEBUG: Ctrl+B detected!"); 
+                teleportToBoss3();
+            }
+        }
+
         if (gameOver || gameCompleted || lvlCompleted) return;
 
         switch (e.getKeyCode()) {
@@ -439,43 +476,57 @@ public class Playing extends State implements Statemethods {
     }
 
     public void restartGame() {
-    player.saveCheckpoint();
-    saveShopCheckpoints();
-    levelManager.resetLevelIndex();
-    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-    player.resetAll();
-    player.setAttacking(false);
-    resetAll();
-    xLvlOffset = 0;
-    calcLvlOffset();
-    npcs.clear();
-    initNPCs();
+        player.saveCheckpoint();
+        saveShopCheckpoints();
+        levelManager.resetLevelIndex();
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+        player.resetAll();
+        player.setAttacking(false);
+        resetAll();
+        xLvlOffset = 0;
+        calcLvlOffset();
+        npcs.clear();
+        initNPCs();
     }
 
     public void loadStartLevelByIndex(int index) {
-    player.saveCheckpoint();
-    saveShopCheckpoints();
-    resetAll();
-    levelManager.setLevelIndex(index);
-    enemyManager.loadEnemies(levelManager.getCurrentLevel());
-    objectManager.loadObjects(levelManager.getCurrentLevel());
-    player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
-    player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
-    player.resetAll();
-    xLvlOffset = 0;
-    calcLvlOffset();
-    npcs.clear();
-    initNPCs();
+        player.saveCheckpoint();
+        saveShopCheckpoints();
+        resetAll();
+        levelManager.setLevelIndex(index);
+        enemyManager.loadEnemies(levelManager.getCurrentLevel());
+        objectManager.loadObjects(levelManager.getCurrentLevel());
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+        player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+        player.resetAll();
+        xLvlOffset = 0;
+        calcLvlOffset();
+        npcs.clear();
+        initNPCs();
     }
 
-    public void setMaxLvlOffset(int lvlOffset) { this.maxLvlOffsetX = lvlOffset; }
-    public void unpauseGame()                  { paused = false; }
-    public void windowFocusLost()              { player.resetDirBooleans(); }
+    public void setMaxLvlOffset(int lvlOffset) { 
+        this.maxLvlOffsetX = lvlOffset; 
+    }
+    public void unpauseGame()                  { 
+        paused = false; 
+    }
+    public void windowFocusLost()              { 
+        player.resetDirBooleans(); 
+    }
 
-    public Player         getPlayer()         { return player; }
-    public EnemyManager   getEnemyManager()   { return enemyManager; }
-    public LevelManager   getLevelManager()   { return levelManager; }
-    public ObjectManager  getObjectManager()  { return objectManager; }
+    public Player getPlayer()         { 
+        return player; 
+    }
+    public EnemyManager getEnemyManager()   { 
+        return enemyManager; 
+    }
+    public LevelManager getLevelManager()   { 
+        return levelManager; 
+    }
+    public ObjectManager getObjectManager()  { 
+        return objectManager; 
+    }
 
         private void saveShopCheckpoints() {
         for (NPC npc : npcs)
@@ -488,4 +539,57 @@ public class Playing extends State implements Statemethods {
             if (npc.isShopkeeper())
                 npc.restoreShopCheckpoint();
     }
+
+    public void teleportToBoss3() {
+        int bossLevelIndex = 6;  // Level 7
+        
+        System.out.println("DEBUG: Teleporting to BOSS3 (Level " + (bossLevelIndex + 1) + ")");
+        
+        // Save checkpoint
+        player.saveCheckpoint();
+        saveShopCheckpoints();
+        
+        // Reset everything
+        resetAll();
+        
+        // Load boss level
+        levelManager.setLevelIndex(bossLevelIndex);
+        Level bossLevel = levelManager.getCurrentLevel();
+        enemyManager.loadEnemies(bossLevel);
+        objectManager.loadObjects(bossLevel);
+        
+        // Setup player
+        player.setSpawn(bossLevel.getPlayerSpawn());
+        player.loadLvlData(bossLevel.getLevelData());
+        
+        // Full heal and stamina restore
+        player.changeHealth(player.getMaxHealth() - player.getCurrentHealth());
+        player.setStamina(MAX_STAMINA);
+        player.clearBurn();
+        
+        // Reset action states
+        player.setAttacking(false);
+        player.setSkill2(false);
+        player.setSkill3(false);
+        player.setLeft(false);
+        player.setRight(false);
+        player.setJump(false);
+        
+        // Reset camera and game flags
+        xLvlOffset = 0;
+        calcLvlOffset();
+        npcs.clear();
+        initNPCs();
+        dialogueActive = false;
+        shopActive = false;
+        activeNPC = null;
+        paused = false;
+        gameOver = false;
+        lvlCompleted = false;
+        gameCompleted = false;
+        playerDying = false;
+        
+        System.out.println("DEBUG: Teleported to Boss3! Player fully healed.");
+    }
 }
+

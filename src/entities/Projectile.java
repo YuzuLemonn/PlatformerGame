@@ -19,6 +19,10 @@ public class Projectile {
 
     private BufferedImage[] frames;
     private int aniTick, aniIndex;
+    
+    // Custom speed for boss projectiles
+    private float customSpeed = -1;
+    private float spawnX;
 
     public Projectile(float x, float y, int dir, Playing playing, String spritePath, int frameCount, int damage) {
         this.dir = dir;
@@ -32,21 +36,34 @@ public class Projectile {
 
     private void loadFrames(String spritePath, int frameCount) {
         BufferedImage sheet = LoadSave.GetSpriteAtlas(spritePath);
-        if (sheet == null) return;
-        int fw = sheet.getWidth() / frameCount;
-        frames = new BufferedImage[frameCount];
-        for (int i = 0; i < frameCount; i++)
-            frames[i] = sheet.getSubimage(i * fw, 0, fw, sheet.getHeight());
+        if (sheet == null) {
+            System.out.println("ERROR: Could not load " + spritePath);
+            return;
+        }
+        
+        if (frameCount == 1) {
+            frames = new BufferedImage[1];
+            frames[0] = sheet;
+        } else {
+            int fw = sheet.getWidth() / frameCount;
+            frames = new BufferedImage[frameCount];
+            for (int i = 0; i < frameCount; i++)
+                frames[i] = sheet.getSubimage(i * fw, 0, fw, sheet.getHeight());
+        }
     }
 
     public void update(int[][] lvlData) {
         if (!active) return;
-        float newX = hitbox.x + speed * dir;
+        
+        float currentSpeed = (customSpeed > 0) ? customSpeed : speed;
+        float newX = hitbox.x + currentSpeed * dir;
+        
         if (CanMoveHere(newX, hitbox.y, hitbox.width, hitbox.height, lvlData)) {
             hitbox.x = newX;
         } else {
             active = false;
         }
+        
         // animate
         aniTick++;
         if (aniTick >= 8) {
@@ -58,22 +75,47 @@ public class Projectile {
 
     public void render(Graphics g, int lvlOffset) {
         if (!active || frames == null || aniIndex >= frames.length) return;
+        
         int drawX = (int)(hitbox.x - lvlOffset);
-        int drawW = (int)(hitbox.width * 2) * dir; // flip with dir
+        int drawW = (int)(hitbox.width * 2) * dir;
         if (dir == -1) drawX += (int)(hitbox.width * 2);
         g.drawImage(frames[aniIndex], drawX, (int)hitbox.y,
                 drawW, (int)(hitbox.height * 2), null);
     }
 
-    public Rectangle2D.Float getHitbox() { return hitbox; }
-    public boolean isActive() { return active; }
-    public void setActive(boolean b) { active = b; }
-    public int getDamage() { return damage; }
+    public Rectangle2D.Float getHitbox() { 
+        return hitbox; 
+    }
+    
+    public boolean isActive() { 
+        return active; 
+    }
+    
+    public void setActive(boolean b) { 
+        active = b; 
+    }
+    
+    public int getDamage() { 
+        return damage; 
+    }
 
-    public int getDir() { return dir; }
+    public int getDir() { 
+        return dir; 
+    }
 
-    private float spawnX;
-    public void setSpawnX(float x) { this.spawnX = x; }
-    public float getSpawnX()       { return spawnX; }
-    public void setInactive()      { this.active = false; }
+    public void setSpawnX(float x) { 
+        this.spawnX = x; 
+    }
+    
+    public float getSpawnX() { 
+        return spawnX; 
+    }
+    
+    public void setInactive() { 
+        this.active = false; 
+    }
+
+    public void setSpeed(float speed) {
+        this.customSpeed = speed;
+    }
 }

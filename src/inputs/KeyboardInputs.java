@@ -22,6 +22,21 @@ public class KeyboardInputs implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e){
+
+        // DEBUG: Print all key presses to see if they're detected
+        System.out.println("KeyboardInputs - Key: " + KeyEvent.getKeyText(e.getKeyCode()) + 
+                           ", Ctrl: " + e.isControlDown() + 
+                           ", Shift: " + e.isShiftDown());
+        
+        // DEBUG: Ctrl+B shortcut right here in KeyboardInputs
+        if (e.getKeyCode() == KeyEvent.VK_B && e.isControlDown()) {
+            System.out.println("KeyboardInputs: Ctrl+B detected! Calling teleport...");
+            if (Gamestate.state == Gamestate.PLAYING) {
+                gamePanel.getGame().getPlaying().teleportToBoss3();
+                return; // Don't send to normal handler
+            }
+        }
+        
         switch(Gamestate.state){
             case PLAYING:
                 gamePanel.getGame().getPlaying().keyReleased(e);

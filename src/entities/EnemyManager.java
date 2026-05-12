@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import entities.enemies.Zombie;
 import entities.bosses.BossDemon;
+import entities.bosses.BossGolem;
 import entities.bosses.BossWorm;
 
 public class EnemyManager {
@@ -60,6 +61,13 @@ public class EnemyManager {
             float bossX = level.getLevelData()[0].length / 2f * Game.TILES_SIZE;
             float bossY = (Game.TILES_IN_HEIGHT - 4) * Game.TILES_SIZE - (120 * Game.SCALE);
             boss = new BossDemon(bossX, bossY, playing);
+        }
+
+        if (lvlIndex == 6) {
+            float bossX = level.getLevelData()[0].length / 2f * Game.TILES_SIZE;
+            float bossY = (Game.TILES_IN_HEIGHT - 4) * Game.TILES_SIZE - (120 * Game.SCALE);
+            boss = new BossGolem(bossX, bossY, playing);
+            System.out.println("DEBUG: BossGolem spawned at level " + lvlIndex);
         }
         
         for (Slime s : slimes) s.setPlaying(playing);
@@ -345,4 +353,12 @@ public class EnemyManager {
         }
     }
 
+    public ArrayList<Enemy> getAllEnemies() {
+        ArrayList<Enemy> all = new ArrayList<>();
+        all.addAll(slimes);
+        all.addAll(goblins);
+        all.addAll(zombies);
+        if (boss != null) all.add(boss);
+        return all;
+    }
 }

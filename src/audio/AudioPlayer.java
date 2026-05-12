@@ -76,8 +76,7 @@ public class AudioPlayer {
             return c;
 
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-
-            e.printStackTrace();
+            System.err.println("Error loading audio file: " + name);
         }
 
         return null;

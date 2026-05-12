@@ -74,7 +74,7 @@ public abstract class Player extends Entity {
     private int healthBarXStart = (int)(34  * Game.SCALE);
     private int healthBarYStart = (int)(14  * Game.SCALE);
     private int healthWidth     = healthBarWidth;
-    private float stamina = MAX_STAMINA;
+    protected float stamina = MAX_STAMINA;
     private int staminaBarWidth  = (int)(105 * Game.SCALE);
     private int staminaBarHeight = (int)(4   * Game.SCALE);
     private int staminaBarXStart = (int)(44  * Game.SCALE);
@@ -446,9 +446,6 @@ public abstract class Player extends Entity {
 
     public void loadLvlData(int[][] lvlData) {
         this.lvlData = lvlData;
-         System.out.println("loadLvlData called with width: " + lvlData[0].length);
-        if (lvlData[0].length == 30)
-            Thread.currentThread().dumpStack();
 
         if (!IsEntityOnFloor(hitbox, lvlData))
             inAir = true;
@@ -613,5 +610,22 @@ public abstract class Player extends Entity {
             burnTicksLeft--;
             changeHealth(-BURN_DAMAGE);
         }
+    }
+
+    public void setStamina(float stamina) {
+        this.stamina = Math.max(0, Math.min(stamina, MAX_STAMINA));
+    }
+
+    public void clearBurn() {
+        burnTicksLeft = 0;
+        burnTimer = 0;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public float getMaxStamina() {
+        return MAX_STAMINA;
     }
 }
