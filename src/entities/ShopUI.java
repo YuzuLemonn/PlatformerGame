@@ -55,8 +55,8 @@ public class ShopUI {
                 prices       = new int[]    {55,       20,             85};
                 dmgBoost     = new float[]  {0.15f,    0.0f,           0.10f};
                 healAmount   = new int[]    {0,        0,              0};
-                isPotion     = new boolean[]{false,    false,          false};
-                isManaPotion = new boolean[]{false,    true,           false};
+                isPotion     = new boolean[]{false,    true,          false};
+                isManaPotion = new boolean[]{false,    false,           false};
             }
             default -> {
                 items        = new String[] {"Mystery Box"};

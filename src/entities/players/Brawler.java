@@ -46,21 +46,23 @@ public class Brawler extends Player {
     protected String getCharacterName() { return "Brawler"; }
 
     @Override
-    protected boolean isProjectileAttack() { return false; }
+    protected boolean isProjectileAttack() { 
+        return false; 
+    }
 
     @Override
     protected void spawnProjectile() {} // melee, no projectile
 
     @Override
     protected void useSkill2() {
-        if (!useStamina(STAMINA_COST_SKILL2)) return;
+        //if (!useStamina(STAMINA_COST_SKILL2)) return;
         playing.checkEnemyHit(attackBox, BRAWLER_SKILL2_DMG);
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 
     @Override
     protected void useSkill3() {
-        if (!useStamina(STAMINA_COST_SKILL3)) return;
+        //if (!useStamina(STAMINA_COST_SKILL3)) return;
         playing.checkEnemyHit(attackBox, BRAWLER_SKILL3_DMG);
         playing.getGame().getAudioPlayer().playAttackSound();
     }
@@ -78,5 +80,20 @@ public class Brawler extends Player {
     @Override
     protected int getSkill3HitFrame() { 
         return 7; 
+    }
+
+    @Override
+    protected int getAttackStaminaCost() {
+        return STAMINA_COST_ATTACK;
+    }
+
+    @Override
+    protected int getSkill2StaminaCost() {
+        return STAMINA_COST_SKILL2;
+    }
+
+    @Override
+    protected int getSkill3StaminaCost() {
+        return STAMINA_COST_SKILL3;
     }
 }

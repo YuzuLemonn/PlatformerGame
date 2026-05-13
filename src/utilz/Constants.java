@@ -215,6 +215,7 @@ public class Constants {
         public static final int   STAMINA_COST_ATTACK   = 15;
         public static final int   STAMINA_COST_SKILL2   = 25;
         public static final int   STAMINA_COST_SKILL3   = 40;
+        public static final float ASSASSIN_SKILL3_RANGE = 700 * Game.SCALE;
 
         public static int GetSpriteAmount(int player_action, String character) {
             switch (character) {
@@ -236,7 +237,7 @@ public class Constants {
                         case JUMP    -> 6;
                         case ATTACK  -> 5;
                         case SKILL2  -> 4;
-                        case SKILL3  -> 21;
+                        case SKILL3  -> 22;
                         default      -> 1;
                     };
                 }

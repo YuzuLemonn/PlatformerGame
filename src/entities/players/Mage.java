@@ -65,13 +65,13 @@ public class Mage extends Player {
 
     @Override
     protected void useSkill2() {
-        if (!useStamina(STAMINA_COST_SKILL2)) return;
+        //if (!useStamina(STAMINA_COST_SKILL2)) return;
         changeHealth(20);  // adjust heal amount as needed
     }
 
     @Override
     protected void useSkill3() {
-        if (!useStamina(STAMINA_COST_SKILL3)) return;
+        //if (!useStamina(STAMINA_COST_SKILL3)) return;
         int dir = (flipW == 1) ? 1 : -1;
         float projX = (dir == 1)
                 ? hitbox.x + hitbox.width
@@ -95,5 +95,20 @@ public class Mage extends Player {
     @Override
     protected int getSkill3HitFrame() { 
         return 7; 
+    }
+
+    @Override
+    protected int getAttackStaminaCost() {
+        return STAMINA_COST_ATTACK;
+    }
+
+    @Override
+    protected int getSkill2StaminaCost() {
+        return STAMINA_COST_SKILL2;
+    }
+
+    @Override
+    protected int getSkill3StaminaCost() {
+        return STAMINA_COST_SKILL3;
     }
 }

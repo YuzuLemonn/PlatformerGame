@@ -511,7 +511,15 @@ public abstract class Player extends Entity {
         jump = false;
     }
 
-    public void setAttacking(boolean attacking) { this.attacking = attacking; }
+    public void setAttacking(boolean attacking) { 
+        if (attacking && !this.attacking) {
+            if (useStamina(getAttackStaminaCost())) {
+                this.attacking = attacking;
+            }
+        } else if (!attacking) {
+            this.attacking = attacking;
+        }
+    }
 
     public boolean isLeft()  { return left; }
     public void setLeft(boolean left)   { this.left = left; }
@@ -520,30 +528,30 @@ public abstract class Player extends Entity {
     public void setJump(boolean jump)   { this.jump = jump; }
 
     public void resetAll() {
-    resetDirBooleans();
-    inAir         = false;
-    attacking     = false;
-    moving        = false;
-    state         = IDLE;
-    currentHealth = maxHealth;
-    airSpeed      = 0f;
-    skill2        = false;
-    skill2Checked = false;
-    skill3        = false;
-    skill3Checked = false;
+        resetDirBooleans();
+        inAir         = false;
+        attacking     = false;
+        moving        = false;
+        state         = IDLE;
+        currentHealth = maxHealth;
+        airSpeed      = 0f;
+        skill2        = false;
+        skill2Checked = false;
+        skill3        = false;
+        skill3Checked = false;
 
-    stamina              = MAX_STAMINA;   
-    staminaMessageTimer  = 0;            
-    burnTicksLeft        = 0; 
+        stamina              = MAX_STAMINA;   
+        staminaMessageTimer  = 0;            
+        burnTicksLeft        = 0; 
 
-    hitbox.x = x;
-    hitbox.y = y;
+        hitbox.x = x;
+        hitbox.y = y;
 
-    restoreCheckpoint();
+        restoreCheckpoint();
 
-    if (!IsEntityOnFloor(hitbox, lvlData))
-        inAir = true;
-}
+        if (!IsEntityOnFloor(hitbox, lvlData))
+            inAir = true;
+    }
 
     public void kill() { currentHealth = 0; }
 
@@ -567,9 +575,25 @@ public abstract class Player extends Entity {
 
     public ArrayList<Projectile> getProjectiles() { return projectiles; }
 
-    public void setSkill2(boolean skill2) { this.skill2 = skill2; }
+    public void setSkill2(boolean skill2) { 
+        if (skill2 && !this.skill2) {
+            if (useStamina(getSkill2StaminaCost())) {
+                this.skill2 = skill2;
+            }
+        } else if (!skill2) {
+            this.skill2 = skill2;
+        }
+    }
 
-    public void setSkill3(boolean skill3) { this.skill3 = skill3; }
+    public void setSkill3(boolean skill3) { 
+        if (skill3 && !this.skill3) {
+            if (useStamina(getSkill3StaminaCost())) {
+                this.skill3 = skill3;
+            }
+        } else if (!skill3) {
+            this.skill3 = skill3;
+        }
+    }
 
     private void checkSkill2() {
         if (skill2Checked || aniIndex != getSkill2HitFrame()) return;
@@ -653,7 +677,7 @@ public abstract class Player extends Entity {
 
     private int staminaMessageTimer = 0;
 
-    private static final int STAMINA_MESSAGE_DURATION = 120; // frames
+    private static final int STAMINA_MESSAGE_DURATION = 120;
 
     private void showNotEnoughStamina() {
         staminaMessageTimer = STAMINA_MESSAGE_DURATION;
@@ -694,4 +718,9 @@ public abstract class Player extends Entity {
     public float getMaxStamina() {
         return MAX_STAMINA;
     }
+
+    protected abstract int getSkill2StaminaCost();
+    protected abstract int getSkill3StaminaCost();
+    protected abstract int getAttackStaminaCost();
+
 }
