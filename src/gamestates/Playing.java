@@ -137,9 +137,15 @@ public class Playing extends State implements Statemethods {
                     p.x, p.y,
                     "Mother",
                     new String[]{
-                            "Welcome, traveler!",
-                            "Beware of the enemies ahead.",
-                            "Good luck on your journey!"
+                            "Dear, come back inside. The tunnels aren’t safe.",
+                            "Player: I’m not afraid of the dark anymore.",
+                            "That’s exactly why I’m afraid for you.",
+                            "Player: I want to see the surface. I want to know if the stories are true.",
+                            "The surface is filled with danger. Creatures, wars... things we don’t understand.",
+                            "Player: Down here feels like a cage.",
+                            "...If you leave, there’s no promise you’ll return.",
+                            "Player: I know. But I have to try.",
+                            "..."
                     },
                     this
             );
@@ -261,7 +267,7 @@ public class Playing extends State implements Statemethods {
             g.setColor(new Color(0, 0, 0, 150));
             g.fillRect(0, 0, 100, 40);
             g.setColor(Color.YELLOW);
-            g.setFont(new Font("Arial", Font.BOLD, 12));
+            g.setFont(new Font("Monospaced", Font.BOLD, 12));
             g.drawString("DEBUG MODE", 5, 15);
             g.drawString("Ctrl+B = Boss3", 5, 30);
         }

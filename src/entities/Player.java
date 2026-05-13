@@ -291,7 +291,7 @@ public abstract class Player extends Entity {
         if (staminaMessageTimer > 0) {
             String msg = "Not enough stamina!";
             g.setColor(new Color(255, 220, 0));
-            g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
+            g.setFont(new Font("Monospaced", Font.BOLD, (int)(9 * Game.SCALE)));
             FontMetrics fm = g.getFontMetrics();
             int msgX = (Game.GAME_WIDTH - fm.stringWidth(msg)) / 2;
             int msgY = (Game.GAME_HEIGHT / 2);
@@ -303,13 +303,13 @@ public abstract class Player extends Entity {
             g.setColor(new Color(255, 100, 0, 150));
             g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
             g.setColor(new Color(255, 50, 0));
-            g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+            g.setFont(new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
             g.drawString("BURNING!", statusBarX + healthBarXStart, statusBarY + healthBarYStart - 5);
         }
 
         // --- Icon HUD top right ---
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        g2d.setFont(new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
         FontMetrics fm = g2d.getFontMetrics();
 
         int iconY    = (int)(8  * Game.SCALE);

@@ -36,8 +36,8 @@ public class LevelNameOverlay {
         int titleY = (int)(26 * Game.SCALE);
         int counterY = titleY + (int)(20 * Game.SCALE);
 
-        drawCenteredString(g2d, worldName, titleY, new Font("Arial", Font.BOLD, (int)(13 * Game.SCALE)));
-        drawCenteredString(g2d, worldCounter, counterY, new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        drawCenteredString(g2d, worldName, titleY, new Font("Monospaced", Font.BOLD, (int)(13 * Game.SCALE)));
+        drawCenteredString(g2d, worldCounter, counterY, new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
 
         g2d.dispose();
     }

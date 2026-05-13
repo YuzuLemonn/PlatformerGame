@@ -117,7 +117,7 @@ public class NPC extends Entity {
         g.drawImage(frame, drawX, drawY, drawW, drawH, null);
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
 
         FontMetrics fm = g.getFontMetrics();
         int nameWidth = fm.stringWidth(name);

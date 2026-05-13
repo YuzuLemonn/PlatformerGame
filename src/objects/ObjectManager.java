@@ -1,5 +1,7 @@
 package objects;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -76,6 +78,7 @@ public class ObjectManager {
     public void draw(Graphics g, int xLvlOffset) {
         drawTraps(g, xLvlOffset);
         drawPortals(g, xLvlOffset);
+        drawLevelOnePortalPrompt(g, xLvlOffset);
     }
 
     public void updatePortals(boolean allEnemiesCleared) {
@@ -99,6 +102,33 @@ public class ObjectManager {
                     (int)(p.getHitbox().y)               - PORTAL_DRAWOFFSET_Y,
                     PORTAL_WIDTH, PORTAL_HEIGHT, null);
         }
+    }
+
+    private void drawLevelOnePortalPrompt(Graphics g, int xLvlOffset) {
+        if (playing.getLevelManager().getLvlIndex() != 0)
+            return;
+
+        Portal promptPortal = null;
+        for (Portal p : currentLevel.getPortals()) {
+            if (!p.isUnlocked())
+                continue;
+            if (promptPortal == null || p.getHitbox().x > promptPortal.getHitbox().x)
+                promptPortal = p;
+        }
+
+        if (promptPortal == null)
+            return;
+
+        String prompt = "E to interact";
+        g.setFont(new Font("Monospaced", Font.BOLD, (int)(7 * Game.SCALE)));
+        FontMetrics fm = g.getFontMetrics();
+        int x = (int)(promptPortal.getHitbox().x - xLvlOffset + promptPortal.getHitbox().width / 2 - fm.stringWidth(prompt) / 2);
+        int y = (int)(promptPortal.getHitbox().y - (10 * Game.SCALE));
+
+        g.setColor(new java.awt.Color(0, 0, 0, 170));
+        g.drawString(prompt, x + 2, y + 2);
+        g.setColor(java.awt.Color.WHITE);
+        g.drawString(prompt, x, y);
     }
 
     private void drawTraps(Graphics g, int xLvlOffset) {
