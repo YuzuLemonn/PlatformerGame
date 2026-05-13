@@ -1,41 +1,39 @@
-package entities;
+package entities.enemies;
 
+import entities.Enemy;
+import entities.Player;
 import main.Game;
 import java.awt.geom.Rectangle2D;
-import static utilz.Constants.Directions.*;
+
 import static utilz.Constants.EnemyConstants.*;
 
-public class Goblin extends Enemy {
+public class Slime extends Enemy {
 
-    public Goblin(float x, float y) {
-        super(x, y, GOBLIN_WIDTH, GOBLIN_HEIGHT, GOBLIN);
-        initHitbox(20, 28);
-        initAttackBox(20, 28, (int)(Game.SCALE * 10));
-        walkSpeed = Game.SCALE * 0.40f; // faster than slime
+    public Slime(float x, float y) {
+        super(x, y, SLIME_WIDTH, SLIME_HEIGHT, SLIME);
+        initHitbox(22, 19);
+        initAttackBox();
+        walkSpeed = Game.SCALE * 0.3f;
+    }
+
+    private void initAttackBox() {
+        attackBox = new Rectangle2D.Float(x, y,
+                (int)(60 * Game.SCALE), (int)(19 * Game.SCALE));
+        attackBoxOffsetX = (int)(Game.SCALE * 20);
     }
 
     public void update(int[][] lvlData, Player player) {
         updateBehavior(lvlData, player);
         updateAnimationTick();
-        updateAttackBoxFlip();
+        updateAttackBox();
     }
 
     private void updateBehavior(int[][] lvlData, Player player) {
         if (firstUpdate)
             firstUpdateCheck(lvlData);
-
-        if (state == HIT) {
-            updateKnockback(lvlData);
-            if (!inAir) {
-                pushDrawOffset = 0;
-                newState(IDLE);
-            }
-            return;
-        }
-
-        if (inAir) {
+        if (inAir)
             updateInAir(lvlData);
-        } else {
+        else {
             switch (state) {
                 case IDLE -> newState(RUNNING);
                 case RUNNING -> {
@@ -48,13 +46,14 @@ public class Goblin extends Enemy {
                 }
                 case ATTACK -> {
                     if (aniIndex == 0) attackChecked = false;
-                    if (aniIndex == 1 && !attackChecked)
+                    if (aniIndex == 3 && !attackChecked)
                         checkEnemyHit(attackBox, player);
                 }
+                case HIT -> {}
             }
         }
     }
 
     @Override
-    public int getCoinValue() { return 8; }
+    public int getCoinValue() { return 7; }
 }

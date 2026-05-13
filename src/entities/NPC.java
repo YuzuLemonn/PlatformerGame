@@ -30,8 +30,8 @@ public class NPC extends Entity {
     private int aniTick, aniIndex;
     private static final int ANI_SPEED = 30;
 
-    private float xDrawOffset = 21 * Game.SCALE;
-    private float yDrawOffset = 10 * Game.SCALE;
+//    private float xDrawOffset = 21 * Game.SCALE;
+//    private float yDrawOffset = 10 * Game.SCALE;
 
     public void loadLvlData(int[][] lvlData) {
         this.lvlData = lvlData;

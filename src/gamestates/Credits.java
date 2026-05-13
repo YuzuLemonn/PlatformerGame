@@ -78,9 +78,8 @@ public class Credits extends State implements Statemethods {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            setGamestate(Gamestate.MENU);
             musicStarted = false;
-            game.getAudioPlayer().playSong(audio.AudioPlayer.MENU_1);
-            Gamestate.state = Gamestate.MENU;
         }
     }
     @Override public void keyReleased(KeyEvent e) {}

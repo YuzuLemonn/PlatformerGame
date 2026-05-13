@@ -69,11 +69,11 @@ public class BossWorm extends BaseBoss {
         }
 
         float speed = (phase == 2) ? WALK_SPEED * 1.5f : WALK_SPEED;
-        float dx = player.getHitbox().x - hitbox.x;
-        float dy = player.getHitbox().y - hitbox.y;
+        float dx = (float)(player.getHitbox().getCenterX() - hitbox.getCenterX());
+        float dy = (float)(player.getHitbox().getCenterY() - hitbox.getCenterY());
 
-        int playerTileY = (int)(player.getHitbox().y / Game.TILES_SIZE);
-        if (playerTileY == tileY) {
+        boolean playerInRange = Math.abs(dx) < DETECT_RANGE && Math.abs(dy) < Game.TILES_SIZE * 4;
+        if (playerInRange) {
             turnTowardsPlayer(player);
         }
         
@@ -88,7 +88,8 @@ public class BossWorm extends BaseBoss {
         if (!HelpMethods.IsEntityOnFloor(hitbox, lvlData))
             inAir = true;
 
-        boolean playerClose = Math.abs(dx) < hitbox.width * 2 && Math.abs(dy) < hitbox.height * 2;
+        boolean playerClose = hitbox.intersects(player.getHitbox())
+                || (Math.abs(dx) < hitbox.width * 2 && Math.abs(dy) < hitbox.height * 2);
 
         if (playerClose && attackCooldown <= 0) {
             doAttack(player);
@@ -98,10 +99,10 @@ public class BossWorm extends BaseBoss {
 
     @Override
     protected void doAttack(Player player) {
-        float dx = Math.abs(player.getHitbox().x - hitbox.x);
-        float dy = Math.abs(player.getHitbox().y - hitbox.y);
+        float dx = (float)Math.abs(player.getHitbox().getCenterX() - hitbox.getCenterX());
+        float dy = (float)Math.abs(player.getHitbox().getCenterY() - hitbox.getCenterY());
         
-        if (dx < hitbox.width && dy < hitbox.height) {
+        if (hitbox.intersects(player.getHitbox()) || (dx < hitbox.width && dy < hitbox.height)) {
             state = BOSS_ATTACKED;
             aniIndex = 0;
             player.changeHealth(-GetEnemyDmgBoss(BOSS_1));

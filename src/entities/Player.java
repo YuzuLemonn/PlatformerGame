@@ -43,14 +43,14 @@ public abstract class Player extends Entity {
     private BufferedImage healthIcon;
     private BufferedImage manaIcon;
     private int iconSize = (int)(20 * Game.SCALE);
-    
+
     protected abstract void loadAnimations();
     protected abstract String getCharacterName();
     protected abstract boolean isProjectileAttack();
     protected abstract void spawnProjectile();
     protected abstract void useSkill2();
     protected abstract void useSkill3();
-    
+
     protected ArrayList<Projectile> projectiles = new ArrayList<>();
 
     protected boolean moving = false, attacking = false;
@@ -58,7 +58,7 @@ public abstract class Player extends Entity {
     protected abstract int getAttackHitFrame();
     protected abstract int getSkill2HitFrame();
     protected abstract int getSkill3HitFrame();
-    
+
     protected int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 10 * Game.SCALE;
@@ -66,18 +66,18 @@ public abstract class Player extends Entity {
     private int burnTimer = 0;
     private static final int BURN_INTERVAL = (int)(0.5f * 200); // 0.5s at 200 UPS
     private static final int BURN_DAMAGE = 10;
-    
-    
+
+
     // Jumping / Gravity
     private float jumpSpeed = -2.25f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
-    
+
     // Status bar UI
     private int statusBarWidth  = (int)(192 * Game.SCALE);
     private int statusBarHeight = (int)(58  * Game.SCALE);
     private int statusBarX      = (int)(10  * Game.SCALE);
     private int statusBarY      = (int)(10  * Game.SCALE);
-    
+
     private int healthBarWidth  = (int)(150 * Game.SCALE);
     private int healthBarHeight = (int)(4   * Game.SCALE);
     private int healthBarXStart = (int)(34  * Game.SCALE);
@@ -88,20 +88,23 @@ public abstract class Player extends Entity {
     private int staminaBarHeight = (int)(4   * Game.SCALE);
     private int staminaBarXStart = (int)(44  * Game.SCALE);
     private int staminaBarYStart = (int)(33  * Game.SCALE);
-    
+
     protected int flipX = 0;
     protected int flipW = 1;
-    
+
+    private int iFramesTimer = 0;
+    private static final int IFRAME_DURATION = 100;
+
     private boolean attackChecked;
     protected Playing playing;
     private boolean skill2Checked, skill3Checked;
     protected String playerClass;
-    
+
 
     public String getPlayerClass() {
         return playerClass;
     }
-    
+
     public Player(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
         this.playing = playing;
@@ -109,13 +112,13 @@ public abstract class Player extends Entity {
         this.maxHealth = 100;
         this.currentHealth = maxHealth;
         this.walkSpeed = Game.SCALE * 1.0f;
-        loadIcons(); 
+        loadIcons();
     }
 
     private void loadIcons() {
-    goldIcon   = LoadSave.GetSpriteAtlas(LoadSave.GOLD_ICON);
-    healthIcon = LoadSave.GetSpriteAtlas(LoadSave.HEALTH_ICON);
-    manaIcon   = LoadSave.GetSpriteAtlas(LoadSave.MANA_ICON);
+        goldIcon   = LoadSave.GetSpriteAtlas(LoadSave.GOLD_ICON);
+        healthIcon = LoadSave.GetSpriteAtlas(LoadSave.HEALTH_ICON);
+        manaIcon   = LoadSave.GetSpriteAtlas(LoadSave.MANA_ICON);
     }
 
     public void setSpawn(Point spawn) {
@@ -137,7 +140,7 @@ public abstract class Player extends Entity {
             case KeyEvent.VK_D:     setRight(true);  break;
             case KeyEvent.VK_SPACE: setJump(true);   break;
             case KeyEvent.VK_R:
-                if (!skill3)   
+                if (!skill3)
                     setSkill3(true);
                 break;
         }
@@ -152,7 +155,7 @@ public abstract class Player extends Entity {
         }
     }
 
-    
+
     public void update() {
         updateHealthBar();
         updateStamina();
@@ -272,37 +275,37 @@ public abstract class Player extends Entity {
     }
 
     private void drawUI(Graphics g) {
-    // Status bar background
-    g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+        // Status bar background
+        g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
 
-    // Health bar
-    g.setColor(Color.red);
-    g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
-
-    // Stamina bar
-    int staminaWidth = (int)((stamina / (float) MAX_STAMINA) * staminaBarWidth);
-    g.setColor(Color.yellow);
-    g.fillRect(staminaBarXStart + statusBarX, staminaBarYStart + statusBarY, staminaWidth, staminaBarHeight);
-
-    // Not enough stamina message
-    if (staminaMessageTimer > 0) {
-        String msg = "Not enough stamina!";
-        g.setColor(new Color(255, 220, 0));
-        g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
-        FontMetrics fm = g.getFontMetrics();
-        int msgX = (Game.GAME_WIDTH - fm.stringWidth(msg)) / 2;
-        int msgY = (Game.GAME_HEIGHT / 2);
-        g.drawString(msg, msgX, msgY);
-    }
-
-    // Burn overlay
-    if (isBurning()) {
-        g.setColor(new Color(255, 100, 0, 150));
+        // Health bar
+        g.setColor(Color.red);
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
-        g.setColor(new Color(255, 50, 0));
-        g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
-        g.drawString("BURNING!", statusBarX + healthBarXStart, statusBarY + healthBarYStart - 5);
-    }
+
+        // Stamina bar
+        int staminaWidth = (int)((stamina / (float) MAX_STAMINA) * staminaBarWidth);
+        g.setColor(Color.blue);
+        g.fillRect(staminaBarXStart + statusBarX, staminaBarYStart + statusBarY, staminaWidth, staminaBarHeight);
+
+        // Not enough stamina message
+        if (staminaMessageTimer > 0) {
+            String msg = "Not enough stamina!";
+            g.setColor(new Color(255, 220, 0));
+            g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
+            FontMetrics fm = g.getFontMetrics();
+            int msgX = (Game.GAME_WIDTH - fm.stringWidth(msg)) / 2;
+            int msgY = (Game.GAME_HEIGHT / 2);
+            g.drawString(msg, msgX, msgY);
+        }
+
+        // Burn overlay
+        if (isBurning()) {
+            g.setColor(new Color(255, 100, 0, 150));
+            g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+            g.setColor(new Color(255, 50, 0));
+            g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+            g.drawString("BURNING!", statusBarX + healthBarXStart, statusBarY + healthBarYStart - 5);
+        }
 
         // --- Icon HUD top right ---
         Graphics2D g2d = (Graphics2D) g;
@@ -340,6 +343,10 @@ public abstract class Player extends Entity {
     }
 
     private void updateAnimationTick() {
+        if (iFramesTimer > 0) {
+            iFramesTimer--;
+        }
+
         aniTick++;
         if (aniTick >= ANI_SPEED) {
             aniTick = 0;
@@ -349,9 +356,9 @@ public abstract class Player extends Entity {
                 aniIndex = 0;
                 attacking = false;
                 attackChecked = false;
-                skill2 = false;        
-                skill2Checked = false; 
-                skill3 = false;        
+                skill2 = false;
+                skill2Checked = false;
+                skill3 = false;
                 skill3Checked = false;
                 if (state == HIT) {
                     newState(IDLE);
@@ -479,16 +486,24 @@ public abstract class Player extends Entity {
 
     public void changeHealth(int value) {
         if (value < 0) {
-            if (state == HIT) return;
-            else newState(HIT);
+            if (state == HIT || iFramesTimer > 0) {
+                return;
+            }
+            else {
+                newState(HIT);
+                iFramesTimer = IFRAME_DURATION;
+            }
         }
         currentHealth += value;
         currentHealth = Math.max(Math.min(currentHealth, maxHealth), 0);
     }
 
     public void changeHealth(int value, Enemy e) {
-        if (state == HIT) return;
+        if (state == HIT || iFramesTimer > 0) {
+            return;
+        }
         changeHealth(value);
+        iFramesTimer = IFRAME_DURATION;
         pushBackOffsetDir = UP;
         pushDrawOffset = 0;
         if (e.getHitbox().x < hitbox.x)
@@ -520,30 +535,32 @@ public abstract class Player extends Entity {
     public void setJump(boolean jump)   { this.jump = jump; }
 
     public void resetAll() {
-    resetDirBooleans();
-    inAir         = false;
-    attacking     = false;
-    moving        = false;
-    state         = IDLE;
-    currentHealth = maxHealth;
-    airSpeed      = 0f;
-    skill2        = false;
-    skill2Checked = false;
-    skill3        = false;
-    skill3Checked = false;
+        resetDirBooleans();
+        inAir         = false;
+        attacking     = false;
+        moving        = false;
+        state         = IDLE;
+        currentHealth = maxHealth;
+        airSpeed      = 0f;
+        skill2        = false;
+        skill2Checked = false;
+        skill3        = false;
+        skill3Checked = false;
 
-    stamina              = MAX_STAMINA;   
-    staminaMessageTimer  = 0;            
-    burnTicksLeft        = 0; 
+        stamina              = MAX_STAMINA;
+        staminaMessageTimer  = 0;
+        burnTicksLeft        = 0;
 
-    hitbox.x = x;
-    hitbox.y = y;
+        iFramesTimer = 0;
 
-    restoreCheckpoint();
+        hitbox.x = x;
+        hitbox.y = y;
 
-    if (!IsEntityOnFloor(hitbox, lvlData))
-        inAir = true;
-}
+        restoreCheckpoint();
+
+        if (!IsEntityOnFloor(hitbox, lvlData))
+            inAir = true;
+    }
 
     public void kill() { currentHealth = 0; }
 
@@ -583,8 +600,8 @@ public abstract class Player extends Entity {
         useSkill3();
     }
 
-    public boolean isSkill2Active() { 
-        return skill2; 
+    public boolean isSkill2Active() {
+        return skill2;
     }
 
     public void setPlayerClass(String playerClass) {
@@ -621,7 +638,7 @@ public abstract class Player extends Entity {
         System.out.println("[PLAYER] Used mana potion! Stamina: " + stamina + " Left: " + manaPotionCount);
     }
 
-        public void saveCheckpoint() {
+    public void saveCheckpoint() {
         checkpointGold    = gold;
         checkpointPotions = potionCount;
         checkpointManaPotions = manaPotionCount;
@@ -664,8 +681,8 @@ public abstract class Player extends Entity {
         burnTimer = 0;
     }
 
-    public boolean isBurning() { 
-        return burnTicksLeft > 0; 
+    public boolean isBurning() {
+        return burnTicksLeft > 0;
     }
 
     private void updateBurn() {

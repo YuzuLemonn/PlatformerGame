@@ -122,11 +122,15 @@ public class CharacterSelect extends State implements Statemethods {
     }
 
     @Override public void mouseClicked(MouseEvent e) {}
+
     @Override public void mousePressed(MouseEvent e) {}
+
     public void mouseDragged(MouseEvent e) {}
+
     @Override public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
             Gamestate.state = Gamestate.MENU;
     }
+
     @Override public void keyReleased(KeyEvent e) {}
 }

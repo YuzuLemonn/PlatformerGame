@@ -5,10 +5,13 @@ import main.GamePanel;
 
 import java.awt.event.KeyEvent;
 import java. awt.event.KeyListener;
-import static utilz.Constants.Directions.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class KeyboardInputs implements KeyListener {
     private GamePanel gamePanel;
+    private Set<Integer> pressedKeys = new HashSet<>();
+    private Set<Integer> suppressedKeys = new HashSet<>();
 
 
     public KeyboardInputs(GamePanel gamePanel){
@@ -22,6 +25,8 @@ public class KeyboardInputs implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e){
+        pressedKeys.remove(e.getKeyCode());
+        suppressedKeys.remove(e.getKeyCode());
 
         // DEBUG: Print all key presses to see if they're detected
         System.out.println("KeyboardInputs - Key: " + KeyEvent.getKeyText(e.getKeyCode()) + 
@@ -61,6 +66,12 @@ public class KeyboardInputs implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e){
+        if (suppressedKeys.contains(e.getKeyCode()))
+            return;
+
+        if (Gamestate.state == Gamestate.PLAYING)
+            pressedKeys.add(e.getKeyCode());
+
         switch(Gamestate.state){
             case PLAYING:
                 gamePanel.getGame().getPlaying().keyPressed(e);
@@ -83,5 +94,23 @@ public class KeyboardInputs implements KeyListener {
             default:
                 break;
         }
+    }
+
+    public void releaseAllPressedKeys() {
+        suppressedKeys.addAll(pressedKeys);
+
+        for (int keyCode : new HashSet<>(pressedKeys)) {
+            KeyEvent releaseEvent = new KeyEvent(
+                    gamePanel,
+                    KeyEvent.KEY_RELEASED,
+                    System.currentTimeMillis(),
+                    0,
+                    keyCode,
+                    KeyEvent.CHAR_UNDEFINED
+            );
+            gamePanel.getGame().getPlaying().keyReleased(releaseEvent);
+        }
+
+        pressedKeys.clear();
     }
 }

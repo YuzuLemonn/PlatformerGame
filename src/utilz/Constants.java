@@ -117,7 +117,7 @@ public class Constants {
         public static final int MAGE_SKILL2_DMG   = 0;  // heal, no damage
         public static final int MAGE_SKILL3_DMG   = 30;
 
-        public static final int ASSASSIN_ATTACK_DMG = 15;
+        public static final int ASSASSIN_ATTACK_DMG = 18;
         public static final int ASSASSIN_SKILL2_DMG = 25;
         public static final int ASSASSIN_SKILL3_DMG = 35;
 

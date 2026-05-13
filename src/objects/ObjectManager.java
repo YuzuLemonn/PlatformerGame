@@ -117,4 +117,8 @@ public class ObjectManager {
         }
         loadObjects(playing.getLevelManager().getCurrentLevel());
     }
+
+    public ArrayList<Spike> getCurrentLevelSpikes() {
+        return currentLevel.getSpikes();
+    }
 }

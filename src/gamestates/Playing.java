@@ -50,12 +50,13 @@ public class Playing extends State implements Statemethods {
     private ArrayList<NPC> npcs = new ArrayList<>();
     private NPC activeNPC = null;
     private DialogueOverlay dialogueOverlay;
+    private LevelNameOverlay levelNameOverlay;
     private boolean dialogueActive = false;
     private boolean shopActive = false;
     private boolean allEnemiesCleared = false;
 
     private BossCutscene bossCutscene = null;
-private boolean cutsceneActive = false;
+    private boolean cutsceneActive = false;
 
     public Playing(Game game) {
         super(game);
@@ -88,12 +89,14 @@ private boolean cutsceneActive = false;
         initNPCs();
         xLvlOffset = 0;
         calcLvlOffset();
+        levelNameOverlay.start(levelManager.getLvlIndex());
         tryStartBossCutscene();
     }
 
     private void loadStartLevel() {
         enemyManager.loadEnemies(levelManager.getCurrentLevel());
         objectManager.loadObjects(levelManager.getCurrentLevel());
+        levelNameOverlay.start(levelManager.getLvlIndex());
     }
 
     public void setPlayer(Player p) {
@@ -123,6 +126,7 @@ private boolean cutsceneActive = false;
         levelCompletedOverlay = new LevelCompletedOverlay(this);
         gameCompletedOverlay  = new GameCompletedOverlay(this);
         dialogueOverlay       = new DialogueOverlay(this);
+        levelNameOverlay      = new LevelNameOverlay();
 
         initNPCs();
     }
@@ -165,6 +169,8 @@ private boolean cutsceneActive = false;
         bossCutscene.update();
         return;
         }
+
+        levelNameOverlay.update();
 
         if (paused)
             pauseOverlay.update();
@@ -246,10 +252,6 @@ private boolean cutsceneActive = false;
         
         if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
             enemyManager.getBoss().drawBossBar(g);
-
-        if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
-            enemyManager.getBoss().drawBossBar(g);
-
         
         // Dialogue and shop overlays
         if (dialogueActive && activeNPC != null)
@@ -267,6 +269,8 @@ private boolean cutsceneActive = false;
         if (shopActive && activeNPC != null)
             activeNPC.drawShop(g);
 
+        levelNameOverlay.draw(g);
+
         if (paused) {
             g.setColor(new Color(0, 0, 0, 150));
             g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
@@ -279,9 +283,9 @@ private boolean cutsceneActive = false;
             gameCompletedOverlay.draw(g);
 
         if (cutsceneActive && bossCutscene != null) {
-        bossCutscene.draw(g);
-        return;
-}
+            bossCutscene.draw(g);
+            return;
+        }
     }
 
     public void resetAll() {
@@ -369,14 +373,15 @@ private boolean cutsceneActive = false;
     public void keyPressed(KeyEvent e) {
 
         if (cutsceneActive && bossCutscene != null) {
-        if (e.getKeyCode() == KeyEvent.VK_E) {
-            boolean done = bossCutscene.advance();
-            if (done) {
-                cutsceneActive = false;
-                bossCutscene   = null;
+            if (e.getKeyCode() == KeyEvent.VK_E ||
+                    e.getKeyCode() == KeyEvent.VK_SPACE) {
+                boolean done = bossCutscene.advance();
+                if (done) {
+                    cutsceneActive = false;
+                    bossCutscene   = null;
+                }
             }
-        }
-        return;
+            return;
         }
 
         if (debugMode) {
@@ -399,7 +404,7 @@ private boolean cutsceneActive = false;
 
             case KeyEvent.VK_E:
                 if (objectManager.isPlayerAtOpenPortal(player.getHitbox()))
-                    loadNextLevel();
+                    game.getStoryManager().onLevelComplete();
                 else
                     handleNPCInteract();
                 break;
@@ -505,6 +510,7 @@ private boolean cutsceneActive = false;
         calcLvlOffset();
         npcs.clear();
         initNPCs();
+        levelNameOverlay.start(levelManager.getLvlIndex());
     }
 
     public void loadStartLevelByIndex(int index) {
@@ -521,6 +527,7 @@ private boolean cutsceneActive = false;
         calcLvlOffset();
         npcs.clear();
         initNPCs();
+        levelNameOverlay.start(levelManager.getLvlIndex());
         tryStartBossCutscene();
     }
 
@@ -607,23 +614,31 @@ private boolean cutsceneActive = false;
         lvlCompleted = false;
         gameCompleted = false;
         playerDying = false;
+        levelNameOverlay.start(levelManager.getLvlIndex());
         
         System.out.println("DEBUG: Teleported to Boss3! Player fully healed.");
         tryStartBossCutscene();
     }
 
     private void tryStartBossCutscene() {
-    int lvl = levelManager.getLvlIndex();
-    BossCutscene.CutsceneLine[] lines = null;
+        int lvl = levelManager.getLvlIndex();
+        BossCutscene.CutsceneLine[] lines = null;
 
-    if (lvl == 2) lines = BossCutscene.BOSS1_LINES;
-    else if (lvl == 4) lines = BossCutscene.BOSS2_LINES;
-    else if (lvl == 6) lines = BossCutscene.BOSS3_LINES;
+        if (lvl == 2) {
+            lines = BossCutscene.BOSS1_LINES;
+        } else if (lvl == 4) {
+            lines = BossCutscene.BOSS2_LINES;
+        } else if (lvl == 6) {
+            lines = BossCutscene.BOSS3_LINES;
+        }
 
-    if (lines != null) {
-        bossCutscene   = new BossCutscene(lines);
-        cutsceneActive = true;
+        if (lines != null) {
+            bossCutscene   = new BossCutscene(lines);
+            cutsceneActive = true;
+        }
     }
+
+    public void onBossDefeated() {
+        game.getStoryManager().onBossDefeated(levelManager.getLvlIndex());
     }
 }
-

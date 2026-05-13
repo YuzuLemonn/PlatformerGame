@@ -2,6 +2,7 @@ package entities;
 
 import gamestates.Playing;
 import main.Game;
+import objects.Spike;
 
 import java.awt.geom.Rectangle2D;
 
@@ -22,6 +23,7 @@ public abstract class Enemy extends Entity{
     protected int attackBoxOffsetX;
     protected Playing playing;
 
+    private boolean coinDropped = false;
 
 
     public Enemy(float x, float y, int width, int height, int enemyType) {
@@ -61,7 +63,6 @@ public abstract class Enemy extends Entity{
     protected void move(int[][] lvlData) {
         float xSpeed = (walkDir == LEFT) ? -walkSpeed : walkSpeed;
 
-        // spike avoidance — stop and turn if spike is ahead
         if (playing != null && playing.getObjectManager().isSpikeAhead(hitbox, walkDir)) {
             changeWalkDir();
             return;
@@ -84,19 +85,46 @@ public abstract class Enemy extends Entity{
         }
     }
 
-    protected boolean canSeePlayer(int[][] lvlData, Player player){
+    protected boolean canSeePlayer(int[][] lvlData, Player player) {
         int playerTileY = (int)(player.getHitbox().y / Game.TILES_SIZE);
 
-        if(playerTileY == tileY){
-            if(isPlayerInRange(player)){
-                if(IsSightClear(lvlData, hitbox, player.hitbox, tileY)){
+        if (playerTileY == tileY) {
+            if (isPlayerInRange(player)) {
+                if (IsSightClear(lvlData, hitbox, player.hitbox, tileY)) {
+
+                    if (playing != null && isSpikeInBetween(player)) {
+                        return false;
+                    }
+
                     return true;
                 }
             }
         }
-
         return false;
+    }
 
+    private boolean isSpikeInBetween(Player player) {
+        float enemyLeft  = hitbox.x;
+        float enemyRight = hitbox.x + hitbox.width;
+        float playerLeft  = player.getHitbox().x;
+        float playerRight = player.getHitbox().x + player.getHitbox().width;
+
+        float rangeLeft  = Math.min(enemyRight, playerRight);
+        float rangeRight = Math.max(enemyLeft,  playerLeft);
+
+        for (Spike s : playing.getObjectManager().getCurrentLevelSpikes()) {
+            float spikeLeft  = s.getHitbox().x;
+            float spikeRight = s.getHitbox().x + s.getHitbox().width;
+            float spikeTop   = s.getHitbox().y;
+
+            // Spike must be horizontally between them and on the same floor level
+            if (spikeRight > rangeLeft && spikeLeft < rangeRight) {
+                if (Math.abs(spikeTop - (hitbox.y + hitbox.height)) < Game.TILES_SIZE) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected boolean isPlayerInRange(Player player) {
@@ -190,8 +218,11 @@ public abstract class Enemy extends Entity{
     }
 
     public int flipW() {
-        if(walkDir == RIGHT) return -1;
-        else return 1;
+        if(walkDir == RIGHT) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
     public boolean isActive(){
@@ -206,11 +237,9 @@ public abstract class Enemy extends Entity{
         this.playing = playing;
     }
 
-        private boolean coinDropped = false;
-
     public boolean isCoinDropped()  { return coinDropped; }
+
     public void markCoinDropped()   { coinDropped = true; }
 
-    // Override per enemy type, or set a default:
-    public int getCoinValue() { return 5; }   // default: 5 gold
+    public int getCoinValue() { return 5; }
 }

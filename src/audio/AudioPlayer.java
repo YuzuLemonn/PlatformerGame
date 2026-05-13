@@ -27,12 +27,14 @@ public class AudioPlayer {
     public static int JUMP = 1;
     public static int GAMEOVER = 2;
     public static int LVL_COMPLETED = 3;
-    public static int ATTACK_ONE = 4;
+    public static int ATTACK_ONE = 4; // to be implemented or not ha ha ha
     public static int ATTACK_TWO = 5;
     public static int ATTACK_THREE = 6;
 
     private Clip[] songs, effects;
     private int currentSongId;
+    private int pausedSongId = -1;
+    private long pausedSongPosition;
     private float volume = 1f;
     private boolean songMute, effectMute;
     private Random rand = new Random();
@@ -94,6 +96,26 @@ public class AudioPlayer {
             songs[currentSongId].stop();
     }
 
+    public void pauseSongForCutscene() {
+        if (pausedSongId != -1)
+            return;
+
+        pausedSongId = currentSongId;
+        pausedSongPosition = songs[currentSongId].getMicrosecondPosition();
+        songs[currentSongId].stop();
+    }
+
+    public void resumeSongAfterCutscene() {
+        if (pausedSongId == -1)
+            return;
+
+        currentSongId = pausedSongId;
+        pausedSongId = -1;
+        updateSongVolume();
+        songs[currentSongId].setMicrosecondPosition(pausedSongPosition);
+        songs[currentSongId].loop(Clip.LOOP_CONTINUOUSLY);
+    }
+
     public void setLevelSong(int lvlIndex) {
         switch (lvlIndex) {
             case 0, 1 -> playSong(LEVEL_1);
@@ -129,6 +151,7 @@ public class AudioPlayer {
 
     public void playSong(int song) {
         stopSong();
+        pausedSongId = -1;
 
         currentSongId = song;
         updateSongVolume();

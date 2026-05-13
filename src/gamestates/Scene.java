@@ -2,10 +2,10 @@ package gamestates;
 
 public class Scene {
     public final SceneType type;
-    public final int levelIndex;     // which lvl file to load (-1 for cutscenes)
-    public final String[] lines;     // dialogue/narration lines
-    public final String speaker;     // who is speaking (null = narrator)
-    public final int bgmIndex;       // which bgm to play
+    public final int levelIndex;
+    public final String[] lines;
+    public final String speaker;
+    public final int bgmIndex;
 
     // cutscene constructor
     public Scene(String speaker, String[] lines, int bgmIndex) {

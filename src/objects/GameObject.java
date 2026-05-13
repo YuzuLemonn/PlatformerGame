@@ -13,7 +13,7 @@ public class GameObject {
 
     protected int x, y, objType;
     protected Rectangle2D.Float hitbox;
-    protected boolean doAnimation, active = true;
+    protected boolean active = true;
     protected int aniTick, aniIndex;
     protected int xDrawOffset, yDrawOffset;
 
@@ -23,31 +23,10 @@ public class GameObject {
         this.objType = objType;
     }
 
-//    protected void updateAnimationTick() {
-//        aniTick++;
-//        if (aniTick >= ANI_SPEED) {
-//            aniTick = 0;
-//            aniIndex++;
-//            if (aniIndex >= GetSpriteAmount(objType)) {
-//                aniIndex = 0;
-//                if (objType == BARREL || objType == BOX) {
-//                    doAnimation = false;
-//                    active = false;
-//                } else if (objType == CANNON_LEFT || objType == CANNON_RIGHT)
-//                    doAnimation = false;
-//            }
-//        }
-//    }
-
     public void reset() {
         aniIndex = 0;
         aniTick = 0;
         active = true;
-
-//        if (objType == BARREL || objType == BOX || objType == CANNON_LEFT || objType == CANNON_RIGHT)
-//            doAnimation = false;
-//        else
-            doAnimation = true;
     }
 
     protected void initHitbox(int width, int height) {
@@ -73,10 +52,6 @@ public class GameObject {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public void setAnimation(boolean doAnimation) {
-        this.doAnimation = doAnimation;
     }
 
     public int getxDrawOffset() {
