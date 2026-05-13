@@ -52,9 +52,6 @@ public class Game implements Runnable{
         gameOptions = new GameOptions(this);
         credits = new Credits(this);
         storyManager = new StoryManager(this);
-
-
-
     }
 
     private void startGameLoop(){
@@ -163,6 +160,10 @@ public class Game implements Runnable{
         if(Gamestate.state == Gamestate.PLAYING){
             playing.getPlayer().resetDirBooleans();
         }
+    }
+
+    public void releaseAllPressedKeys() {
+        gamePanel.releaseAllPressedKeys();
     }
 
     public Menu getMenu(){

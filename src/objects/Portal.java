@@ -5,16 +5,16 @@ import static utilz.Constants.ObjectConstants.*;
 
 public class Portal extends GameObject {
     private boolean unlocked = false;
+    private boolean doAnimation;
 
     public Portal(int x, int y) {
         super(x, y, PORTAL);
-        // hitbox is the interaction zone, slightly larger than visual
         initHitbox(16, 32);
-        // center the hitbox on the tile
         hitbox.x -= (int)(8 * Game.SCALE);
     }
 
     public void update(boolean allEnemiesCleared) {
+
         if (allEnemiesCleared && !unlocked) {
             unlocked = true;
             doAnimation = true;
@@ -35,7 +35,7 @@ public class Portal extends GameObject {
 
     public boolean isUnlocked() { return unlocked; }
 
-    // Areas with no enemies (village, merchant) portal starts open
+    // no enemies = unlock portal
     public void forceUnlock() {
         unlocked = true;
         doAnimation = true;

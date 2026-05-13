@@ -40,7 +40,7 @@ public class LevelManager {
     public void resetLevelIndex() {
         lvlIndex = 0;
         Level newLevel = levels.get(lvlIndex);
-        newLevel.resetEnemies(); // fresh enemy objects here too
+        newLevel.resetEnemies();
         game.getPlaying().getEnemyManager().loadEnemies(newLevel);
         game.getPlaying().getPlayer().loadLvlData(newLevel.getLevelData());
         game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
@@ -87,10 +87,6 @@ public class LevelManager {
             }
     }
 
-    public void update(){
-
-    }
-
     public void setLevelIndex(int lvlIndex) {
         this.lvlIndex = lvlIndex;
     }
@@ -107,4 +103,7 @@ public class LevelManager {
         return lvlIndex;
     }
 
+    public void update() {
+
+    }
 }

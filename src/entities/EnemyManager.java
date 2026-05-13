@@ -1,6 +1,7 @@
 package entities;
 
-import gamestates.Gamestate;
+import entities.enemies.Goblin;
+import entities.enemies.Slime;
 import gamestates.Playing;
 import levels.Level;
 import main.Game;
@@ -32,6 +33,8 @@ public class EnemyManager {
     private entities.BaseBoss boss;
     private ArrayList<Slime>  slimes  = new ArrayList<>();
     private ArrayList<Goblin> goblins = new ArrayList<>();
+
+    private boolean bossDeathHandled = false;
 
     
     private int gold = 0;
@@ -301,6 +304,9 @@ public class EnemyManager {
                 return false;
             }
         }
+        if (boss != null && boss.isActive()) {
+            return false;
+        }
         return true;
     }
 
@@ -308,6 +314,7 @@ public class EnemyManager {
         for (Slime  s : slimes) s.resetEnemy();
         for (Goblin g : goblins) g.resetEnemy();
         for (Zombie z : zombies) z.resetEnemy();
+        bossDeathHandled = false;
         loadEnemies(playing.getLevelManager().getCurrentLevel());
     }
 
@@ -350,6 +357,10 @@ public class EnemyManager {
         if (boss != null && !boss.isActive() && !boss.isCoinDropped()) {
             player.addGold(boss.getCoinValue());
             boss.markCoinDropped();
+        }
+        if (boss != null && !boss.isActive() && !bossDeathHandled) {
+            bossDeathHandled = true;
+            playing.onBossDefeated();
         }
     }
 

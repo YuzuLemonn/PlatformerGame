@@ -17,7 +17,7 @@ public class Zombie extends Enemy {
         super(x, y, ZOMBIE_WIDTH, ZOMBIE_HEIGHT, ZOMBIE);
         initHitbox(20, 28);
         initAttackBox(30, 30, (int)(Game.SCALE * 10));
-        walkSpeed = Game.SCALE * 0.2f;
+        walkSpeed = Game.SCALE * 0.3f;
     }
 
     public void update(int[][] lvlData, Player player) {

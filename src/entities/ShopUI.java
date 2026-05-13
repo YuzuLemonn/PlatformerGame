@@ -51,7 +51,7 @@ public class ShopUI {
                 isManaPotion = new boolean[]{false,         true,          false};
             }
             case "ASSASSIN" -> {
-                items        = new String[] {"Dagger", "Mana Potion", "Shadow Cloak"};
+                items        = new String[] {"Dagger", "HP Potion", "Shadow Cloak"};
                 prices       = new int[]    {55,       20,             85};
                 dmgBoost     = new float[]  {0.15f,    0.0f,           0.10f};
                 healAmount   = new int[]    {0,        0,              0};
@@ -87,7 +87,7 @@ public class ShopUI {
         g2d.drawRoundRect(panelX, panelY, panelW, panelH, 16, 16);
 
         // Title
-        g2d.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
+        g2d.setFont(new Font("Monospaced", Font.BOLD, (int)(9 * Game.SCALE)));
         g2d.setColor(Color.YELLOW);
         g2d.drawString("SHOP — " + playerClass,
                 panelX + (int)(10 * Game.SCALE),
@@ -95,13 +95,13 @@ public class ShopUI {
 
         // Gold display top-right
         g2d.setColor(Color.YELLOW);
-        g2d.setFont(new Font("Arial", Font.BOLD, (int)(7 * Game.SCALE)));
+        g2d.setFont(new Font("Monospaced", Font.BOLD, (int)(7 * Game.SCALE)));
         g2d.drawString("Gold: " + playing.getPlayer().getGold() + "g",
                 panelX + panelW - (int)(60 * Game.SCALE),
                 panelY + (int)(18 * Game.SCALE));
 
         // Items
-        g2d.setFont(new Font("Arial", Font.PLAIN, (int)(7 * Game.SCALE)));
+        g2d.setFont(new Font("Monospaced", Font.PLAIN, (int)(7 * Game.SCALE)));
         int lineH  = (int)(18 * Game.SCALE);
         int startY = panelY + (int)(36 * Game.SCALE);
 
@@ -130,7 +130,7 @@ public class ShopUI {
         }
 
         // Potion counts
-        g2d.setFont(new Font("Arial", Font.BOLD, (int)(7 * Game.SCALE)));
+        g2d.setFont(new Font("Monospaced", Font.BOLD, (int)(7 * Game.SCALE)));
         g2d.setColor(new Color(255, 100, 100));
         g2d.drawString("HP Potions: " + playing.getPlayer().getPotionCount() + "  (H)",
                 panelX + (int)(10 * Game.SCALE),
@@ -143,7 +143,7 @@ public class ShopUI {
 
         // Footer
         g2d.setColor(Color.GRAY);
-        g2d.setFont(new Font("Arial", Font.ITALIC, (int)(6 * Game.SCALE)));
+        g2d.setFont(new Font("Monospaced", Font.ITALIC, (int)(6 * Game.SCALE)));
         g2d.drawString("Press 1-" + items.length + " to buy  |  E to close",
                 panelX + (int)(10 * Game.SCALE),
                 panelY + panelH - (int)(10 * Game.SCALE));

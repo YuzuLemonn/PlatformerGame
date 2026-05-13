@@ -54,13 +54,17 @@ public class Credits extends State implements Statemethods {
                 "Neo Mark Tripoli",
                 "Edvard Antony De los Reyes",
                 "",
-                "Music",
-                "Stolen",
+                "BGM & SFX",
+                "itch.io, KaarinGaming.com, Crimson Gem Saga Official Soundtrack",
+                "",
+                "Special Thanks to:",
+                "Sir Khai",
+                "Kaarin Gaming",
                 "",
                 "Press ESC to return"
         };
 
-        int startY = (int)(80 * Game.SCALE);
+        int startY = (int)(40 * Game.SCALE);
         int lineH  = (int)(13 * Game.SCALE);
         FontMetrics fm = g.getFontMetrics();
 
@@ -78,9 +82,8 @@ public class Credits extends State implements Statemethods {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            setGamestate(Gamestate.MENU);
             musicStarted = false;
-            game.getAudioPlayer().playSong(audio.AudioPlayer.MENU_1);
-            Gamestate.state = Gamestate.MENU;
         }
     }
     @Override public void keyReleased(KeyEvent e) {}

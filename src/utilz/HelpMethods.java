@@ -1,8 +1,8 @@
 package utilz;
 
 import entities.enemies.Zombie;
-import entities.Slime;
-import entities.Goblin;
+import entities.enemies.Slime;
+import entities.enemies.Goblin;
 import main.Game;
 
 import java.awt.*;
@@ -128,18 +128,6 @@ public class HelpMethods {
             return IsAllTilesWalkable(secondXTile, firstXTile, yTile, lvlData);
         else
             return IsAllTilesWalkable(firstXTile, secondXTile, yTile, lvlData);
-    }
-
-    public static boolean IsSightClear_OLD(int[][] lvlData, Rectangle2D.Float firstHitbox, Rectangle2D.Float secondHitbox, int yTile) {
-        int firstXTile = (int) (firstHitbox.x / Game.TILES_SIZE);
-        int secondXTile = (int) (secondHitbox.x / Game.TILES_SIZE);
-
-        if (firstXTile > secondXTile) {
-            return IsAllTilesWalkable(secondXTile, firstXTile, yTile, lvlData);
-        }
-        else {
-            return IsAllTilesWalkable(firstXTile, secondXTile, yTile, lvlData);
-        }
     }
 
     public static int[][] GetLevelData(BufferedImage img) {

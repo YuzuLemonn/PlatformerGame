@@ -178,7 +178,7 @@ public abstract class BaseBoss extends Enemy {
         g.drawRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
 
         // name
-        g.setFont(new Font("Arial", Font.BOLD, 14));
+        g.setFont(new Font("Monospaced", Font.BOLD, 14));
         g.setColor(Color.WHITE);
         g.drawString(getBossName(), barX, barY - 6);
 

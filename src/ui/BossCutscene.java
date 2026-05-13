@@ -54,7 +54,7 @@ public class BossCutscene {
     private static final Color BG         = new Color(0, 0, 0);
     private static final Color PLAYER_COL = new Color(180, 220, 255);
     private static final Color BOSS_COL   = new Color(255, 100, 80);
-    private static final Color HINT_COL   = new Color(120, 120, 120);
+    private static final Color HINT_COL   = new Color(180, 180, 180);
 
     public BossCutscene(CutsceneLine[] lines) {
         this.lines = lines;
@@ -71,13 +71,11 @@ public class BossCutscene {
     public void update() {
         if (finished) return;
 
-        // Fade in
         if (fadingIn) {
             fadeAlpha = Math.max(0f, fadeAlpha - FADE_SPEED / 255f);
             if (fadeAlpha <= 0f) fadingIn = false;
         }
 
-        // Type current line
         String full = lines[lineIndex].text;
         if (charIndex < full.length()) {
             textTick++;
@@ -100,7 +98,6 @@ public class BossCutscene {
             return false;
         }
 
-        // Advance to next line
         lineIndex++;
         if (lineIndex >= lines.length) {
             finished = true;
@@ -123,20 +120,20 @@ public class BossCutscene {
         boolean isPlayer = current.speaker.equals("Player");
 
         // Speaker name
-        g.setFont(new Font("Arial", Font.BOLD, (int)(12 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.BOLD, (int) (10 * Game.SCALE)));
         g.setColor(isPlayer ? PLAYER_COL : BOSS_COL);
         FontMetrics fmName = g.getFontMetrics();
         int nameX = Game.GAME_WIDTH / 2 - fmName.stringWidth(current.speaker) / 2;
         int nameY = Game.GAME_HEIGHT / 2 - (int)(20 * Game.SCALE);
         g.drawString(current.speaker, nameX, nameY);
 
-        // Separator line
-        g.setColor(new Color(80, 80, 80));
-        g.fillRect(Game.GAME_WIDTH / 4, nameY + (int)(4 * Game.SCALE),
-                   Game.GAME_WIDTH / 2, 1);
+//        // Separator line
+//        g.setColor(new Color(80, 80, 80));
+//        g.fillRect(Game.GAME_WIDTH / 4, nameY + (int)(4 * Game.SCALE),
+//                   Game.GAME_WIDTH / 2, 1);
 
         // Dialogue text — wrap long lines
-        g.setFont(new Font("Arial", Font.PLAIN, (int)(9 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.BOLD, (int) (8 * Game.SCALE)));
         g.setColor(Color.WHITE);
         drawWrappedText(g, displayedText,
                 Game.GAME_WIDTH / 2,
@@ -148,9 +145,9 @@ public class BossCutscene {
 
         // Continue hint — only when line is fully typed
         if (charIndex >= lines[lineIndex].text.length()) {
-            g.setFont(new Font("Arial", Font.ITALIC, (int)(7 * Game.SCALE)));
+            g.setFont(new Font("Monospaced", Font.ITALIC, (int) (6 * Game.SCALE)));
             g.setColor(HINT_COL);
-            String hint = "[E] Continue";
+            String hint = "SPACE / E to continue";
             FontMetrics fmHint = g.getFontMetrics();
             g.drawString(hint,
                     Game.GAME_WIDTH / 2 - fmHint.stringWidth(hint) / 2,

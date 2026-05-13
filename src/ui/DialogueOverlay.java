@@ -84,18 +84,18 @@ public class DialogueOverlay {
         g.drawRect(portraitX, portraitY, portraitSize, portraitSize);
 
         // NPC name
-        g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.BOLD, (int)(9 * Game.SCALE)));
         g.setColor(Color.YELLOW);
         g.drawString(npc.getName(), nameX, textY - (int)(16 * Game.SCALE));
 
         // dialogue text
-        g.setFont(new Font("Arial", Font.PLAIN, (int)(7 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.PLAIN, (int)(7 * Game.SCALE)));
         g.setColor(Color.WHITE);
         g.drawString(displayedText, textX, textY);
 
         // continue hint
         if (isTextComplete()) {
-            g.setFont(new Font("Arial", Font.ITALIC, (int)(6 * Game.SCALE)));
+            g.setFont(new Font("Monospaced", Font.ITALIC, (int)(6 * Game.SCALE)));
             g.setColor(Color.LIGHT_GRAY);
             g.drawString("[E] Continue", boxX + boxW - (int)(60 * Game.SCALE),
                     boxY + boxH - (int)(5 * Game.SCALE));

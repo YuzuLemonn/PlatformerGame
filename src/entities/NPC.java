@@ -30,8 +30,8 @@ public class NPC extends Entity {
     private int aniTick, aniIndex;
     private static final int ANI_SPEED = 30;
 
-    private float xDrawOffset = 21 * Game.SCALE;
-    private float yDrawOffset = 10 * Game.SCALE;
+//    private float xDrawOffset = 21 * Game.SCALE;
+//    private float yDrawOffset = 10 * Game.SCALE;
 
     public void loadLvlData(int[][] lvlData) {
         this.lvlData = lvlData;
@@ -117,7 +117,7 @@ public class NPC extends Entity {
         g.drawImage(frame, drawX, drawY, drawW, drawH, null);
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        g.setFont(new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
 
         FontMetrics fm = g.getFontMetrics();
         int nameWidth = fm.stringWidth(name);
