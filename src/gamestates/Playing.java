@@ -132,19 +132,21 @@ public class Playing extends State implements Statemethods {
     }
 
     private void initNPCs() {
+        String playerName = BossCutscene.getPlayerName();
+
         for (Point p : levelManager.getCurrentLevel().getMotherSpawns()) {
             NPC npc = new NPC(
                     p.x, p.y,
                     "Mother",
                     new String[]{
-                            "Dear, come back inside. The tunnels aren’t safe.",
-                            "Player: I’m not afraid of the dark anymore.",
-                            "That’s exactly why I’m afraid for you.",
-                            "Player: I want to see the surface. I want to know if the stories are true.",
-                            "The surface is filled with danger. Creatures, wars... things we don’t understand.",
-                            "Player: Down here feels like a cage.",
-                            "...If you leave, there’s no promise you’ll return.",
-                            "Player: I know. But I have to try.",
+                            "Dear, come back inside. The tunnels aren't safe.",
+                            playerName + ": I'm not afraid of the dark anymore.",
+                            "That's exactly why I'm afraid for you.",
+                            playerName + ": I want to see the surface. I want to know if the stories are true.",
+                            "The surface is filled with danger. Creatures, wars... things we don't understand.",
+                            playerName + ": Down here feels like a cage.",
+                            "...If you leave, there's no promise you'll return.",
+                            playerName + ": I know. But I have to try.",
                             "..."
                     },
                     this
@@ -154,18 +156,36 @@ public class Playing extends State implements Statemethods {
         }
 
         for (Point p : levelManager.getCurrentLevel().getMerchantSpawns()) {
-            NPC npc = new NPC(
-                    p.x, p.y,
-                    "Merchant",
-                    new String[]{
-                            "Welcome to my shop!",
-                            "I have wares if you have coin."
-                    },
-                    this
-            );
-            npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
-            npc.setShopkeeper(true);
-            npcs.add(npc);
+            if (levelManager.getLvlIndex() == 1) {
+                NPC npc = new NPC(
+                        p.x, p.y,
+                        "Merchant1",
+                        new String[]{
+                                "Raineir: Supplies for a journey upward? Not many try.",
+                                playerName + ": I don't plan to turn back.",
+                                "Raineir: Then take these supplies. You'll need them.",
+                                playerName + ": Thank you.",
+                                "Raineir: May the stone guide your path."
+                        },
+                        this
+                );
+                npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+                npc.setGiftOnEnd(2, 2);
+                npcs.add(npc);
+            } else {
+                NPC npc = new NPC(
+                        p.x, p.y,
+                        "Merchant",
+                        new String[]{
+                                "Welcome to my shop!",
+                                "I have wares if you have coin."
+                        },
+                        this
+                );
+                npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+                npc.setShopkeeper(true);
+                npcs.add(npc);
+            }
         }
     }
 
@@ -631,11 +651,11 @@ public class Playing extends State implements Statemethods {
         BossCutscene.CutsceneLine[] lines = null;
 
         if (lvl == 2) {
-            lines = BossCutscene.BOSS1_LINES;
+            lines = BossCutscene.getBoss1Lines();
         } else if (lvl == 4) {
-            lines = BossCutscene.BOSS2_LINES;
+            lines = BossCutscene.getBoss2Lines();
         } else if (lvl == 6) {
-            lines = BossCutscene.BOSS3_LINES;
+            lines = BossCutscene.getBoss3Lines();
         }
 
         if (lines != null) {

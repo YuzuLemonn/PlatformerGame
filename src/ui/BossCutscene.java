@@ -5,6 +5,8 @@ import java.awt.*;
 
 public class BossCutscene {
 
+    protected static String playerName = "Player";
+
     public static class CutsceneLine {
         public String speaker;
         public String text;
@@ -15,26 +17,30 @@ public class BossCutscene {
     }
 
     // World 1 — Worm boss
-    public static final CutsceneLine[] BOSS1_LINES = {
-        new CutsceneLine("???",    "I am the Worm-Keeper. None leave Abyssos."),
-        new CutsceneLine("Player", "I'm done living beneath everything."),
-        new CutsceneLine("???",    "Return… or be devoured."),
-        new CutsceneLine("Player", "Then I'll rise — or die trying.")
-    };
+    public static CutsceneLine[] getBoss1Lines() {
+        return new CutsceneLine[] {
+            new CutsceneLine("Josiah",    "I am the Worm-Keeper. None leave Abyssos."),
+            new CutsceneLine(playerName,  "I'm done living beneath everything."),
+            new CutsceneLine("Josiah",    "Return… or be devoured."),
+            new CutsceneLine(playerName,  "Then I'll rise — or die trying.")
+        };
+    }
 
-    // World 2 — Demon boss
-    public static final CutsceneLine[] BOSS2_LINES = {
-        new CutsceneLine("???",    "No mortal shall pass this abyss."),
-        new CutsceneLine("Player", "I didn't come this far to stop now."),
-        new CutsceneLine("???",    "Then your soul will remain here forever.")
-    };
+    public static CutsceneLine[] getBoss2Lines() {
+        return new CutsceneLine[] {
+            new CutsceneLine("Edvard",   "No mortal shall pass this abyss."),
+            new CutsceneLine(playerName, "I didn't come this far to stop now."),
+            new CutsceneLine("Edvard",   "Then your soul will remain here forever.")
+        };
+    }
 
-    // World 3 — Golem boss
-    public static final CutsceneLine[] BOSS3_LINES = {
-        new CutsceneLine("???",    "Speak your name, trespasser."),
-        new CutsceneLine("Player", "I seek the surface. I have come too far to turn back."),
-        new CutsceneLine("???",    "Then face the truth of the forest."),
-    };
+    public static CutsceneLine[] getBoss3Lines() {
+        return new CutsceneLine[] {
+            new CutsceneLine("Neo",      "Speak your name, trespasser."),
+            new CutsceneLine(playerName, "I seek the surface. I have come too far to turn back."),
+            new CutsceneLine("Neo",      "Then face the truth of the forest.")
+        };
+    }
 
     // ── state ──────────────────────────────────────────────
     private CutsceneLine[] lines;
@@ -117,7 +123,7 @@ public class BossCutscene {
         if (lines == null || lineIndex >= lines.length) return;
 
         CutsceneLine current = lines[lineIndex];
-        boolean isPlayer = current.speaker.equals("Player");
+        boolean isPlayer = current.speaker.equals(playerName);
 
         // Speaker name
         g.setFont(new Font("Monospaced", Font.BOLD, (int) (10 * Game.SCALE)));
@@ -198,5 +204,13 @@ public class BossCutscene {
             g.setColor(i == lineIndex ? Color.WHITE : new Color(60, 60, 60));
             g.fillOval(startX + i * (dotSize + gap), dotY, dotSize, dotSize);
         }
+    }
+
+    public static void setPlayerName(String name) {
+        playerName = name;
+    }
+
+    public static String getPlayerName() {
+        return playerName;  
     }
 }

@@ -70,7 +70,6 @@ public class EnemyManager {
             float bossX = level.getLevelData()[0].length / 2f * Game.TILES_SIZE;
             float bossY = (Game.TILES_IN_HEIGHT - 4) * Game.TILES_SIZE - (120 * Game.SCALE);
             boss = new BossGolem(bossX, bossY, playing);
-            System.out.println("DEBUG: BossGolem spawned at level " + lvlIndex);
         }
         
         for (Slime s : slimes) s.setPlaying(playing);
@@ -122,8 +121,8 @@ public class EnemyManager {
                             drawHeight,
                             null);
                 }
-                z.drawHitbox(g, xLvlOffset);
-                z.drawAttackBox(g, xLvlOffset);
+                //z.drawHitbox(g, xLvlOffset);
+                //z.drawAttackBox(g, xLvlOffset);
             }
         }
     }
@@ -139,8 +138,8 @@ public class EnemyManager {
                         (int) s.getHitbox().y - SLIME_DRAWOFFSET_Y + (int) s.getPushDrawOffset(),
                         SLIME_WIDTH * s.flipW(), SLIME_HEIGHT, null);
             }
-            s.drawHitbox(g, xLvlOffset);
-            s.drawAttackBox(g, xLvlOffset);
+            //s.drawHitbox(g, xLvlOffset);
+            //s.drawAttackBox(g, xLvlOffset);
         }
     }
 
@@ -155,8 +154,8 @@ public class EnemyManager {
                         (int) gb.getHitbox().y - GOBLIN_DRAWOFFSET_Y + (int) gb.getPushDrawOffset(),
                         GOBLIN_WIDTH * gb.flipW(), GOBLIN_HEIGHT, null);
             }
-            gb.drawHitbox(g, xLvlOffset);
-            gb.drawAttackBox(g, xLvlOffset);
+            //gb.drawHitbox(g, xLvlOffset);
+            //gb.drawAttackBox(g, xLvlOffset);
         }
     }
 

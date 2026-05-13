@@ -22,7 +22,6 @@ public abstract class BaseBoss extends Enemy {
     protected Playing playing;
     protected ArrayList<Projectile> projectiles = new ArrayList<>();
 
-    // animation
     protected BufferedImage[] moveFrames;
     protected BufferedImage[] attackFrames;
     protected BufferedImage[] hitFrames;
@@ -31,7 +30,6 @@ public abstract class BaseBoss extends Enemy {
     protected int aniTick = 0, aniIndex = 0;
     protected static final int ANI_SPEED = 15;
 
-    // boss bar
     public static final int BAR_WIDTH  = 500;
     public static final int BAR_HEIGHT = 22;
 
@@ -74,7 +72,6 @@ public abstract class BaseBoss extends Enemy {
         }
     }
 
-    // override in subclass if phase 2 needs special setup
     protected void onPhaseTransition() {}
 
     protected void updateProjectiles(int[][] lvlData, Player player) {
@@ -86,7 +83,6 @@ public abstract class BaseBoss extends Enemy {
         }
     }
 
-    // override to apply special effects (e.g. burn)
     protected void onProjectileHit(Projectile p, Player player) {
         player.changeHealth(-GetEnemyDmgBoss(enemyType));
         p.setInactive();
@@ -164,16 +160,13 @@ public abstract class BaseBoss extends Enemy {
         int barX = (Game.GAME_WIDTH - BAR_WIDTH) / 2;
         int barY = Game.GAME_HEIGHT - 50;
 
-        // background
         g.setColor(new Color(30, 0, 0));
         g.fillRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
 
-        // health fill — orange in phase 2
         float pct = (float) currentHealth / maxHealth;
         g.setColor(phase == 2 ? new Color(255, 120, 0) : new Color(200, 0, 0));
         g.fillRect(barX, barY, (int)(BAR_WIDTH * pct), BAR_HEIGHT);
 
-        // border
         g.setColor(Color.WHITE);
         g.drawRect(barX, barY, BAR_WIDTH, BAR_HEIGHT);
 

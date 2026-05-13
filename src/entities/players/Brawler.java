@@ -1,6 +1,7 @@
 package entities.players;
 
 import entities.Player;
+import entities.Projectile;
 import gamestates.Playing;
 import main.Game;
 import utilz.LoadSave;
@@ -9,6 +10,8 @@ import static utilz.Constants.DamageConstants.*;
 import static utilz.Constants.PlayerConstants.*;
 
 public class Brawler extends Player {
+
+    private boolean skill3SecondShotFired = false;
 
     public Brawler(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height, playing);
@@ -43,57 +46,56 @@ public class Brawler extends Player {
     }
 
     @Override
-    protected String getCharacterName() { return "Brawler"; }
+    public void update() {
+        super.update();
 
-    @Override
-    protected boolean isProjectileAttack() { 
-        return false; 
+        if (skill3 && state == SKILL3) {
+            if (aniIndex == 12 && !skill3SecondShotFired) {
+                skill3SecondShotFired = true;
+                spawnSkill3Projectile();
+            }
+        } else {
+            skill3SecondShotFired = false;
+        }
+    }
+
+    private void spawnSkill3Projectile() {
+        int dir = (flipW == 1) ? 1 : -1;
+        float projX = (dir == 1)
+                ? hitbox.x + hitbox.width
+                : hitbox.x - (16 * Game.SCALE);
+        float projY = hitbox.y + hitbox.height / 2 - (4 * Game.SCALE);
+        projectiles.add(new Projectile(projX, projY, dir, playing,
+                "sprites/Brawler/Attack3_Projectile_Brawler.png", 4, BRAWLER_SKILL3_DMG));
+        playing.getGame().getAudioPlayer().playAttackSound();
     }
 
     @Override
-    protected void spawnProjectile() {} // melee, no projectile
+    protected String getCharacterName() { return "Brawler"; }
+
+    @Override
+    protected boolean isProjectileAttack() { return false; }
+
+    @Override
+    protected void spawnProjectile() {}
 
     @Override
     protected void useSkill2() {
-        //if (!useStamina(STAMINA_COST_SKILL2)) return;
         playing.checkEnemyHit(attackBox, BRAWLER_SKILL2_DMG);
         playing.getGame().getAudioPlayer().playAttackSound();
     }
 
     @Override
     protected void useSkill3() {
-        //if (!useStamina(STAMINA_COST_SKILL3)) return;
-        playing.checkEnemyHit(attackBox, BRAWLER_SKILL3_DMG);
-        playing.getGame().getAudioPlayer().playAttackSound();
+        skill3SecondShotFired = false;
+        spawnSkill3Projectile();
     }
 
-    @Override
-    protected int getAttackHitFrame() { 
-        return 2; 
-    }
+    @Override protected int getAttackHitFrame()  { return 2; }
+    @Override protected int getSkill2HitFrame()  { return 3; }
+    @Override protected int getSkill3HitFrame()  { return 8; }
 
-    @Override
-    protected int getSkill2HitFrame() { 
-        return 3; 
-    }
-
-    @Override
-    protected int getSkill3HitFrame() { 
-        return 7; 
-    }
-
-    @Override
-    protected int getAttackStaminaCost() {
-        return STAMINA_COST_ATTACK;
-    }
-
-    @Override
-    protected int getSkill2StaminaCost() {
-        return STAMINA_COST_SKILL2;
-    }
-
-    @Override
-    protected int getSkill3StaminaCost() {
-        return STAMINA_COST_SKILL3;
-    }
+    @Override protected int getAttackStaminaCost() { return STAMINA_COST_ATTACK; }
+    @Override protected int getSkill2StaminaCost() { return STAMINA_COST_SKILL2; }
+    @Override protected int getSkill3StaminaCost() { return STAMINA_COST_SKILL3; }
 }

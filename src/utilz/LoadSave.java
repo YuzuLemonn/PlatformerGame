@@ -54,6 +54,7 @@ public class LoadSave {
     public static final String DEATH_SCREEN = "death_screen.png";
 
     public static final String MOTHER_IDLE   = "sprites/NPC/Mother.png";
+    public static final String MERCHANT1_IDLE = "sprites/NPC/Merchant1.png";
     public static final String MERCHANT2_IDLE = "sprites/NPC/Merchant2.png";
 
     public static final String GOLD_ICON   = "gold_icon.png";

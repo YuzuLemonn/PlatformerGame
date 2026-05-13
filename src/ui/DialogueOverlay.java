@@ -32,12 +32,14 @@ public class DialogueOverlay {
     private int    textSpeed     = 3;
     private String fullText      = "";
 
+    private BufferedImage merchant1Portrait;
     private BufferedImage motherPortrait;
     private BufferedImage merchantPortrait;
 
     public DialogueOverlay(Playing playing) {
         this.playing = playing;
         motherPortrait   = LoadSave.GetSpriteAtlas(LoadSave.MOTHER_IDLE);   // or a dedicated portrait image
+        merchant1Portrait = LoadSave.GetSpriteAtlas(LoadSave.MERCHANT1_IDLE);
         merchantPortrait = LoadSave.GetSpriteAtlas(LoadSave.MERCHANT2_IDLE);
     }
 
@@ -70,10 +72,18 @@ public class DialogueOverlay {
         g.setColor(Color.WHITE);
         g.drawRoundRect(boxX, boxY, boxW, boxH, 10, 10);
 
-        BufferedImage sheet = npc.getName().equals("Merchant") ? merchantPortrait : motherPortrait;
+        BufferedImage sheet;
+        int frameCount;
+
+        switch (npc.getName()) {
+            case "Merchant"  -> { sheet = merchantPortrait;  frameCount = 4; }
+            case "Merchant1" -> { sheet = merchant1Portrait; frameCount = 4; }
+            default          -> { sheet = motherPortrait;    frameCount = 5; }
+        }
+
         if (sheet != null) {
+            int frameW = sheet.getWidth() / frameCount;
             int frameH = sheet.getHeight();
-            int frameW = sheet.getWidth() / (npc.getName().equals("Merchant") ? 4 : 5);
             BufferedImage portrait = sheet.getSubimage(0, 0, frameW, frameH);
             g.drawImage(portrait, portraitX, portraitY, portraitSize, portraitSize, null);
         } else {
@@ -86,7 +96,8 @@ public class DialogueOverlay {
         // NPC name
         g.setFont(new Font("Monospaced", Font.BOLD, (int)(9 * Game.SCALE)));
         g.setColor(Color.YELLOW);
-        g.drawString(npc.getName(), nameX, textY - (int)(16 * Game.SCALE));
+        String displayName = npc.getName().equals("Merchant1") ? "Raineir" : npc.getName();
+        g.drawString(displayName, nameX, textY - (int)(16 * Game.SCALE));
 
         // dialogue text
         g.setFont(new Font("Monospaced", Font.PLAIN, (int)(7 * Game.SCALE)));

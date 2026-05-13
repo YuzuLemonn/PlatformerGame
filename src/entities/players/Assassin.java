@@ -167,7 +167,6 @@ public class Assassin extends Player {
                     
                     int knockbackDir = (hitbox.x > backstabTarget.getHitbox().x) ? RIGHT : LEFT;
                     backstabTarget.hurt(damage, knockbackDir);
-                    System.out.println("Backstab! Damage: " + damage);
                 }
                 
                 // End of skill

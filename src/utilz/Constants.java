@@ -94,9 +94,9 @@ public class Constants {
 
         public static int GetMaxHealth(int enemy_type) {
             switch(enemy_type) {
-                case ZOMBIE: return 1;
-                case SLIME:  return 1;
-                case GOBLIN: return 1;
+                case ZOMBIE: return 15;
+                case SLIME:  return 25;
+                case GOBLIN: return 35;
                 default: return 1;
             }
         }
@@ -122,8 +122,8 @@ public class Constants {
         public static final int ASSASSIN_SKILL3_DMG = 35;
 
         public static final int BRAWLER_ATTACK_DMG  = 15;
-        public static final int BRAWLER_SKILL2_DMG  = 30;
-        public static final int BRAWLER_SKILL3_DMG  = 40;
+        public static final int BRAWLER_SKILL2_DMG  = 25;
+        public static final int BRAWLER_SKILL3_DMG  = 15;
     }
 
     public static class ObjectConstants {

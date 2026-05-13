@@ -162,7 +162,7 @@ public class BossDemon extends BaseBoss {
         return 80; 
     }
     @Override protected String getBossName() { 
-        return "INFERNO BEAST"; 
+        return "Edvard"; 
     }
 
     protected float getSpawnX(levels.Level level) {

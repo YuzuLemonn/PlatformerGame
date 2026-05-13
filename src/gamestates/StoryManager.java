@@ -2,6 +2,7 @@ package gamestates;
 
 import audio.AudioPlayer;
 import main.Game;
+import ui.BossCutscene;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,6 +16,7 @@ public class StoryManager {
     private ArrayList<Scene> scenes = new ArrayList<>();
     private int currentSceneIndex = 0;
     private int currentLineIndex = 0;
+    private int endingSceneIndex = -1;
 
     // cutscene rendering
     private float textAlpha = 0f;
@@ -84,6 +86,7 @@ public class StoryManager {
         scenes.add(new Scene(SceneType.BOSS, 6, AudioPlayer.LEVEL_1));
 
         // ENDING
+        endingSceneIndex = scenes.size();
         scenes.add(new Scene("Ser Christian", new String[]{
                 "Ser Christian:  You've ascended...",
                 "  not just through worlds, but within yourself.",
@@ -101,6 +104,22 @@ public class StoryManager {
     }
 
     public void startStory() {
+        String name = BossCutscene.getPlayerName();
+        scenes.set(endingSceneIndex, new Scene("Ser Christian", new String[]{
+            "Ser Christian:  You've ascended...",
+            "  not just through worlds, but within yourself.",
+            name + ":  So... I belong here?",
+            "Ser Christian:  The surface is not easy.",
+            name + ":  I didn't expect it to be.",
+            "Ser Christian:  Then welcome to the world above.",
+            "The sky stretched endlessly above me.",
+            "For the first time, I felt truly free.",
+            name + " (Inner Voice):",
+            "  I left the darkness seeking the light...",
+            "  but along the way, I found who I truly am.",
+            "Press SPACE for credits"
+        }, AudioPlayer.MENU_1));
+
         currentSceneIndex = 0;
         currentLineIndex = 0;
         textAlpha = 0f;
@@ -235,4 +254,6 @@ public class StoryManager {
     public boolean currentSceneIsBoss() {
         return getCurrentScene().type == SceneType.BOSS;
     }
+
+    
 }

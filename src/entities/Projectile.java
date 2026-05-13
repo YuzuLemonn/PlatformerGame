@@ -29,8 +29,8 @@ public class Projectile {
         this.playing = playing;
         this.damage = damage;
         hitbox = new Rectangle2D.Float(x, y,
-                (int)(16 * Game.SCALE),
-                (int)(8  * Game.SCALE));
+                (int)(18 * Game.SCALE),
+                (int)(10  * Game.SCALE));
         loadFrames(spritePath, frameCount);
     }
 

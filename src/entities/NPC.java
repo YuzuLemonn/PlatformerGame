@@ -29,6 +29,9 @@ public class NPC extends Entity {
     private BufferedImage[][] animations;
     private int aniTick, aniIndex;
     private static final int ANI_SPEED = 30;
+    private int giftHpPotions   = 0;
+    private int giftManaPotions = 0;
+    private boolean giftGiven   = false;
 
 //    private float xDrawOffset = 21 * Game.SCALE;
 //    private float yDrawOffset = 10 * Game.SCALE;
@@ -56,9 +59,10 @@ public class NPC extends Entity {
 
     private String resolveSpritePath(String name) {
         switch (name) {
-            case "Merchant": return LoadSave.MERCHANT2_IDLE;
-            case "Mother":   return LoadSave.MOTHER_IDLE;
-            default:         return LoadSave.MOTHER_IDLE;
+            case "Merchant1": return LoadSave.MERCHANT1_IDLE;
+            case "Merchant":  return LoadSave.MERCHANT2_IDLE;
+            case "Mother":    return LoadSave.MOTHER_IDLE;
+            default:          return LoadSave.MOTHER_IDLE;
         }
     }
 
@@ -69,8 +73,10 @@ public class NPC extends Entity {
             return;
         }
 
-        boolean isMerchant = idleSpritePath.equals(LoadSave.MERCHANT2_IDLE);
-        int frames      = isMerchant ? 4 : 5;
+        int frames;
+        if (idleSpritePath.equals(LoadSave.MERCHANT2_IDLE)) frames = 4;
+        else if (idleSpritePath.equals(LoadSave.MERCHANT1_IDLE)) frames = 4;
+        else frames = 5;
         int frameHeight = img.getHeight();
         int frameWidth  = img.getWidth() / frames;
 
@@ -139,6 +145,13 @@ public class NPC extends Entity {
         if (dialogueIndex >= dialogueLines.length) {
             dialogueActive = false;
             dialogueIndex = 0;
+
+            if (!giftGiven && (giftHpPotions > 0 || giftManaPotions > 0)) {
+                Player player = playing.getPlayer();
+                for (int i = 0; i < giftHpPotions;   i++) player.addPotion();
+                for (int i = 0; i < giftManaPotions;  i++) player.addManaPotion();
+                giftGiven = true;
+            }
         }
     }
 
@@ -166,10 +179,21 @@ public class NPC extends Entity {
         return displayedText.equals(getCurrentLine());
     }
 
-    public boolean isShopkeeper()     { return isShopkeeper; }
-    public boolean isDialogueActive() { return dialogueActive; }
-    public String  getCurrentLine()   { return dialogueLines[dialogueIndex]; }
-    public String  getName()          { return name; }
+    public boolean isShopkeeper()     { 
+        return isShopkeeper; 
+    }
+
+    public boolean isDialogueActive() { 
+        return dialogueActive; 
+    }
+
+    public String  getCurrentLine()   { 
+        return dialogueLines[dialogueIndex]; 
+    }
+
+    public String  getName()          { 
+        return name; 
+    }
 
         public void saveShopCheckpoint() {
         if (shopUI != null) shopUI.saveCheckpoint();
@@ -177,5 +201,10 @@ public class NPC extends Entity {
 
     public void restoreShopCheckpoint() {
         if (shopUI != null) shopUI.restoreCheckpoint();
+    }
+
+    public void setGiftOnEnd(int hpPotions, int manaPotions) {
+        this.giftHpPotions   = hpPotions;
+        this.giftManaPotions = manaPotions;
     }
 }

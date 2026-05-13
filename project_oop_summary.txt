@@ -1,0 +1,104 @@
+PlatformerGame OOP Analysis
+===========================
+
+Total Java files: 59
+Classes: 52
+Abstract classes: 4
+Interfaces: 1
+Enums: 2
+
+Methods: 285
+Constructors: 39
+Getters: 61
+Setters: 17
+Try blocks: 1
+Catch blocks: 0
+Switch statements: 15
+Case labels: 59
+
+Access modifiers counts:
+  public: 373
+  private: 268
+  protected: 87
+
+Data types used (unique types and occurrences):
+  int: 215
+  void: 173
+  boolean: 55
+  package: 50
+  float: 47
+  public: 41
+  return: 37
+  String: 32
+  BufferedImage[]: 21
+  BufferedImage: 20
+  Playing: 15
+  Game: 7
+  BufferedImage[][]: 6
+  String[]: 6
+  ArrayList<Point>: 4
+  AudioOptions: 4
+  Level: 4
+  Point: 4
+  Rectangle2D.Float: 4
+  UrmButton: 4
+  double: 4
+  ArrayList<Goblin>: 3
+  ArrayList<Slime>: 3
+  ArrayList<Zombie>: 3
+  FontMetrics: 3
+  GamePanel: 3
+  NPC: 3
+  Rectangle: 3
+  else: 3
+  int[][]: 3
+  long: 3
+  ArrayList<Portal>: 2
+  ArrayList<Spike>: 2
+  AudioPlayer: 2
+  CharacterSelect: 2
+  Credits: 2
+  GameOptions: 2
+  Graphics2D: 2
+  Menu: 2
+  Set<Integer>: 2
+  StoryManager: 2
+  boolean[]: 2
+  int[]: 2
+  ArrayList<Level>: 1
+  ArrayList<NPC>: 1
+  ArrayList<Projectile>: 1
+  ArrayList<Scene>: 1
+  BossCutscene: 1
+  CUTSCENE,: 1
+  CharacterCard[]: 1
+  CharacterStats: 1
+  Color: 1
+  DialogueOverlay: 1
+  Dimension: 1
+  EnemyManager: 1
+  GameCompletedOverlay: 1
+  GameOverOverlay: 1
+  GameWindow: 1
+  Gamestate: 1
+  JFrame: 1
+  KeyboardInputs: 1
+  LevelCompletedOverlay: 1
+  LevelManager: 1
+  LevelNameOverlay: 1
+  MenuButton: 1
+  MenuButton[]: 1
+  MouseInputs: 1
+  ObjectManager: 1
+  PLAYING,: 1
+  PauseOverlay: 1
+  Player: 1
+  Random: 1
+  SceneType: 1
+  ShopUI: 1
+  SoundButton: 1
+  Thread: 1
+  VolumeButton: 1
+  entities.BaseBoss: 1
+  float[]: 1
+  startX,: 1

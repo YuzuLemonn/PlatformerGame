@@ -57,7 +57,6 @@ public class BossGolem extends BaseBoss {
     protected void onPhaseTransition() {
         // At 50% HP, unlock projectiles
         canShoot = true;
-        System.out.println("TIDAL GOLEM has unlocked WATER PROJECTILES!");
     }
 
     @Override
@@ -168,15 +167,10 @@ public class BossGolem extends BaseBoss {
             BOSS3_WATER_DAMAGE
             
         );
-        System.out.println("Created projectile - dir: " + dir + ", X: " + spawnX + ", Y: " + spawnY);
-        System.out.println("Projectile active: " + water.isActive() + ", hitbox X: " + water.getHitbox().x);
         projectiles.add(water);
-        System.out.println("Total boss projectiles: " + projectiles.size());
         water.setSpeed(PROJECTILE_SPEED);
         water.setSpawnX(spawnX);
         projectiles.add(water);
-        System.out.println("Water projectile!");
-        System.out.println("Projectile added to boss list. Total projectiles: " + projectiles.size());
     }
 
     @Override
@@ -199,7 +193,6 @@ public class BossGolem extends BaseBoss {
                     if (hitbox.intersects(player.getHitbox())) {
                         int dmg = GetEnemyDmgBoss(BOSS_3);
                         player.changeHealth(-dmg);
-                        System.out.println("Melee hit! Damage: " + dmg);
                     }
                 }
             }
@@ -236,7 +229,6 @@ public class BossGolem extends BaseBoss {
     @Override
     public void hurt(int amount) {
         currentHealth -= amount;
-        System.out.println("Boss Health: " + currentHealth + "/" + maxHealth);
         
         // Phase transition at 50% health - UNLOCK PROJECTILES
         if (!phaseTransitioned && currentHealth < maxHealth * 0.5f) {
@@ -287,7 +279,7 @@ public class BossGolem extends BaseBoss {
     
     @Override
     protected String getBossName() { 
-        return (phase == 2) ? "TIDAL GOLEM (Projectiles Unlocked)" : "TIDAL GOLEM"; 
+        return (phase == 2) ? "Neo (Projectiles Unlocked)" : "Neo"; 
     }
 
     @Override

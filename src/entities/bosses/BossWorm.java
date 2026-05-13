@@ -32,8 +32,6 @@ public class BossWorm extends BaseBoss {
         hitFrames = loadStrip("sprites/Boss1/Boss1_Hit.png", 3);
         attackFrames = loadStrip("sprites/Boss1/Boss1_Attack.png",      5);
         deadFrames = loadStrip("sprites/Boss1/Boss1_Dead.png",     5);
-        System.out.println("moveFrames null? " + (moveFrames == null || moveFrames[0] == null));
-    System.out.println("hitFrames null? "  + (hitFrames  == null || hitFrames[0]  == null));
     }
 
     @Override
@@ -131,9 +129,18 @@ public class BossWorm extends BaseBoss {
             width * flipW, height, null);
     }
 
-    @Override protected int getAttackCooldown() { return 80; }
-    @Override protected int getPhase2Cooldown() { return 50; }
-    @Override protected String getBossName()     { return "CAVE WORM"; }
+    @Override protected int getAttackCooldown() { 
+        return 80; 
+    }
+
+    @Override protected int getPhase2Cooldown() { 
+        return 50; 
+    }
+
+    @Override protected String getBossName()     { 
+        return "Josiah"; 
+    }
+
 
     @Override
     public void resetEnemy() {

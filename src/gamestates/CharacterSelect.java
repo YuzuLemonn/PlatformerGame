@@ -4,10 +4,11 @@ import entities.players.Assassin;
 import entities.players.Brawler;
 import entities.players.Mage;
 import main.Game;
+import ui.BossCutscene;
+import utilz.Constants.CharacterStats;
 import utilz.LoadSave;
 
 import static utilz.Constants.DamageConstants.*;
-import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.PlayerConstants.MAX_STAMINA;
 import static utilz.Constants.CharacterStats;
 
@@ -105,16 +106,19 @@ public class CharacterSelect extends State implements Statemethods {
         case "Brawler" -> {
             playing.setPlayer(new Brawler(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
             playing.getPlayer().setPlayerClass("BRAWLER");
+            BossCutscene.setPlayerName("Sett");
         }
 
         case "Mage" -> {
             playing.setPlayer(new Mage(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
             playing.getPlayer().setPlayerClass("MAGE");
+            BossCutscene.setPlayerName("Sonia");
         }
-
+        
         case "Assassin" -> {
             playing.setPlayer(new Assassin(200, 200, (int)(64*Game.SCALE), (int)(40*Game.SCALE), playing));
             playing.getPlayer().setPlayerClass("ASSASSIN");
+            BossCutscene.setPlayerName("Sylas");
         }
     }
 
