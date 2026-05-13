@@ -9,6 +9,7 @@ import utilz.LoadSave;
 import static utilz.Constants.DamageConstants.*;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.PlayerConstants.MAX_STAMINA;
+import static utilz.Constants.CharacterStats;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

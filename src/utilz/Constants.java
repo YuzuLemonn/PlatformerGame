@@ -6,6 +6,31 @@ public class Constants {
     public static final float GRAVITY = 0.04f * Game.SCALE;
     public static final int ANI_SPEED = 25;
 
+    public static class CharacterStats {
+    public int hp;
+    public int stamina;
+    public String skill1Name;
+    public int skill1Dmg;
+    public String skill2Name;
+    public int skill2Dmg;
+    public String skill3Name;
+    public int skill3Dmg;
+
+    public CharacterStats(int hp, int stamina,
+                          String skill1Name, int skill1Dmg,
+                          String skill2Name, int skill2Dmg,
+                          String skill3Name, int skill3Dmg) {
+        this.hp         = hp;
+        this.stamina    = stamina;
+        this.skill1Name = skill1Name;
+        this.skill1Dmg  = skill1Dmg;
+        this.skill2Name = skill2Name;
+        this.skill2Dmg  = skill2Dmg;
+        this.skill3Name = skill3Name;
+        this.skill3Dmg  = skill3Dmg;
+    }
+    }
+
     public static class EnemyConstants {
         public static final int SLIME = 22;
         public static final int GOBLIN = 44;
@@ -37,6 +62,8 @@ public class Constants {
         public static final int ZOMBIE_HEIGHT = (int)(ZOMBIE_HEIGHT_DEFAULT * Game.SCALE);
         public static final int ZOMBIE_DRAWOFFSET_X = (int)(5 * Game.SCALE);
         public static final int ZOMBIE_DRAWOFFSET_Y = (int)(8 * Game.SCALE);
+
+        
 
         public static int GetSpriteAmount(int enemy_type, int enemy_state) {
             switch(enemy_state) {

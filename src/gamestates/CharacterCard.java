@@ -4,6 +4,7 @@ import main.Game;
 import utilz.LoadSave;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import static utilz.Constants.CharacterStats;
 
 public class CharacterCard {
     private String name;

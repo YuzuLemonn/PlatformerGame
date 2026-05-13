@@ -56,6 +56,10 @@ public class LoadSave {
     public static final String MOTHER_IDLE   = "sprites/NPC/Mother.png";
     public static final String MERCHANT2_IDLE = "sprites/NPC/Merchant2.png";
 
+    public static final String GOLD_ICON   = "gold_icon.png";
+    public static final String HEALTH_ICON = "health_icon.png";
+    public static final String MANA_ICON   = "mana_icon.png";
+
     public static final String TRAP_ATLAS = "trap_atlas.png";
     public static final String PORTAL_ATLAS = "portal.png";
 
@@ -67,6 +71,12 @@ public class LoadSave {
         BufferedImage img = null;
         InputStream is = LoadSave.class.getResourceAsStream("/" + fileName);
 
+
+    if (is == null) {
+        System.err.println("[LoadSave] Resource not found: " + fileName);
+        return null;   // ← return null instead of crashing
+    }
+    
         try {
             img = ImageIO.read(is);
 

@@ -34,6 +34,15 @@ public abstract class Player extends Entity {
     private int potionHealAmount = 50;
     private int gold = 0;
     private float damageMultiplier = 1.0f;
+    private int manaPotionCount = 0;
+    private int manaRestoreAmount = 40;
+    private int checkpointManaPotions = 0;
+
+    // Icons
+    private BufferedImage goldIcon;
+    private BufferedImage healthIcon;
+    private BufferedImage manaIcon;
+    private int iconSize = (int)(20 * Game.SCALE);
     
     protected abstract void loadAnimations();
     protected abstract String getCharacterName();
@@ -100,6 +109,13 @@ public abstract class Player extends Entity {
         this.maxHealth = 100;
         this.currentHealth = maxHealth;
         this.walkSpeed = Game.SCALE * 1.0f;
+        loadIcons(); 
+    }
+
+    private void loadIcons() {
+    goldIcon   = LoadSave.GetSpriteAtlas(LoadSave.GOLD_ICON);
+    healthIcon = LoadSave.GetSpriteAtlas(LoadSave.HEALTH_ICON);
+    manaIcon   = LoadSave.GetSpriteAtlas(LoadSave.MANA_ICON);
     }
 
     public void setSpawn(Point spawn) {
@@ -256,33 +272,71 @@ public abstract class Player extends Entity {
     }
 
     private void drawUI(Graphics g) {
-        g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+    // Status bar background
+    g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
 
-        g.setColor(Color.red);
+    // Health bar
+    g.setColor(Color.red);
+    g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+
+    // Stamina bar
+    int staminaWidth = (int)((stamina / (float) MAX_STAMINA) * staminaBarWidth);
+    g.setColor(Color.yellow);
+    g.fillRect(staminaBarXStart + statusBarX, staminaBarYStart + statusBarY, staminaWidth, staminaBarHeight);
+
+    // Not enough stamina message
+    if (staminaMessageTimer > 0) {
+        String msg = "Not enough stamina!";
+        g.setColor(new Color(255, 220, 0));
+        g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
+        FontMetrics fm = g.getFontMetrics();
+        int msgX = (Game.GAME_WIDTH - fm.stringWidth(msg)) / 2;
+        int msgY = (Game.GAME_HEIGHT / 2);
+        g.drawString(msg, msgX, msgY);
+    }
+
+    // Burn overlay
+    if (isBurning()) {
+        g.setColor(new Color(255, 100, 0, 150));
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+        g.setColor(new Color(255, 50, 0));
+        g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        g.drawString("BURNING!", statusBarX + healthBarXStart, statusBarY + healthBarYStart - 5);
+    }
 
-        int staminaWidth = (int)((stamina / (float) MAX_STAMINA) * staminaBarWidth);
-        g.setColor(Color.yellow);
-        g.fillRect(staminaBarXStart + statusBarX, staminaBarYStart + statusBarY, staminaWidth, staminaBarHeight);
+        // --- Icon HUD top right ---
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
+        FontMetrics fm = g2d.getFontMetrics();
 
-        // Not enough stamina message
-        if (staminaMessageTimer > 0) {
-            String msg = "Not enough stamina!";
-            g.setColor(new Color(255, 220, 0));
-            g.setFont(new Font("Arial", Font.BOLD, (int)(9 * Game.SCALE)));
-            FontMetrics fm = g.getFontMetrics();
-            int msgX = (Game.GAME_WIDTH  - fm.stringWidth(msg)) / 2;
-            int msgY = (Game.GAME_HEIGHT / 2);
-            g.drawString(msg, msgX, msgY);
-        }
+        int iconY    = (int)(8  * Game.SCALE);
+        int textYOff = (int)(14 * Game.SCALE);
+        int colGap   = (int)(6  * Game.SCALE);
+        int rowGap   = iconSize + (int)(4 * Game.SCALE);
 
-        if (isBurning()) {
-            g.setColor(new Color(255, 100, 0, 150));
-            g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
-            g.setColor(new Color(255, 50, 0));
-            g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
-            g.drawString("BURNING!", statusBarX + healthBarXStart, statusBarY + healthBarYStart - 5);
-        }
+        // Gold row
+        String goldText = "" + gold;
+        int goldX = Game.GAME_WIDTH - fm.stringWidth(goldText) - iconSize - colGap - (int)(10 * Game.SCALE);
+        if (goldIcon != null)
+            g2d.drawImage(goldIcon, goldX, iconY, iconSize, iconSize, null);
+        g2d.setColor(Color.YELLOW);
+        g2d.drawString(goldText, goldX + iconSize + colGap, iconY + textYOff);
+
+        // HP potion row
+        String hpText = "" + potionCount;
+        int hpX = Game.GAME_WIDTH - fm.stringWidth(hpText) - iconSize - colGap - (int)(10 * Game.SCALE);
+        if (healthIcon != null)
+            g2d.drawImage(healthIcon, hpX, iconY + rowGap, iconSize, iconSize, null);
+        g2d.setColor(new Color(255, 100, 100));
+        g2d.drawString(hpText, hpX + iconSize + colGap, iconY + rowGap + textYOff);
+
+        // Mana potion row
+        String mpText = "" + manaPotionCount;
+        int mpX = Game.GAME_WIDTH - fm.stringWidth(mpText) - iconSize - colGap - (int)(10 * Game.SCALE);
+        if (manaIcon != null)
+            g2d.drawImage(manaIcon, mpX, iconY + rowGap * 2, iconSize, iconSize, null);
+        g2d.setColor(new Color(100, 150, 255));
+        g2d.drawString(mpText, mpX + iconSize + colGap, iconY + rowGap * 2 + textYOff);
     }
 
     private void updateAnimationTick() {
@@ -557,14 +611,26 @@ public abstract class Player extends Entity {
         changeHealth(potionHealAmount);
     }
 
+    public void addManaPotion()        { manaPotionCount++; }
+    public int  getManaPotionCount()   { return manaPotionCount; }
+
+    public void useManaPotion() {
+        if (manaPotionCount <= 0) return;
+        manaPotionCount--;
+        stamina = Math.min(MAX_STAMINA, stamina + manaRestoreAmount);
+        System.out.println("[PLAYER] Used mana potion! Stamina: " + stamina + " Left: " + manaPotionCount);
+    }
+
         public void saveCheckpoint() {
         checkpointGold    = gold;
         checkpointPotions = potionCount;
+        checkpointManaPotions = manaPotionCount;
     }
 
     public void restoreCheckpoint() {
         gold        = checkpointGold;
         potionCount = checkpointPotions;
+        manaPotionCount  = checkpointManaPotions;
     }
 
     private void updateStamina() {

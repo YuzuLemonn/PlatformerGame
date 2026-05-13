@@ -241,21 +241,6 @@ public class Playing extends State implements Statemethods {
         if (enemyManager.getBoss() != null && enemyManager.getBoss().isActive())
             enemyManager.getBoss().drawBossBar(g);
 
-        g.setColor(Color.YELLOW);
-        g.setFont(new Font("Arial", Font.BOLD, (int)(8 * Game.SCALE)));
-        FontMetrics fm = g.getFontMetrics();
-
-        String goldText   = "Gold: " + player.getGold() + "g";
-        String potionText = "Potions: " + player.getPotionCount() + "  [H]";
-
-        g.drawString(goldText,
-                Game.GAME_WIDTH - fm.stringWidth(goldText) - (int)(10 * Game.SCALE),
-                (int)(20 * Game.SCALE));
-
-        g.setColor(new Color(150, 255, 150));
-        g.drawString(potionText,
-                Game.GAME_WIDTH - fm.stringWidth(potionText) - (int)(10 * Game.SCALE),
-                (int)(32 * Game.SCALE));
         
         // Dialogue and shop overlays
         if (dialogueActive && activeNPC != null)
@@ -395,6 +380,11 @@ public class Playing extends State implements Statemethods {
                 if (!shopActive && !dialogueActive)
                     player.usePotion();
                 break;
+
+            case KeyEvent.VK_G:
+            if (!shopActive && !dialogueActive)
+                player.useManaPotion();
+            break;
 
             case KeyEvent.VK_1:
             case KeyEvent.VK_2:
