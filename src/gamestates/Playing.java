@@ -54,6 +54,9 @@ public class Playing extends State implements Statemethods {
     private boolean shopActive = false;
     private boolean allEnemiesCleared = false;
 
+    private BossCutscene bossCutscene = null;
+private boolean cutsceneActive = false;
+
     public Playing(Game game) {
         super(game);
         initClasses();
@@ -85,6 +88,7 @@ public class Playing extends State implements Statemethods {
         initNPCs();
         xLvlOffset = 0;
         calcLvlOffset();
+        tryStartBossCutscene();
     }
 
     private void loadStartLevel() {
@@ -157,6 +161,11 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void update() {
+        if (cutsceneActive && bossCutscene != null) {
+        bossCutscene.update();
+        return;
+        }
+
         if (paused)
             pauseOverlay.update();
         else if (lvlCompleted)
@@ -268,6 +277,11 @@ public class Playing extends State implements Statemethods {
             levelCompletedOverlay.draw(g);
         else if (gameCompleted)
             gameCompletedOverlay.draw(g);
+
+        if (cutsceneActive && bossCutscene != null) {
+        bossCutscene.draw(g);
+        return;
+}
     }
 
     public void resetAll() {
@@ -285,6 +299,8 @@ public class Playing extends State implements Statemethods {
         enemyManager.resetAllEnemies();
         objectManager.resetAllObjects();
         for (NPC npc : npcs) npc.endDialogue();
+        cutsceneActive = false;
+        bossCutscene   = null;
     }
 
     public void setGameOver(boolean gameOver)       { this.gameOver = gameOver; }
@@ -351,6 +367,18 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void keyPressed(KeyEvent e) {
+
+        if (cutsceneActive && bossCutscene != null) {
+        if (e.getKeyCode() == KeyEvent.VK_E) {
+            boolean done = bossCutscene.advance();
+            if (done) {
+                cutsceneActive = false;
+                bossCutscene   = null;
+            }
+        }
+        return;
+        }
+
         if (debugMode) {
             if (e.getKeyCode() == KeyEvent.VK_B && e.isControlDown()) {
                 System.out.println("DEBUG: Ctrl+B detected!"); 
@@ -493,6 +521,7 @@ public class Playing extends State implements Statemethods {
         calcLvlOffset();
         npcs.clear();
         initNPCs();
+        tryStartBossCutscene();
     }
 
     public void setMaxLvlOffset(int lvlOffset) { 
@@ -580,6 +609,21 @@ public class Playing extends State implements Statemethods {
         playerDying = false;
         
         System.out.println("DEBUG: Teleported to Boss3! Player fully healed.");
+        tryStartBossCutscene();
+    }
+
+    private void tryStartBossCutscene() {
+    int lvl = levelManager.getLvlIndex();
+    BossCutscene.CutsceneLine[] lines = null;
+
+    if (lvl == 2) lines = BossCutscene.BOSS1_LINES;
+    else if (lvl == 4) lines = BossCutscene.BOSS2_LINES;
+    else if (lvl == 6) lines = BossCutscene.BOSS3_LINES;
+
+    if (lines != null) {
+        bossCutscene   = new BossCutscene(lines);
+        cutsceneActive = true;
+    }
     }
 }
 
