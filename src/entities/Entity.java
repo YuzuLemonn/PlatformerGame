@@ -11,7 +11,6 @@ import static utilz.Constants.Directions.UP;
 import static utilz.HelpMethods.CanMoveHere;
 
 import static utilz.Constants.GRAVITY;
-import static utilz.HelpMethods.CanMoveHere;
 import static utilz.HelpMethods.GetEntityYPosUnderRoofOrAboveFloor;
 
 public abstract class Entity {

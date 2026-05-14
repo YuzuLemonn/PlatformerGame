@@ -12,14 +12,12 @@ import java.awt.image.BufferedImage;
 
 import static utilz.Constants.GRAVITY;
 import static utilz.Constants.EnemyConstants.HIT;
-import static utilz.Constants.EnemyConstants.DEAD;
 import static utilz.Constants.BossConstants.*;
 import static utilz.Constants.Directions.*;
 
 public class BossDemon extends BaseBoss {
 
     private static final float WALK_SPEED   = 0.3f * Game.SCALE; // slow
-    private static final int   DETECT_RANGE = 900;
     private static final int   BURN_TICKS   = 3; // 3 instances × 10 dmg
 
     private boolean attackHitDealt = false;

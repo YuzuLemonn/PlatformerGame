@@ -8,7 +8,7 @@ public class Constants {
 
     public static class CharacterStats {
     public int hp;
-    public int stamina;
+    public int mana;
     public String skill1Name;
     public int skill1Dmg;
     public String skill2Name;
@@ -16,12 +16,12 @@ public class Constants {
     public String skill3Name;
     public int skill3Dmg;
 
-    public CharacterStats(int hp, int stamina,
+    public CharacterStats(int hp, int mana,
                           String skill1Name, int skill1Dmg,
                           String skill2Name, int skill2Dmg,
                           String skill3Name, int skill3Dmg) {
         this.hp         = hp;
-        this.stamina    = stamina;
+        this.mana       = mana;
         this.skill1Name = skill1Name;
         this.skill1Dmg  = skill1Dmg;
         this.skill2Name = skill2Name;

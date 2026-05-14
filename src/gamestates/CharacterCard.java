@@ -1,6 +1,7 @@
 package gamestates;
 
 import main.Game;
+import utilz.Constants.CharacterStats;
 import utilz.LoadSave;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -70,7 +71,7 @@ public class CharacterCard {
     }
 
     private void drawStats(Graphics g) {
-        int panelW = (int)(160 * Game.SCALE);
+        int panelW = (int)(180 * Game.SCALE);
         int panelH = (int)(120 * Game.SCALE);
         int panelX = bounds.x + bounds.width/2 - panelW/2;
         int panelY = bounds.y + bounds.height - (int)(8 * Game.SCALE);
@@ -93,8 +94,8 @@ public class CharacterCard {
 
         // full HP bar + label
         drawStatRow(g, tx, ty, panelW, "HP", stats.hp, stats.hp, new Color(220, 50, 50)); ty += lineH;
-        // full stamina bar + label  
-        drawStatRow(g, tx, ty, panelW, "STAMINA", stats.stamina, stats.stamina, new Color(255, 200, 0)); ty += lineH;
+        // full mana bar + label  
+        drawStatRow(g, tx, ty, panelW, "MANA", stats.mana, stats.mana, new Color(0, 0, 255)); ty += lineH;
 
         // divider
         g.setColor(new Color(255, 255, 255, 60));
@@ -102,9 +103,9 @@ public class CharacterCard {
         ty += (int)(6 * Game.SCALE);
 
         // skill damages
-        drawDmgRow(g, tx, ty, stats.skill1Name, stats.skill1Dmg, new Color(100, 180, 255)); ty += lineH;
-        drawDmgRow(g, tx, ty, stats.skill2Name, stats.skill2Dmg, new Color(100, 255, 150)); ty += lineH;
-        drawDmgRow(g, tx, ty, stats.skill3Name, stats.skill3Dmg, new Color(255, 120, 50));
+        drawDmgRow(g, tx, ty, stats.skill1Name, stats.skill1Dmg, false, new Color(100, 180, 255)); ty += lineH;
+        drawDmgRow(g, tx, ty, stats.skill2Name, stats.skill2Dmg, stats.skill2Name.equals("Heal"), new Color(100, 255, 150)); ty += lineH;
+        drawDmgRow(g, tx, ty, stats.skill3Name, stats.skill3Dmg, false, new Color(255, 120, 50));
     }
 
     private void drawStatRow(Graphics g, int x, int y, int panelW,
@@ -135,11 +136,15 @@ public class CharacterCard {
     }
 
     private void drawDmgRow(Graphics g, int x, int y,
-                             String skillName, int dmg, Color color) {
+                         String skillName, int dmg, boolean isHeal, Color color) {
         g.setColor(color);
-        g.drawString(skillName + ":", x, y);
+        String nameLabel = skillName + ":";
+        g.drawString(nameLabel, x, y);
+        
+        FontMetrics fm = g.getFontMetrics();
         g.setColor(Color.WHITE);
-        g.drawString(dmg + " dmg", x + (int)(70 * Game.SCALE), y);
+        String label = isHeal ? dmg + " heal" : dmg + " dmg";
+        g.drawString(label, x + fm.stringWidth(nameLabel) + (int)(4 * Game.SCALE), y);
     }
 
     public Rectangle getBounds() { return bounds; }

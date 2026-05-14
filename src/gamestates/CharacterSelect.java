@@ -5,7 +5,6 @@ import entities.players.Brawler;
 import entities.players.Mage;
 import main.Game;
 import ui.BossCutscene;
-import utilz.Constants.CharacterStats;
 import utilz.LoadSave;
 
 import static utilz.Constants.DamageConstants.*;
@@ -42,25 +41,25 @@ public class CharacterSelect extends State implements Statemethods {
             startX, cardY, cardWidth, cardHeight,
             "sprites/Brawler/IdleAni_Brawler.png", 14,
             new CharacterStats(100, MAX_STAMINA,
-                "Punch",  BRAWLER_ATTACK_DMG,
-                "Slam",   BRAWLER_SKILL2_DMG,
-                "Smash",  BRAWLER_SKILL3_DMG));
+                "Basic Punch",  BRAWLER_ATTACK_DMG,
+                "Haymaker",   BRAWLER_SKILL2_DMG,
+                "Showstopper",  BRAWLER_SKILL3_DMG));
 
         cards[1] = new CharacterCard("Mage",
             startX + cardWidth + spacing, cardY, cardWidth, cardHeight,
             "sprites/Mage/IdleAni_Mage.png", 9,
             new CharacterStats(70, MAX_STAMINA,
-                "Bolt",   MAGE_ATTACK_DMG,
-                "Heal",   0,
-                "Blast",  MAGE_SKILL3_DMG));
+                "Fire Ball",   MAGE_ATTACK_DMG,
+                "Perseverance",   0,
+                "Crescendo",  MAGE_SKILL3_DMG));
 
         cards[2] = new CharacterCard("Assassin",
             startX + (cardWidth+spacing)*2, cardY, cardWidth, cardHeight,
             "sprites/Assassin/IdleAni_Assassin.png", 8,
             new CharacterStats(80, MAX_STAMINA,
                 "Slash",  ASSASSIN_ATTACK_DMG,
-                "Throw",  ASSASSIN_SKILL2_DMG,
-                "Flurry", ASSASSIN_SKILL3_DMG));
+                "Throwing Knife",  ASSASSIN_SKILL2_DMG,
+                "Backstab", ASSASSIN_SKILL3_DMG));
     }
 
     @Override

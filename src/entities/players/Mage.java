@@ -7,7 +7,6 @@ import main.Game;
 import utilz.LoadSave;
 import java.awt.image.BufferedImage;
 import static utilz.Constants.PlayerConstants.*;
-import static utilz.Constants.Directions.*;
 import static utilz.Constants.DamageConstants.*;
 
 public class Mage extends Player {

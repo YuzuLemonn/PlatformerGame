@@ -18,7 +18,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import static utilz.Constants.PlayerConstants.MAX_STAMINA;
 
@@ -40,7 +39,6 @@ public class Playing extends State implements Statemethods {
     private int maxLvlOffsetX;
 
     private BufferedImage[] backgroundImgs;
-    private Random rnd = new Random();
 
     private boolean gameOver;
     private boolean lvlCompleted;

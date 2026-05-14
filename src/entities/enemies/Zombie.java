@@ -1,7 +1,6 @@
 package entities.enemies;
 
 import main.Game;
-import java.awt.geom.Rectangle2D;
 
 import entities.Enemy;
 import entities.Player;
@@ -10,8 +9,6 @@ import static utilz.Constants.Directions.*;
 import static utilz.Constants.EnemyConstants.*;
 
 public class Zombie extends Enemy {
-
-    private int attackBoxOffsetX;
 
     public Zombie(float x, float y) {
         super(x, y, ZOMBIE_WIDTH, ZOMBIE_HEIGHT, ZOMBIE);
