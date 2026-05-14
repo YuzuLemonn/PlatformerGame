@@ -131,6 +131,8 @@ public class Playing extends State implements Statemethods {
 
     private void initNPCs() {
         String playerName = BossCutscene.getPlayerName();
+//        System.out.println("DEBUG initNPCs: lvlIndex = " + levelManager.getLvlIndex());
+
 
         for (Point p : levelManager.getCurrentLevel().getMotherSpawns()) {
             NPC npc = new NPC(
@@ -169,6 +171,19 @@ public class Playing extends State implements Statemethods {
                 );
                 npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
                 npc.setGiftOnEnd(2, 2);
+                npcs.add(npc);
+            } else if(levelManager.getLvlIndex() == 5) {
+                NPC npc = new NPC(
+                        p.x, p.y,
+                        "Trader Francis",
+                        new String[]{
+                                "Welcome to my shop!",
+                                "I have wares if you have coin."
+                        },
+                        this
+                );
+                npc.loadLvlData(levelManager.getCurrentLevel().getLevelData());
+                npc.setShopkeeper(true);
                 npcs.add(npc);
             } else {
                 NPC npc = new NPC(
@@ -591,7 +606,7 @@ public class Playing extends State implements Statemethods {
     }
 
     public void teleportToBoss3() {
-        int bossLevelIndex = 6;  // Level 7
+        int bossLevelIndex = 5;  // Level 7
         
         System.out.println("DEBUG: Teleporting to BOSS3 (Level " + (bossLevelIndex + 1) + ")");
         

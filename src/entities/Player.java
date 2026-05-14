@@ -289,7 +289,7 @@ public abstract class Player extends Entity {
 
         // Not enough stamina message
         if (staminaMessageTimer > 0) {
-            String msg = "Not enough stamina!";
+            String msg = "Not enough mana!";
             g.setColor(new Color(255, 220, 0));
             g.setFont(new Font("Monospaced", Font.BOLD, (int)(9 * Game.SCALE)));
             FontMetrics fm = g.getFontMetrics();

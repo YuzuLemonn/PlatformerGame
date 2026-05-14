@@ -61,6 +61,7 @@ public class NPC extends Entity {
         switch (name) {
             case "Merchant Raineir": return LoadSave.MERCHANT1_IDLE;
             case "Mysterious Merchant":  return LoadSave.MERCHANT2_IDLE;
+            case "Trader Francis": return LoadSave.MERCHANT3_IDLE;
             case "Mother":    return LoadSave.MOTHER_IDLE;
             default:          return LoadSave.MOTHER_IDLE;
         }
@@ -76,6 +77,7 @@ public class NPC extends Entity {
         int frames;
         if (idleSpritePath.equals(LoadSave.MERCHANT2_IDLE)) frames = 4;
         else if (idleSpritePath.equals(LoadSave.MERCHANT1_IDLE)) frames = 4;
+        else if (idleSpritePath.equals(LoadSave.MERCHANT3_IDLE)) frames = 4;
         else frames = 5;
         int frameHeight = img.getHeight();
         int frameWidth  = img.getWidth() / frames;
