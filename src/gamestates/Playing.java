@@ -642,6 +642,7 @@ public class Playing extends State implements Statemethods {
         
         System.out.println("DEBUG: Teleported to Boss3! Player fully healed.");
         tryStartBossCutscene();
+        game.getAudioPlayer().setLevelSong(6);
     }
 
     private void tryStartBossCutscene() {
