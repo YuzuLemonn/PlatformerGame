@@ -157,7 +157,7 @@ public class Playing extends State implements Statemethods {
             if (levelManager.getLvlIndex() == 1) {
                 NPC npc = new NPC(
                         p.x, p.y,
-                        "Merchant1",
+                        "Merchant Raineir",
                         new String[]{
                                 "Raineir: Supplies for a journey upward? Not many try.",
                                 playerName + ": I don't plan to turn back.",
@@ -173,7 +173,7 @@ public class Playing extends State implements Statemethods {
             } else {
                 NPC npc = new NPC(
                         p.x, p.y,
-                        "Merchant",
+                        "Mysterious Merchant",
                         new String[]{
                                 "Welcome to my shop!",
                                 "I have wares if you have coin."

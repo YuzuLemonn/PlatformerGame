@@ -71,9 +71,9 @@ public class LevelNameOverlay {
         if (levelIndex == 2)
             return "Josiah - The Worm Keeper";
         if (levelIndex == 4)
-            return "Mark - The Starcaller";
+            return "Edvard - The Starcaller";
         if (levelIndex == 6)
-            return "Edvard - The Sentinel of the Deepwood";
+            return "Mark - The Sentinel of the Deepwood";
 
         if (levelIndex <= 2)
             return "World 1: Abyssos – The Underground Village";

@@ -59,8 +59,8 @@ public class NPC extends Entity {
 
     private String resolveSpritePath(String name) {
         switch (name) {
-            case "Merchant1": return LoadSave.MERCHANT1_IDLE;
-            case "Merchant":  return LoadSave.MERCHANT2_IDLE;
+            case "Merchant Raineir": return LoadSave.MERCHANT1_IDLE;
+            case "Mysterious Merchant":  return LoadSave.MERCHANT2_IDLE;
             case "Mother":    return LoadSave.MOTHER_IDLE;
             default:          return LoadSave.MOTHER_IDLE;
         }

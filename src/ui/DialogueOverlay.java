@@ -76,8 +76,8 @@ public class DialogueOverlay {
         int frameCount;
 
         switch (npc.getName()) {
-            case "Merchant"  -> { sheet = merchantPortrait;  frameCount = 4; }
-            case "Merchant1" -> { sheet = merchant1Portrait; frameCount = 4; }
+            case "Mysterious Merchant"  -> { sheet = merchantPortrait;  frameCount = 4; }
+            case "Merchant Raineir" -> { sheet = merchant1Portrait; frameCount = 4; }
             default          -> { sheet = motherPortrait;    frameCount = 5; }
         }
 
@@ -96,7 +96,7 @@ public class DialogueOverlay {
         // NPC name
         g.setFont(new Font("Monospaced", Font.BOLD, (int)(9 * Game.SCALE)));
         g.setColor(Color.YELLOW);
-        String displayName = npc.getName().equals("Merchant1") ? "Raineir" : npc.getName();
+        String displayName = npc.getName().equals("Merchant Ranier") ? "Raineir" : npc.getName();
         g.drawString(displayName, nameX, textY - (int)(16 * Game.SCALE));
 
         // dialogue text
