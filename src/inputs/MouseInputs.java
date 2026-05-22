@@ -29,6 +29,8 @@ public class MouseInputs implements MouseListener, MouseMotionListener{
             case CREDITS:
                 gamePanel.getGame().getCredits().mouseDragged(e);
                 break;
+            case LEADERBOARD:
+                break;
             default:
                 break;
         }
@@ -52,6 +54,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener{
             case CREDITS:
                 gamePanel.getGame().getCredits().mouseMoved(e);
                 break;
+            case LEADERBOARD:
+                gamePanel.getGame().getLeaderboardState().mouseMoved(e);
+                break;
             default:
                 break;
         }
@@ -71,6 +76,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener{
                 break;
             case CREDITS:
                 gamePanel.getGame().getCredits().mouseClicked(e);
+                break;
+            case LEADERBOARD:
+                gamePanel.getGame().getLeaderboardState().mouseClicked(e);
                 break;
             default:
                 break;
@@ -95,6 +103,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener{
             case CREDITS:
                 gamePanel.getGame().getCredits().mousePressed(e);
                 break;
+            case LEADERBOARD:
+                gamePanel.getGame().getLeaderboardState().mousePressed(e);
+                break;
             default:
                 break;
         }
@@ -117,6 +128,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener{
                 break;
             case CREDITS:
                 gamePanel.getGame().getCredits().mouseReleased(e);
+                break;
+            case LEADERBOARD:
+                gamePanel.getGame().getLeaderboardState().mouseReleased(e);
                 break;
             default:
                 break;

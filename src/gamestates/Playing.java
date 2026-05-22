@@ -8,10 +8,13 @@ import levels.LevelManager;
 import main.Game;
 import objects.ObjectManager;
 import ui.*;
+import utilz.Leaderboard;
 import utilz.LoadSave;
 import entities.NPC;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import audio.AudioPlayer;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -55,6 +58,8 @@ public class Playing extends State implements Statemethods {
 
     private BossCutscene bossCutscene = null;
     private boolean cutsceneActive = false;
+    private Map<String, boolean[]> shopEquipmentPurchased = new HashMap<>();
+    private Map<String, boolean[]> checkpointShopEquipmentPurchased = new HashMap<>();
 
     public Playing(Game game) {
         super(game);
@@ -314,6 +319,7 @@ public class Playing extends State implements Statemethods {
             g.setColor(new Color(0, 0, 0, 150));
             g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
             pauseOverlay.draw(g);
+            drawRunTimer(g);
         } else if (gameOver)
             gameOverOverlay.draw(g);
         else if (lvlCompleted)
@@ -468,7 +474,7 @@ public class Playing extends State implements Statemethods {
                 break;
 
             case KeyEvent.VK_ESCAPE:
-                paused = !paused;
+                setPaused(!paused);
                 break;
         }
     }
@@ -540,6 +546,7 @@ public class Playing extends State implements Statemethods {
     public void restartGame() {
         player.saveCheckpoint();
         saveShopCheckpoints();
+        resetShopPurchases();
         levelManager.resetLevelIndex();
         player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
         player.resetAll();
@@ -574,7 +581,7 @@ public class Playing extends State implements Statemethods {
         this.maxLvlOffsetX = lvlOffset; 
     }
     public void unpauseGame()                  { 
-        paused = false; 
+        setPaused(false);
     }
     public void windowFocusLost()              { 
         player.resetDirBooleans(); 
@@ -593,16 +600,55 @@ public class Playing extends State implements Statemethods {
         return objectManager; 
     }
 
-        private void saveShopCheckpoints() {
+    private void saveShopCheckpoints() {
+        saveShopPurchaseCheckpoint();
         for (NPC npc : npcs)
             if (npc.isShopkeeper())
                 npc.saveShopCheckpoint();
     }
 
     private void restoreShopCheckpoints() {
+        restoreShopPurchaseCheckpoint();
         for (NPC npc : npcs)
             if (npc.isShopkeeper())
                 npc.restoreShopCheckpoint();
+    }
+
+    public boolean[] getShopEquipmentPurchases(String playerClass, int itemCount) {
+        boolean[] purchased = shopEquipmentPurchased.get(playerClass);
+        if (purchased == null || purchased.length != itemCount) {
+            purchased = new boolean[itemCount];
+            shopEquipmentPurchased.put(playerClass, purchased);
+        }
+        return purchased.clone();
+    }
+
+    public void markShopEquipmentPurchased(String playerClass, int itemIndex, int itemCount) {
+        boolean[] purchased = shopEquipmentPurchased.get(playerClass);
+        if (purchased == null || purchased.length != itemCount)
+            purchased = new boolean[itemCount];
+        purchased[itemIndex] = true;
+        shopEquipmentPurchased.put(playerClass, purchased);
+    }
+
+    public void saveShopPurchaseCheckpoint() {
+        checkpointShopEquipmentPurchased = copyShopPurchases(shopEquipmentPurchased);
+    }
+
+    public void restoreShopPurchaseCheckpoint() {
+        shopEquipmentPurchased = copyShopPurchases(checkpointShopEquipmentPurchased);
+    }
+
+    private void resetShopPurchases() {
+        shopEquipmentPurchased.clear();
+        checkpointShopEquipmentPurchased.clear();
+    }
+
+    private Map<String, boolean[]> copyShopPurchases(Map<String, boolean[]> source) {
+        Map<String, boolean[]> copy = new HashMap<>();
+        for (Map.Entry<String, boolean[]> entry : source.entrySet())
+            copy.put(entry.getKey(), entry.getValue().clone());
+        return copy;
     }
 
     public void teleportToBoss3() {
@@ -679,6 +725,35 @@ public class Playing extends State implements Statemethods {
     }
 
     public void onBossDefeated() {
+        if (levelManager.getLvlIndex() == 6)
+            game.finishRun();
         game.getStoryManager().onBossDefeated(levelManager.getLvlIndex());
+    }
+
+    private void setPaused(boolean paused) {
+        if (this.paused == paused)
+            return;
+
+        this.paused = paused;
+        if (paused)
+            game.pauseRunTimer();
+        else
+            game.resumeRunTimer();
+    }
+
+    private void drawRunTimer(Graphics g) {
+        if (!game.isRunTimerRunning())
+            return;
+
+        String timer = Leaderboard.formatTime(game.getCurrentRunElapsedMillis());
+        g.setFont(new Font("Monospaced", Font.BOLD, (int)(8 * Game.SCALE)));
+        FontMetrics fm = g.getFontMetrics();
+        int x = Game.GAME_WIDTH - fm.stringWidth(timer) - (int)(12 * Game.SCALE);
+        int y = (int)(18 * Game.SCALE);
+
+        g.setColor(new Color(0, 0, 0, 150));
+        g.fillRect(x - 6, y - fm.getAscent(), fm.stringWidth(timer) + 12, fm.getHeight());
+        g.setColor(Color.WHITE);
+        g.drawString(timer, x, y);
     }
 }

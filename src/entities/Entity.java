@@ -22,7 +22,7 @@ public abstract class Entity {
     protected float airSpeed = 0f;
     protected boolean inAir = false;
     protected int maxHealth;
-    protected int currentHealth;
+    protected int  currentHealth;
     protected Rectangle2D.Float attackBox;
     protected float walkSpeed;
     protected int pushBackDir;

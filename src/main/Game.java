@@ -4,6 +4,7 @@ import audio.AudioPlayer;
 import gamestates.*;
 import gamestates.Menu;
 import ui.AudioOptions;
+import utilz.Leaderboard;
 
 import java.awt.*;
 
@@ -21,7 +22,14 @@ public class Game implements Runnable{
     private CharacterSelect characterSelect;
     private GameOptions gameOptions;
     private Credits credits;
+    private LeaderboardState leaderboardState;
+    private Leaderboard leaderboard;
     private StoryManager storyManager;
+    private long activeRunStartNanos;
+    private long accumulatedRunMillis;
+    private boolean runTimerRunning;
+    private boolean runTimerPaused;
+    private String currentPlayerName = "Player";
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.7f;
@@ -50,6 +58,8 @@ public class Game implements Runnable{
         playing = new Playing (this);
         gameOptions = new GameOptions(this);
         credits = new Credits(this);
+        leaderboardState = new LeaderboardState(this);
+        leaderboard = new Leaderboard();
         storyManager = new StoryManager(this);
     }
 
@@ -77,6 +87,9 @@ public class Game implements Runnable{
                 break;
             case CREDITS:
                 credits.update();
+                break;
+            case LEADERBOARD:
+                leaderboardState.update();
                 break;
             case QUIT:
                 System.exit(0);
@@ -106,6 +119,9 @@ public class Game implements Runnable{
                 break;
             case CREDITS:
                 credits.draw(g);
+                break;
+            case LEADERBOARD:
+                leaderboardState.draw(g);
                 break;
             default:
                 break;
@@ -183,7 +199,54 @@ public class Game implements Runnable{
 
     public Credits getCredits() { return credits; }
 
+    public LeaderboardState getLeaderboardState() { return leaderboardState; }
+
+    public Leaderboard getLeaderboard() { return leaderboard; }
+
     public StoryManager getStoryManager() { return storyManager; }
 
+    public void startRun(String playerName) {
+        currentPlayerName = Leaderboard.sanitizeName(playerName);
+        activeRunStartNanos = System.nanoTime();
+        accumulatedRunMillis = 0;
+        runTimerRunning = true;
+        runTimerPaused = false;
+    }
+
+    public void finishRun() {
+        if (!runTimerRunning)
+            return;
+
+        long elapsedMillis = getCurrentRunElapsedMillis();
+        runTimerRunning = false;
+        runTimerPaused = false;
+        leaderboard.addEntry(currentPlayerName, elapsedMillis);
+    }
+
+    public long getCurrentRunElapsedMillis() {
+        if (!runTimerRunning)
+            return 0;
+        if (runTimerPaused)
+            return accumulatedRunMillis;
+        return accumulatedRunMillis + (System.nanoTime() - activeRunStartNanos) / 1_000_000L;
+    }
+
+    public boolean isRunTimerRunning() {
+        return runTimerRunning;
+    }
+
+    public void pauseRunTimer() {
+        if (!runTimerRunning || runTimerPaused)
+            return;
+        accumulatedRunMillis += (System.nanoTime() - activeRunStartNanos) / 1_000_000L;
+        runTimerPaused = true;
+    }
+
+    public void resumeRunTimer() {
+        if (!runTimerRunning || !runTimerPaused)
+            return;
+        activeRunStartNanos = System.nanoTime();
+        runTimerPaused = false;
+    }
 
 }

@@ -92,7 +92,7 @@ public abstract class Player extends Entity {
     protected int flipX = 0;
     protected int flipW = 1;
 
-    private int iFramesTimer = 0;
+    protected int iFramesTimer = 0;
     private static final int IFRAME_DURATION = 100;
 
     private boolean attackChecked;
@@ -726,6 +726,14 @@ public abstract class Player extends Entity {
     public void clearBurn() {
         burnTicksLeft = 0;
         burnTimer = 0;
+    }
+
+    protected void startIFrames() {
+        iFramesTimer = IFRAME_DURATION;
+    }
+
+    protected void clearIFrames() {
+        iFramesTimer = 0;
     }
 
     public int getMaxHealth() {

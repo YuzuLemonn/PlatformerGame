@@ -78,6 +78,7 @@ public class DialogueOverlay {
         switch (npc.getName()) {
             case "Mysterious Merchant"  -> { sheet = merchantPortrait;  frameCount = 4; }
             case "Merchant Raineir" -> { sheet = merchant1Portrait; frameCount = 4; }
+            case "Trader Francis" -> { sheet = merchant1Portrait; frameCount = 4; }
             default          -> { sheet = motherPortrait;    frameCount = 5; }
         }
 

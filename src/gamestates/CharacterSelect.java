@@ -5,6 +5,7 @@ import entities.players.Brawler;
 import entities.players.Mage;
 import main.Game;
 import ui.BossCutscene;
+import utilz.Leaderboard;
 import utilz.LoadSave;
 
 import static utilz.Constants.DamageConstants.*;
@@ -20,6 +21,7 @@ public class CharacterSelect extends State implements Statemethods {
     private BufferedImage backgroundImg;
     private CharacterCard[] cards;
     private int hoveredCard = -1;
+    private String playerName = "";
 
     private int cardWidth  = (int)(120 * Game.SCALE);
     private int cardHeight = (int)(150 * Game.SCALE);
@@ -77,8 +79,30 @@ public class CharacterSelect extends State implements Statemethods {
         String title = "SELECT YOUR CHARACTER";
         g.drawString(title, Game.GAME_WIDTH/2 - fm.stringWidth(title)/2, (int)(30 * Game.SCALE));
 
+        drawNameInput(g);
+
         for (int i = 0; i < cards.length; i++)
             cards[i].draw(g, i == hoveredCard);
+    }
+
+    private void drawNameInput(Graphics g) {
+        int boxW = (int)(250 * Game.SCALE);
+        int boxH = (int)(26 * Game.SCALE);
+        int boxX = Game.GAME_WIDTH / 2 - boxW / 2;
+        int boxY = (int)(52 * Game.SCALE);
+
+        g.setColor(new Color(0, 0, 0, 160));
+        g.fillRect(boxX, boxY, boxW, boxH);
+        g.setColor(new Color(230, 210, 150));
+        g.drawRect(boxX, boxY, boxW, boxH);
+
+        g.setFont(new Font("Monospaced", Font.PLAIN, (int)(7 * Game.SCALE)));
+        g.setColor(Color.WHITE);
+        String nameToShow = playerName.isEmpty() ? "Player" : playerName;
+        String text = "NAME: " + nameToShow + "_";
+        FontMetrics fm = g.getFontMetrics();
+        g.drawString(text, Game.GAME_WIDTH / 2 - fm.stringWidth(text) / 2,
+                boxY + boxH / 2 + fm.getAscent() / 2 - 2);
     }
 
     @Override
@@ -121,6 +145,7 @@ public class CharacterSelect extends State implements Statemethods {
         }
     }
 
+    game.startRun(playerName);
     game.getStoryManager().startStory();
     }
 
@@ -131,8 +156,25 @@ public class CharacterSelect extends State implements Statemethods {
     public void mouseDragged(MouseEvent e) {}
 
     @Override public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             Gamestate.state = Gamestate.MENU;
+            return;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            if (!playerName.isEmpty())
+                playerName = playerName.substring(0, playerName.length() - 1);
+            return;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER)
+            return;
+
+        char c = e.getKeyChar();
+        if (playerName.length() < 16 &&
+                (Character.isLetterOrDigit(c) || c == ' ' || c == '_' || c == '-')) {
+            playerName = Leaderboard.sanitizeName(playerName + c);
+        }
     }
 
     @Override public void keyReleased(KeyEvent e) {}

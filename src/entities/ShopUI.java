@@ -17,7 +17,6 @@ public class ShopUI {
     private boolean[] isPotion     = {};
     private boolean[] isManaPotion = {};   // ← added field
     private boolean[] purchased    = {};
-    private boolean[] checkpointPurchased = {};
     private String playerClass = "";
 
     private int panelW = (int)(220 * Game.SCALE);
@@ -30,7 +29,6 @@ public class ShopUI {
     }
 
     public void init(String playerClass) {
-        boolean classChanged = !playerClass.equals(this.playerClass);
         this.playerClass = playerClass;
 
         switch (playerClass) {
@@ -72,8 +70,7 @@ public class ShopUI {
         for (int i = 0; i < items.length; i++)
             labels[i] = prices[i] + "g";
 
-        if (classChanged || purchased.length != items.length)
-            purchased = new boolean[items.length];
+        purchased = playing.getShopEquipmentPurchases(playerClass, items.length);
     }
 
     public void update() {}
@@ -180,8 +177,10 @@ public class ShopUI {
         if (isManaPotion[index])
             player.addManaPotion();      // ← Mana potion
 
-        if (!isConsumable)
+        if (!isConsumable) {
             purchased[index] = true;
+            playing.markShopEquipmentPurchased(playerClass, index, items.length);
+        }
 
         System.out.println("[SHOP] Bought: " + items[index] + " for " + cost + "g. "
                 + "Gold left: " + player.getGold() + "g. "
@@ -190,13 +189,11 @@ public class ShopUI {
     }
 
     public void saveCheckpoint() {
-        checkpointPurchased = purchased.clone();
+        playing.saveShopPurchaseCheckpoint();
     }
 
     public void restoreCheckpoint() {
-        if (checkpointPurchased.length == purchased.length)
-            purchased = checkpointPurchased.clone();
-        else
-            purchased = new boolean[items.length];
+        playing.restoreShopPurchaseCheckpoint();
+        purchased = playing.getShopEquipmentPurchases(playerClass, items.length);
     }
 }

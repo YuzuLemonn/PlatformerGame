@@ -102,6 +102,7 @@ public class Assassin extends Player {
         skill3Part2 = false;
         skill3TeleportDone = false;
         isUsingSkill3 = true;
+        startIFrames();
         
         // SIMPLE - teleport directly to enemy's position (no offsets!)
         teleportX = nearestEnemy.getHitbox().x;
@@ -177,6 +178,7 @@ public class Assassin extends Player {
                     skill3TeleportDone = false;
                     backstabTarget = null;
                     isUsingSkill3 = false;
+                    clearIFrames();
                     aniIndex = 0;
                 }
             }
@@ -205,6 +207,17 @@ public class Assassin extends Player {
             }
         }
         return nearest;
+    }
+
+    @Override
+    public void resetAll() {
+        super.resetAll();
+        skill3Part2 = false;
+        skill3TeleportDone = false;
+        backstabTarget = null;
+        isUsingSkill3 = false;
+        skill3Frames = skill3ShadowFrames;
+        clearIFrames();
     }
 
     @Override

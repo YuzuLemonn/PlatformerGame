@@ -34,7 +34,7 @@ public class Credits extends State implements Statemethods {
         String[] lines = {
                 "CREDITS",
                 "",
-                "Project Mangers",
+                "Project Managers",
                 "Neo Mark Tripoli",
                 "Francis Louie Tantengco",
                 "",
@@ -61,6 +61,7 @@ public class Credits extends State implements Statemethods {
                 "Sir Khai",
                 "Kaarin Gaming",
                 "",
+                "Press SPACE for leaderboard",
                 "Press ESC to return"
         };
 
@@ -83,6 +84,9 @@ public class Credits extends State implements Statemethods {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             setGamestate(Gamestate.MENU);
+            musicStarted = false;
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_ENTER) {
+            Gamestate.state = Gamestate.LEADERBOARD;
             musicStarted = false;
         }
     }

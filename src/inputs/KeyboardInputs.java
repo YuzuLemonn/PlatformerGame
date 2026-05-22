@@ -52,6 +52,9 @@ public class KeyboardInputs implements KeyListener {
             case CREDITS:
                 gamePanel.getGame().getCredits().keyReleased(e);
                 break;
+            case LEADERBOARD:
+                gamePanel.getGame().getLeaderboardState().keyReleased(e);
+                break;
 
             default:
                 break;
@@ -81,6 +84,9 @@ public class KeyboardInputs implements KeyListener {
                 break;
             case CREDITS:
                 gamePanel.getGame().getCredits().keyPressed(e);
+                break;
+            case LEADERBOARD:
+                gamePanel.getGame().getLeaderboardState().keyPressed(e);
                 break;
             case CUTSCENE:
                 gamePanel.getGame().getStoryManager().onKeyPressed(e);

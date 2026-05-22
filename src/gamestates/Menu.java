@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 public class Menu extends State implements Statemethods{
-    private MenuButton[] buttons = new MenuButton[4];
+    private MenuButton[] buttons = new MenuButton[5];
     private BufferedImage backdropImg;
 
     public Menu(Game game) {
@@ -21,13 +21,14 @@ public class Menu extends State implements Statemethods{
 
     private void loadButtons() {
         int centerX = Game.GAME_WIDTH / 2;
-        int startY  = (int)(Game.GAME_HEIGHT * 0.50f);
-        int gap     = (int)(50 * Game.SCALE);
+        int startY  = (int)(Game.GAME_HEIGHT * 0.37f);
+        int gap     = (int)(47 * Game.SCALE);
 
         buttons[0] = new MenuButton(centerX, startY,0, Gamestate.CHARACTER_SELECT);
         buttons[1] = new MenuButton(centerX, startY + gap,1, Gamestate.OPTIONS);
-        buttons[2] = new MenuButton(centerX, startY + gap * 2, 3, Gamestate.CREDITS);
-        buttons[3] = new MenuButton(centerX, startY + gap * 3, 2, Gamestate.QUIT);
+        buttons[2] = new MenuButton(centerX, startY + gap * 2, 4, Gamestate.LEADERBOARD, "LEADERBOARD");
+        buttons[3] = new MenuButton(centerX, startY + gap * 3, 3, Gamestate.CREDITS);
+        buttons[4] = new MenuButton(centerX, startY + gap * 4, 2, Gamestate.QUIT);
 
     }
 
@@ -72,10 +73,6 @@ public class Menu extends State implements Statemethods{
                         game.getAudioPlayer().setLevelSong(0);
                         game.getPlaying().restartGame();
                     }
-                    if (mb.getState() == Gamestate.CHARACTER_SELECT) {
-                        game.getAudioPlayer().setLevelSong(0);
-                        game.getPlaying().restartGame();
-                    }
                 }
                 break;
             }
@@ -106,7 +103,7 @@ public class Menu extends State implements Statemethods{
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            Gamestate.state = Gamestate.PLAYING;
+            Gamestate.state = Gamestate.CHARACTER_SELECT;
             game.getAudioPlayer().setLevelSong(0);
             game.getPlaying().restartGame();
         }
