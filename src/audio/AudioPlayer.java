@@ -26,10 +26,9 @@ public class AudioPlayer {
     public static int DIE = 0;
     public static int JUMP = 1;
     public static int GAMEOVER = 2;
-    public static int LVL_COMPLETED = 3;
-    public static int ATTACK_ONE = 4; // to be implemented or not ha ha ha
-    public static int ATTACK_TWO = 5;
-    public static int ATTACK_THREE = 6;
+    public static int ATTACK_ONE = 3;
+    public static int ATTACK_TWO = 4;
+    public static int ATTACK_THREE = 5;
 
     private Clip[] songs, effects;
     private int currentSongId;
@@ -53,7 +52,7 @@ public class AudioPlayer {
     }
 
     private void loadEffects() {
-        String[] effectNames = { "die", "jump", "gameover", "lvlcompleted", "attack1", "attack2", "attack3" };
+        String[] effectNames = { "die", "jump", "gameover", "attack1", "attack2", "attack3" };
         effects = new Clip[effectNames.length];
         for (int i = 0; i < effects.length; i++)
             effects[i] = getClip(effectNames[i]);
@@ -77,8 +76,8 @@ public class AudioPlayer {
             c.open(audio);
             return c;
 
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            System.err.println("Error loading audio file: " + name);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | IllegalArgumentException e) {
+            System.err.println("Error loading audio file: " + name + " (" + e.getMessage() + ")");
         }
 
         return null;
@@ -92,12 +91,16 @@ public class AudioPlayer {
     }
 
     public void stopSong() {
+        if (!isValidClip(songs, currentSongId))
+            return;
         if (songs[currentSongId].isActive())
             songs[currentSongId].stop();
     }
 
     public void pauseSongForCutscene() {
         if (pausedSongId != -1)
+            return;
+        if (!isValidClip(songs, currentSongId))
             return;
 
         pausedSongId = currentSongId;
@@ -112,6 +115,8 @@ public class AudioPlayer {
         currentSongId = pausedSongId;
         pausedSongId = -1;
         updateSongVolume();
+        if (!isValidClip(songs, currentSongId))
+            return;
         songs[currentSongId].setMicrosecondPosition(pausedSongPosition);
         songs[currentSongId].loop(Clip.LOOP_CONTINUOUSLY);
     }
@@ -132,18 +137,15 @@ public class AudioPlayer {
         playSong(CREDITS_SONG);
     }
 
-    public void lvlCompleted() {
-        stopSong();
-        playEffect(LVL_COMPLETED);
-    }
-
     public void playAttackSound() {
-        int start = 4;
+        int start = ATTACK_ONE;
         start += rand.nextInt(3);
         playEffect(start);
     }
 
     public void playEffect(int effect) {
+        if (!isValidClip(effects, effect))
+            return;
         if (effects[effect].getMicrosecondPosition() > 0)
             effects[effect].setMicrosecondPosition(0);
         effects[effect].start();
@@ -155,6 +157,8 @@ public class AudioPlayer {
 
         currentSongId = song;
         updateSongVolume();
+        if (!isValidClip(songs, currentSongId))
+            return;
         songs[currentSongId].setMicrosecondPosition(0);
         songs[currentSongId].loop(Clip.LOOP_CONTINUOUSLY);
     }
@@ -162,6 +166,8 @@ public class AudioPlayer {
     public void toggleSongMute() {
         this.songMute = !songMute;
         for (Clip c : songs) {
+            if (c == null || !c.isControlSupported(BooleanControl.Type.MUTE))
+                continue;
             BooleanControl booleanControl = (BooleanControl) c.getControl(BooleanControl.Type.MUTE);
             booleanControl.setValue(songMute);
         }
@@ -170,6 +176,8 @@ public class AudioPlayer {
     public void toggleEffectMute() {
         this.effectMute = !effectMute;
         for (Clip c : effects) {
+            if (c == null || !c.isControlSupported(BooleanControl.Type.MUTE))
+                continue;
             BooleanControl booleanControl = (BooleanControl) c.getControl(BooleanControl.Type.MUTE);
             booleanControl.setValue(effectMute);
         }
@@ -178,6 +186,9 @@ public class AudioPlayer {
     }
 
     private void updateSongVolume() {
+        if (!isValidClip(songs, currentSongId) ||
+                !songs[currentSongId].isControlSupported(FloatControl.Type.MASTER_GAIN))
+            return;
 
         FloatControl gainControl = (FloatControl) songs[currentSongId].getControl(FloatControl.Type.MASTER_GAIN);
         float range = gainControl.getMaximum() - gainControl.getMinimum();
@@ -188,11 +199,17 @@ public class AudioPlayer {
 
     private void updateEffectsVolume() {
         for (Clip c : effects) {
+            if (c == null || !c.isControlSupported(FloatControl.Type.MASTER_GAIN))
+                continue;
             FloatControl gainControl = (FloatControl) c.getControl(FloatControl.Type.MASTER_GAIN);
             float range = gainControl.getMaximum() - gainControl.getMinimum();
             float gain = (range * volume) + gainControl.getMinimum();
             gainControl.setValue(gain);
         }
+    }
+
+    private boolean isValidClip(Clip[] clips, int index) {
+        return clips != null && index >= 0 && index < clips.length && clips[index] != null;
     }
 
 }

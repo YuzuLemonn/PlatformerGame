@@ -15,7 +15,6 @@ import entities.NPC;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import audio.AudioPlayer;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -31,8 +30,6 @@ public class Playing extends State implements Statemethods {
     private ObjectManager objectManager;
     private PauseOverlay pauseOverlay;
     private GameOverOverlay gameOverOverlay;
-    private GameCompletedOverlay gameCompletedOverlay;
-    private LevelCompletedOverlay levelCompletedOverlay;
     private boolean paused = false;
     private boolean debugMode = false;
 
@@ -44,8 +41,6 @@ public class Playing extends State implements Statemethods {
     private BufferedImage[] backgroundImgs;
 
     private boolean gameOver;
-    private boolean lvlCompleted;
-    private boolean gameCompleted;
     private boolean playerDying;
 
     private ArrayList<NPC> npcs = new ArrayList<>();
@@ -126,8 +121,6 @@ public class Playing extends State implements Statemethods {
 
         pauseOverlay          = new PauseOverlay(this);
         gameOverOverlay       = new GameOverOverlay(this);
-        levelCompletedOverlay = new LevelCompletedOverlay(this);
-        gameCompletedOverlay  = new GameCompletedOverlay(this);
         dialogueOverlay       = new DialogueOverlay(this);
         levelNameOverlay      = new LevelNameOverlay();
 
@@ -218,10 +211,6 @@ public class Playing extends State implements Statemethods {
 
         if (paused)
             pauseOverlay.update();
-        else if (lvlCompleted)
-            levelCompletedOverlay.update();
-        else if (gameCompleted)
-            gameCompletedOverlay.update();
         else if (gameOver)
             gameOverOverlay.update();
         else if (playerDying)
@@ -322,10 +311,6 @@ public class Playing extends State implements Statemethods {
             drawRunTimer(g);
         } else if (gameOver)
             gameOverOverlay.draw(g);
-        else if (lvlCompleted)
-            levelCompletedOverlay.draw(g);
-        else if (gameCompleted)
-            gameCompletedOverlay.draw(g);
 
         if (cutsceneActive && bossCutscene != null) {
             bossCutscene.draw(g);
@@ -337,9 +322,7 @@ public class Playing extends State implements Statemethods {
         allEnemiesCleared = false;
         gameOver          = false;
         paused            = false;
-        lvlCompleted      = false;
         playerDying       = false;
-        gameCompleted     = false;
         dialogueActive    = false;
         shopActive        = false;
         activeNPC         = null;
@@ -353,8 +336,6 @@ public class Playing extends State implements Statemethods {
     }
 
     public void setGameOver(boolean gameOver)       { this.gameOver = gameOver; }
-    public void setGameCompleted()                  { gameCompleted = true; }
-    public void resetGameCompleted()                { gameCompleted = false; }
     public void setPlayerDying(boolean playerDying) { this.playerDying = playerDying; }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
@@ -385,7 +366,7 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!gameOver && !paused && !lvlCompleted && !gameCompleted) {
+        if (!gameOver && !paused) {
             if (e.getButton() == MouseEvent.BUTTON1)
                 player.setAttacking(true);
             else if (e.getButton() == MouseEvent.BUTTON3)
@@ -394,24 +375,18 @@ public class Playing extends State implements Statemethods {
         }
         if (gameOver)           gameOverOverlay.mousePressed(e);
         else if (paused)        pauseOverlay.mousePressed(e);
-        else if (lvlCompleted)  levelCompletedOverlay.mousePressed(e);
-        else if (gameCompleted) gameCompletedOverlay.mousePressed(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (gameOver)           gameOverOverlay.mouseReleased(e);
         else if (paused)        pauseOverlay.mouseReleased(e);
-        else if (lvlCompleted)  levelCompletedOverlay.mouseReleased(e);
-        else if (gameCompleted) gameCompletedOverlay.mouseReleased(e);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         if (gameOver)           gameOverOverlay.mouseMoved(e);
         else if (paused)        pauseOverlay.mouseMoved(e);
-        else if (lvlCompleted)  levelCompletedOverlay.mouseMoved(e);
-        else if (gameCompleted) gameCompletedOverlay.mouseMoved(e);
     }
 
     @Override
@@ -436,7 +411,7 @@ public class Playing extends State implements Statemethods {
             }
         }
 
-        if (gameOver || gameCompleted || lvlCompleted) return;
+        if (gameOver) return;
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_A:
@@ -481,7 +456,7 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (gameOver || gameCompleted || lvlCompleted) return;
+        if (gameOver) return;
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_A:
@@ -529,18 +504,6 @@ public class Playing extends State implements Statemethods {
                 break;
             }
         }
-    }
-
-    public void setLevelCompleted(boolean levelCompleted) {
-        game.getAudioPlayer().lvlCompleted();
-        game.getStoryManager().onLevelComplete();
-        if (levelManager.getLvlIndex() + 1 >= levelManager.getAmountOfLevels()) {
-            levelManager.loadNextLevel();
-            resetAll();
-            game.getAudioPlayer().playSong(AudioPlayer.MENU_1);
-            return;
-        }
-        this.lvlCompleted = levelCompleted;
     }
 
     public void restartGame() {
@@ -696,8 +659,6 @@ public class Playing extends State implements Statemethods {
         activeNPC = null;
         paused = false;
         gameOver = false;
-        lvlCompleted = false;
-        gameCompleted = false;
         playerDying = false;
         levelNameOverlay.start(levelManager.getLvlIndex());
         

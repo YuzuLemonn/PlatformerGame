@@ -26,8 +26,6 @@ public class LoadSave {
     public static final String URM_BUTTONS = "urm_buttons.png";
     public static final String VOLUME_BUTTONS = "volume_buttons.png";
 
-    public static final String COMPLETED_IMG = "completed_sprite.png";
-
     public static final String PLAYING_BG_IMG = "playing_bg_img1.png";
 //    public static final String BIG_CLOUDS = "big_clouds.png";
 //    public static final String SMALL_CLOUDS = "small_clouds.png";
@@ -49,7 +47,7 @@ public class LoadSave {
     public static final String GOBLIN_HIT    = "sprites/Goblin/Goblin_Hit.png";
     public static final String GOBLIN_DEATH  = "sprites/Goblin/Goblin_Death.png";
 
-    public static final String GAME_COMPLETED = "game_completed.png";
+    public static final String LEADERBOARD = "leaderboard.png";
     public static final String OPTIONS_MENU = "options_background.png";
     public static final String DEATH_SCREEN = "death_screen.png";
 
